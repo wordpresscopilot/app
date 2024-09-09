@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "mongodb"
+  url       = env("DATABASE_PROXY_URL")
+  directUrl = env("MONGODB_URL")
+}
+
+
+model wp_site {
+  id          String   @id @map("_id")
+  user_id     String   @map("user_id")
+  name        String
+  base_url    String   @map("base_url")
+  api_key     String   @map("api_key")
+  logo_url    String?
+  connected   Boolean?
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
+}
