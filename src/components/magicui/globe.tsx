@@ -1,8 +1,9 @@
 "use client";
 
 import createGlobe, { COBEOptions } from "cobe";
+import Image from "next/image";
 import { useCallback, useEffect, useRef } from "react";
-import { useSpring } from "react-spring";
+import { animated, useSpring } from "react-spring";
 
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,11 @@ export default function Globe({
       precision: 0.001,
     },
   }));
+  const [logoSpring, setLogoSpring] = useSpring(() => ({
+    x: 0,
+    y: 0,
+    config: { mass: 1, tension: 180, friction: 12 },
+  }));
 
   const updatePointerInteraction = (value: any) => {
     pointerInteracting.current = value;
@@ -75,8 +81,13 @@ export default function Globe({
       state.phi = phi + r.get();
       state.width = width * 2;
       state.height = width * 2;
+
+      // Calculate logo position based on globe rotation
+      const x = Math.sin(state.phi) * 50;
+      const y = Math.cos(state.phi) * 25;
+      setLogoSpring({ x, y });
     },
-    [pointerInteracting, phi, r]
+    [pointerInteracting, phi, r, setLogoSpring]
   );
 
   const onResize = () => {
@@ -124,6 +135,26 @@ export default function Globe({
           e.touches[0] && updateMovement(e.touches[0].clientX)
         }
       />
+      <animated.div
+        className="absolute top-1/2 left-1/2 pointer-events-none"
+        style={{
+          transform: logoSpring.x.to(
+            (x) =>
+              `translate(calc(-50% + ${x}px), calc(-50% + ${logoSpring.y.get()}px))`
+          ),
+        }}
+      >
+        <div className="relative">
+          <Image
+            src="/wp.png"
+            alt="WordPress Logo"
+            width={96}
+            height={96}
+            className="filter drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] brightness-110 contrast-125"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 opacity-30 mix-blend-overlay rounded-full"></div>
+        </div>
+      </animated.div>
     </div>
   );
 }

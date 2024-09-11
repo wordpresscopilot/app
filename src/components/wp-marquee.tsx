@@ -72,7 +72,7 @@ const FeatureCard = ({
 
 export function WPMarquee() {
   return (
-    <div className="relative flex h-[400px] max-w-100vw lg:max-w-[50vw] flex-col items-center justify-center overflow-hidden">
+    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[50vw] flex-col items-center justify-center overflow-hidden">
       <Marquee pauseOnHover className="[--duration:20s]">
         {firstRow.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />

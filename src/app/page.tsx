@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "PROMPT. WORDPRESS. DEVELOP.",
     description: "AI-Powered Wordpress Development",
     url: process.env.NEXT_PUBLIC_APP_URL!,
-    images: "/gasino_bg.png",
+    images: "/wp.png",
     locale: "en_US",
     type: "website",
   },
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex flex-row w-full min-h-screen">
-      <div className="flex items-center w-full justify-center py-12 h-screen relative">
+    <div className="flex flex-col lg:flex-row w-full min-h-screen overflow-x-hidden">
+      <div className="flex items-center w-full justify-center py-12 min-h-screen relative">
         <div className="flex justify-center items-center">
-          <div className="flex flex-col justify-center gap-2 items-center relative rounded md:max-w-full">
+          <div className="flex flex-col justify-center gap-2 items-center relative rounded md:max-w-full px-4 lg:px-0">
             <Image
-              src="/wp_logo_1.png"
+              src="/wp.png"
               alt="Wordpress Logo"
               width="180"
               height="180"
@@ -45,7 +45,7 @@ export default function Home() {
               <div className="flex justify-center items-center gap-2">
                 <span className="pointer-events-none whitespace-pre-wrap text-center font-semibold leading-none text-black dark:text-white">
                   <AnimatedGradientText className="text-xl inline-flex items-center justify-center px-4 py-1 transition ease-out">
-                    GPT Wrapper for WordPress.
+                    GPT Wrapper for WordPress
                   </AnimatedGradientText>
                 </span>
               </div>
@@ -69,18 +69,11 @@ export default function Home() {
                 <div className="absolute top-1/2 left-1/2 size-full rounded-lg bg-inherit animate-pulse -translate-x-1/2 -translate-y-1/2" />
               </Button>
             </Link>
-            {/* <Link href={`/games/${GameName.SSB_MELEE}`}>
-              <ShinyButton 
-                className="w-full min-w-[300px] z-10"
-                text="GO"
-              />
-            </Link> */}
-
             <WPMarquee />
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block group relative">
+      <div className="hidden bg-muted lg:block group relative lg:w-1/2">
         <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border bg-background px-40 pb-40 pt-8 md:pb-60 md:shadow-xl">
           <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-8xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
             Globe
