@@ -24,7 +24,7 @@ export async function currentSite(pathname: string) {
     },
   });
 }
-export async function createSiteProject(formData: FormData) {
+export async function createSiteProject(formData: FormData): Promise<WpSite> {
   const user = await currentUser()
   if (!user) throw new Error('User not found');
 
@@ -48,9 +48,10 @@ export async function createSiteProject(formData: FormData) {
       user_id: user.id,
       name,
       base_url: baseUrl,
-      api_key: created_key?.result?.key!
+      api_key: created_key?.result?.key!,
+      connected: false,
     },
-  });
+  }) as WpSite;
 
   // Update Redis cache
   const cacheKey = `sites:${user.id}`;

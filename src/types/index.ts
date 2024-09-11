@@ -13,7 +13,7 @@ export interface WpSite {
   name: string;
   base_url: string;
   api_key: string;
-  connected: boolean;
+  connected?: boolean;
   last_connected_date: Date;
   sftp_credentials?: SftpCredentials; 
   sftp_connected?: boolean;
