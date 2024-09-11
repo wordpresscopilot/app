@@ -16,7 +16,7 @@ export default async function DashboardPage() {
   console.log("user_sites", user_sites);
 
   if (user_sites.length === 0) {
-    redirect("/create-site");
+    redirect("/onboarding");
   }
 
   return <DashboardContent user_sites={user_sites} />;

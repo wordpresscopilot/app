@@ -1,5 +1,5 @@
 export const config = {
-  siteName: "PROMPT. WORDPRESS. DEVELOP.",
+  siteName: "PROMPT. DEVELOP. WORDPRESS.",
   description: "An AI Agent for wordpress development.",
   url: "https://w-p.ai", // Replace with your actual URL
   author: "Aaron Landy",

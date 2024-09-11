@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { AI, getSharedChat, getUIStateFromAIState } from "@/actions";
 import { ChatList } from "@/components/chat-list";
-import { FooterText } from "@/components/footer";
 import { formatDate, mapClerkUserForClient } from "@/lib/utils";
 import { UIState } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
@@ -58,7 +57,6 @@ export default async function SharePage({ params }: SharePageProps) {
           />
         </AI>
       </div>
-      <FooterText className="py-8" />
     </>
   );
 }
