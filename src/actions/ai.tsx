@@ -462,7 +462,16 @@ export const getUIStateFromAIState = (aiState: Chat) => {
               <BotCard>
                 {(() => {
                   try {
-                    const parsedResult = JSON.parse(tool?.result);
+                    const result = tool?.result;
+                    if (!result || typeof result !== "string") {
+                      return (
+                        <div className="text-red-500">
+                          <p>Error parsing JSON result:</p>
+                          <p>{JSON.stringify(tool?.result)}</p>
+                        </div>
+                      );
+                    }
+                    const parsedResult = JSON.parse(result);
                     return (
                       <CodeBlock
                         language="json"
@@ -473,7 +482,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
                     return (
                       <div className="text-red-500">
                         <p>Error parsing JSON result:</p>
-                        <p>{tool?.result}</p>
+                        <p>{JSON.stringify(tool?.result)}</p>
                       </div>
                     );
                   }
@@ -565,7 +574,11 @@ export async function saveChat(chat: Chat) {
         messages: {
           deleteMany: {},
           create: chat.messages.map((message) => ({
-            content: message.content,
+            id: message.id,
+            content:
+              typeof message.content === "string"
+                ? message.content
+                : JSON.stringify(message.content),
             role: message.role,
           })),
         },
@@ -574,11 +587,15 @@ export async function saveChat(chat: Chat) {
         id: chat.id,
         title: chat.title,
         userId: chat.userId,
-        siteId: chat.siteId,
+        siteId: chat.siteId!,
         path: chat.path,
         messages: {
           create: chat.messages.map((message) => ({
-            content: message.content,
+            id: message.id,
+            content:
+              typeof message.content === "string"
+                ? message.content
+                : JSON.stringify(message.content),
             role: message.role,
           })),
         },

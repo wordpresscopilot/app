@@ -1,4 +1,4 @@
-import { type Session } from "@/types";
+import { UserSession, type Session } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,14 +19,14 @@ function getUserInitials(name: string) {
   return lastName ? `${firstName[0]}${lastName[0]}` : firstName.slice(0, 2);
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user }: { user: UserSession }) {
   return (
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="pl-0">
             <div className="flex size-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
-              {getUserInitials(user?.fullName)}
+              {getUserInitials(user?.fullName!)}
             </div>
             <span className="ml-2 hidden md:block">{user.fullName}</span>
           </Button>

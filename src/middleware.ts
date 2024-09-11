@@ -30,7 +30,7 @@ export async function AddSiteIDSearchParams(req: NextRequest) {
         if (chat) {
           const url = new URL(req.url);
           url.searchParams.set('chat_id', chatId);
-          url.searchParams.set('site_id', chat.site_id);
+          url.searchParams.set('site_id', chat?.siteId);
           return NextResponse.rewrite(url);
         }
       } catch (error) {

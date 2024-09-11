@@ -235,11 +235,13 @@ export default function SetupProject({ site }: { site: WpSite }) {
             <li>
               <strong>
                 Choose the downloaded Wordpress Sage plugin file and click
-                "Install Now"
+                &quot;Install Now&quot;
               </strong>
             </li>
             <li>
-              <strong>After installation, click "Activate Plugin"</strong>
+              <strong>
+                After installation, click &quot;Activate Plugin&quot;
+              </strong>
             </li>
             <li>
               <strong>

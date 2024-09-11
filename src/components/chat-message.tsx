@@ -10,6 +10,7 @@ import { CodeBlock } from "@/components/ui/codeblock";
 import { IconOpenAI, IconUser } from "@/components/ui/icons";
 import { MemoizedReactMarkdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 export interface ChatMessageProps {
   message: Message;
@@ -39,15 +40,28 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>;
             },
-            code({ node, inline, className, children, ...props }) {
-              if (children.length) {
-                if (children[0] == "▍") {
+            code({
+              node,
+              inline,
+              className,
+              children,
+              ...props
+            }: React.HTMLAttributes<HTMLElement> & {
+              node?: any;
+              inline?: boolean;
+            }) {
+              const childrenArray = React.Children.toArray(children);
+              if (childrenArray.length) {
+                if (childrenArray[0] == "▍") {
                   return (
                     <span className="mt-1 cursor-default animate-pulse">▍</span>
                   );
                 }
 
-                children[0] = (children[0] as string).replace("`▍`", "▍");
+                childrenArray[0] = (childrenArray[0] as string).replace(
+                  "`▍`",
+                  "▍"
+                );
               }
 
               const match = /language-(\w+)/.exec(className || "");

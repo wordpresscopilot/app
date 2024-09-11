@@ -95,14 +95,16 @@ export function BotMessage({
             code(props) {
               const { children, className, node, ...rest } = props;
               const match = /language-(\w+)/.exec(className || "");
+              const { ref, ...restWithoutRef } = rest; // Remove ref from rest
               return match ? (
                 <SyntaxHighlighter
-                  {...rest}
-                  PreTag="div"
-                  children={String(children).replace(/\n$/, "")}
+                  {...restWithoutRef}
                   language={match[1]}
                   style={dark}
-                />
+                  PreTag="div"
+                >
+                  {String(children)}
+                </SyntaxHighlighter>
               ) : (
                 <code {...rest} className={className}>
                   {children}

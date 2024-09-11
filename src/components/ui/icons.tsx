@@ -93,7 +93,7 @@ function IconOpenAI({ className, ...props }: React.ComponentProps<"svg">) {
     <Image
       src="/logo.png"
       alt="Wordpress Sage logo"
-      {...props}
+      className={className} // Add className to props
       width={100}
       height={100}
     />

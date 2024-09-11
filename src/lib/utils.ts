@@ -1,3 +1,4 @@
+import { UserSession } from "@/types"
 import { User } from "@clerk/nextjs/server"
 import { type ClassValue, clsx } from "clsx"
 import { customAlphabet } from 'nanoid'
@@ -89,11 +90,11 @@ export function subMonths(date: Date, amount: number) {
   return newDate
 }
 
-export const mapClerkUserForClient = (user: User) => {
+export const mapClerkUserForClient = (user: User): UserSession => {
   return {
     id: user?.id,
     email: user?.emailAddresses?.[0]?.emailAddress,
-    fullName: user?.fullName,
+    fullName: user?.fullName!,
     imageUrl: user?.imageUrl
   };
 };

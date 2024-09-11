@@ -46,10 +46,20 @@ export type ServerActionResult<Result> = Promise<
     }
 >
 
+export interface UserSession {
+  id: string;
+  email: string;
+  fullName?: string;
+  imageUrl: string;
+}
+
+
 export interface Session {
   user: {
-    id: string
-    email: string
+    id: string;
+    email: string;
+    fullName: string;
+    imageUrl: string;
   }
 }
 

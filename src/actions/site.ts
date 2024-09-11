@@ -161,7 +161,7 @@ export async function runSiteHealthCheck(id: string, url: string): Promise<boole
 }
 
 export async function runSFTPHealthCheck(credentials: SftpCredentials) {
-  
+
 }
 
 export async function getCoreSiteData(siteId: string) {
@@ -203,11 +203,12 @@ export async function getCoreSiteData(siteId: string) {
     api_url: endpoint_url
   });
 
-  result = JSON.parse(result)
-  const core_site_data = result.reduce((acc, { option_name, option_value }) => {
+  const parsedResult = JSON.parse(result) as { option_name: string; option_value: string }[];
+
+  const core_site_data = parsedResult.reduce((acc: Record<string, string>, { option_name, option_value }) => {
       acc[option_name] = option_value;
       return acc;
-    }, {});
+  }, {});
 
   if(core_site_data?.blogname && core_site_data?.blogname !== site?.name) {
     await prisma.wp_site.update({
