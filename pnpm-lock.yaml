@@ -13,7 +13,7 @@ dependencies:
     version: 5.4.1(next@14.2.7)(react-dom@18.3.1)(react@18.3.1)
   '@prisma/client':
     specifier: ^5.19.1
-    version: 5.19.1
+    version: 5.19.1(prisma@5.19.1)
   '@prisma/extension-accelerate':
     specifier: ^1.1.0
     version: 1.1.0(@prisma/client@5.19.1)
@@ -88,7 +88,7 @@ dependencies:
     version: 3.6.0
   drizzle-orm:
     specifier: ^0.33.0
-    version: 0.33.0(@prisma/client@5.19.1)(@types/react@18.3.5)(@vercel/postgres@0.9.0)(postgres@3.4.4)(react@18.3.1)
+    version: 0.33.0(@prisma/client@5.19.1)(@types/react@18.3.5)(@vercel/postgres@0.9.0)(postgres@3.4.4)(prisma@5.19.1)(react@18.3.1)
   framer-motion:
     specifier: ^11.5.2
     version: 11.5.2(react-dom@18.3.1)(react@18.3.1)
@@ -110,6 +110,9 @@ dependencies:
   postgres:
     specifier: ^3.4.4
     version: 3.4.4
+  prisma:
+    specifier: ^5.19.1
+    version: 5.19.1
   react:
     specifier: ^18
     version: 18.3.1
@@ -2608,7 +2611,7 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@prisma/client@5.19.1:
+  /@prisma/client@5.19.1(prisma@5.19.1):
     resolution: {integrity: sha512-x30GFguInsgt+4z5I4WbkZP2CGpotJMUXy+Gl/aaUjHn2o1DnLYNTA+q9XdYmAQZM8fIIkvUiA2NpgosM3fneg==}
     engines: {node: '>=16.13'}
     requiresBuild: true
@@ -2617,6 +2620,26 @@ packages:
     peerDependenciesMeta:
       prisma:
         optional: true
+    dependencies:
+      prisma: 5.19.1
+    dev: false
+
+  /@prisma/debug@5.19.1:
+    resolution: {integrity: sha512-lAG6A6QnG2AskAukIEucYJZxxcSqKsMK74ZFVfCTOM/7UiyJQi48v6TQ47d6qKG3LbMslqOvnTX25dj/qvclGg==}
+    dev: false
+
+  /@prisma/engines-version@5.19.1-2.69d742ee20b815d88e17e54db4a2a7a3b30324e3:
+    resolution: {integrity: sha512-xR6rt+z5LnNqTP5BBc+8+ySgf4WNMimOKXRn6xfNRDSpHvbOEmd7+qAOmzCrddEc4Cp8nFC0txU14dstjH7FXA==}
+    dev: false
+
+  /@prisma/engines@5.19.1:
+    resolution: {integrity: sha512-kR/PoxZDrfUmbbXqqb8SlBBgCjvGaJYMCOe189PEYzq9rKqitQ2fvT/VJ8PDSe8tTNxhc2KzsCfCAL+Iwm/7Cg==}
+    requiresBuild: true
+    dependencies:
+      '@prisma/debug': 5.19.1
+      '@prisma/engines-version': 5.19.1-2.69d742ee20b815d88e17e54db4a2a7a3b30324e3
+      '@prisma/fetch-engine': 5.19.1
+      '@prisma/get-platform': 5.19.1
     dev: false
 
   /@prisma/extension-accelerate@1.1.0(@prisma/client@5.19.1):
@@ -2625,7 +2648,21 @@ packages:
     peerDependencies:
       '@prisma/client': '>=4.16.1'
     dependencies:
-      '@prisma/client': 5.19.1
+      '@prisma/client': 5.19.1(prisma@5.19.1)
+    dev: false
+
+  /@prisma/fetch-engine@5.19.1:
+    resolution: {integrity: sha512-pCq74rtlOVJfn4pLmdJj+eI4P7w2dugOnnTXpRilP/6n5b2aZiA4ulJlE0ddCbTPkfHmOL9BfaRgA8o+1rfdHw==}
+    dependencies:
+      '@prisma/debug': 5.19.1
+      '@prisma/engines-version': 5.19.1-2.69d742ee20b815d88e17e54db4a2a7a3b30324e3
+      '@prisma/get-platform': 5.19.1
+    dev: false
+
+  /@prisma/get-platform@5.19.1:
+    resolution: {integrity: sha512-sCeoJ+7yt0UjnR+AXZL7vXlg5eNxaFOwC23h0KvW1YIXUoa7+W2ZcAUhoEQBmJTW4GrFqCuZ8YSP0mkDa4k3Zg==}
+    dependencies:
+      '@prisma/debug': 5.19.1
     dev: false
 
   /@radix-ui/number@1.1.0:
@@ -5713,7 +5750,7 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/react@18.3.5)(@vercel/postgres@0.9.0)(postgres@3.4.4)(react@18.3.1):
+  /drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/react@18.3.5)(@vercel/postgres@0.9.0)(postgres@3.4.4)(prisma@5.19.1)(react@18.3.1):
     resolution: {integrity: sha512-SHy72R2Rdkz0LEq0PSG/IdvnT3nGiWuRk+2tXZQ90GVq/XQhpCzu/EFT3V2rox+w8MlkBQxifF8pCStNYnERfA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -5802,10 +5839,11 @@ packages:
       sqlite3:
         optional: true
     dependencies:
-      '@prisma/client': 5.19.1
+      '@prisma/client': 5.19.1(prisma@5.19.1)
       '@types/react': 18.3.5
       '@vercel/postgres': 0.9.0
       postgres: 3.4.4
+      prisma: 5.19.1
       react: 18.3.1
     dev: false
 
@@ -9198,6 +9236,17 @@ packages:
       '@jest/schemas': 29.6.3
       ansi-styles: 5.2.0
       react-is: 18.3.1
+    dev: false
+
+  /prisma@5.19.1:
+    resolution: {integrity: sha512-c5K9MiDaa+VAAyh1OiYk76PXOme9s3E992D7kvvIOhCrNsBQfy2mP2QAQtX0WNj140IgG++12kwZpYB9iIydNQ==}
+    engines: {node: '>=16.13'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 5.19.1
+    optionalDependencies:
+      fsevents: 2.3.3
     dev: false
 
   /prismjs@1.27.0:
