@@ -1,3 +1,4 @@
+import { User } from "@clerk/nextjs/server"
 import { type ClassValue, clsx } from "clsx"
 import { customAlphabet } from 'nanoid'
 import { twMerge } from "tailwind-merge"
@@ -87,3 +88,12 @@ export function subMonths(date: Date, amount: number) {
   newDate.setMonth(newDate.getMonth() - amount)
   return newDate
 }
+
+export const mapClerkUserForClient = (user: User) => {
+  return {
+    id: user?.id,
+    email: user?.emailAddresses?.[0]?.emailAddress,
+    fullName: user?.fullName,
+    imageUrl: user?.imageUrl
+  };
+};

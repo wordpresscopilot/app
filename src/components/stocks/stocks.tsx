@@ -1,6 +1,8 @@
+"use client";
+
 import { useActions, useUIState } from "ai/rsc";
 
-import type { AI } from "@/actions/chat";
+import type { AI } from "@/actions/ai";
 
 interface Stock {
   symbol: string;

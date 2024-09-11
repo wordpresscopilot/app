@@ -1,6 +1,3 @@
-// Inspired by Chatbot-UI and modified to fit the needs of this project
-// @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
-
 "use client";
 
 import { FC, memo } from "react";
@@ -93,8 +90,8 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
   };
 
   return (
-    <div className="relative w-full font-sans codeblock bg-zinc-950">
-      <div className="flex items-center justify-between w-full px-6 py-2 pr-4 bg-zinc-800 text-zinc-100">
+    <div className="relative w-full font-sans codeblock bg-zinc-950 rounded-xl mx-auto max-w-2xl">
+      <div className="flex items-center justify-between w-full px-6 py-2 pr-4 bg-zinc-800 text-zinc-100 rounded-t-xl">
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center space-x-1">
           <Button
@@ -117,29 +114,34 @@ const CodeBlock: FC<Props> = memo(({ language, value }) => {
           </Button>
         </div>
       </div>
-      <SyntaxHighlighter
-        language={language}
-        style={coldarkDark}
-        PreTag="div"
-        showLineNumbers
-        customStyle={{
-          margin: 0,
-          width: "100%",
-          background: "transparent",
-          padding: "1.5rem 1rem",
-        }}
-        lineNumberStyle={{
-          userSelect: "none",
-        }}
-        codeTagProps={{
-          style: {
-            fontSize: "0.9rem",
-            fontFamily: "var(--font-mono)",
-          },
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
+      <div className="overflow-y-auto" style={{ maxHeight: "600px" }}>
+        <div className="overflow-x-auto">
+          <SyntaxHighlighter
+            language={language}
+            style={coldarkDark}
+            PreTag="div"
+            showLineNumbers
+            customStyle={{
+              margin: 0,
+              width: "100%",
+              background: "transparent",
+              padding: "1.5rem 1rem",
+            }}
+            lineNumberStyle={{
+              userSelect: "none",
+            }}
+            codeTagProps={{
+              style: {
+                fontSize: "0.9rem",
+                fontFamily: "var(--font-mono)",
+                whiteSpace: "pre",
+              },
+            }}
+          >
+            {value}
+          </SyntaxHighlighter>
+        </div>
+      </div>
     </div>
   );
 });

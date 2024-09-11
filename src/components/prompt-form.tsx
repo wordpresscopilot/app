@@ -3,7 +3,7 @@ import Textarea from "react-textarea-autosize";
 
 import { useActions, useUIState } from "ai/rsc";
 
-import { type AI } from "@/actions/chat";
+import { type AI } from "@/actions/ai";
 import { Button } from "@/components/ui/button";
 import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
 import {

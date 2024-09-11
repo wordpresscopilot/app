@@ -1,39 +1,65 @@
-import { ThemeProvider } from "@/components/theme-provider";
+import { Providers } from "@/components/providers";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Toaster } from "@/components/ui/sonner";
-import { SelectedSiteProvider } from "@/contexts/selected-site";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter as FontSans } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+export const metadata = {
+  metadataBase: process.env.VERCEL_URL
+    ? new URL(`https://${process.env.VERCEL_URL}`)
+    : undefined,
+  title: {
+    default: "W-P.ai",
+    template: `%s - WordPress Sage AI Worker Agent`,
+  },
+  description:
+    "An AI-powered worker agent for WordPress Sage, enhancing development and optimization.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+};
 
-export default function RootLayout({
-  children,
-}: {
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
+
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
           className={cn(
-            "min-h-screen bg-background text-foreground font-sans antialiased",
-            fontSans.variable
+            "font-sans antialiased",
+            GeistSans.variable,
+            GeistMono.variable
           )}
         >
-          <ThemeProvider
+          <Toaster position="top-center" />
+          <Providers
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <SelectedSiteProvider>{children}</SelectedSiteProvider>
-            <Toaster position="bottom-right" />
-          </ThemeProvider>
+            <div className="flex flex-col min-h-screen">
+              <main className="flex flex-col flex-1 bg-muted/50">
+                {children}
+              </main>
+            </div>
+            <TailwindIndicator />
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import * as React from "react";
 
 interface CreateProjectModalProps {
@@ -27,16 +28,41 @@ export function CreateProjectModal({
 }: CreateProjectModalProps) {
   const [name, setName] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [urlError, setUrlError] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const validateUrl = (input: string) => {
+    try {
+      new URL(input);
+      setUrlError("");
+      return true;
+    } catch (error) {
+      setUrlError("Please enter a valid URL");
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("baseUrl", url);
-    const result = await createSiteProject(formData);
-    console.log({ result });
-    setName("");
-    setUrl("");
-    onClose();
+    if (!validateUrl(url)) return;
+
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("baseUrl", url);
+      const result = await createSiteProject(formData);
+      console.log({ result });
+      setName("");
+      setUrl("");
+      onClose();
+      // Refresh the page after successful project creation
+      window.location.reload();
+    } catch (error) {
+      console.error("Error creating project:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,31 +77,34 @@ export function CreateProjectModal({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Site Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="My Awesome Site"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="url">WordPress URL</Label>
+              <Label htmlFor="url">WordPress Base URL</Label>
               <Input
                 id="url"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  validateUrl(e.target.value);
+                }}
                 placeholder="https://myproject.com"
                 required
               />
+              {urlError && <p className="text-sm text-red-500">{urlError}</p>}
               <p className="text-sm text-muted-foreground">
                 Enter the base URL of your WordPress site.
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Create Project</Button>
+            <Button type="submit" disabled={!!urlError || isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Project"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

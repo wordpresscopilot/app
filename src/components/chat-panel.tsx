@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import type { AI } from "@/actions/chat";
-import { shareChat } from "@/actions/chat";
+import type { AI } from "@/actions/ai";
+import { shareChat } from "@/actions/ai";
 import { ButtonScrollToBottom } from "@/components/button-scroll-to-bottom";
 import { ChatShareDialog } from "@/components/chat-share-dialog";
 import { FooterText } from "@/components/footer";
@@ -36,24 +36,24 @@ export function ChatPanel({
 
   const exampleMessages = [
     {
-      heading: "What are the",
-      subheading: "trending memecoins today?",
-      message: `What are the trending memecoins today?`,
+      heading: "Export all",
+      subheading: "WordPress posts",
+      message: `Can you help me export all WordPress posts from my site?`,
     },
     {
-      heading: "What is the price of",
-      subheading: "$DOGE right now?",
-      message: "What is the price of $DOGE right now?",
+      heading: "Create a new",
+      subheading: "blog post",
+      message: "I need help creating a new blog post about WordPress SEO tips.",
     },
     {
-      heading: "I would like to buy",
-      subheading: "42 $DOGE",
-      message: `I would like to buy 42 $DOGE`,
+      heading: "Update theme",
+      subheading: "settings",
+      message: `How can I update the theme settings to change the color scheme?`,
     },
     {
-      heading: "What are some",
-      subheading: `recent events about $DOGE?`,
-      message: `What are some recent events about $DOGE?`,
+      heading: "Optimize",
+      subheading: `WordPress performance`,
+      message: `What are some ways to optimize my WordPress site's performance?`,
     },
   ];
 

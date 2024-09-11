@@ -1,8 +1,8 @@
 export const config = {
-  siteName: "Wordpress Sage",
-  description: "A modern WordPress starter theme with Sage and Next.js",
-  url: "https://wordpresssage.com", // Replace with your actual URL
-  author: "Your Name",
+  siteName: "PROMPT. WORDPRESS. DEVELOP.",
+  description: "An AI Agent for wordpress development.",
+  url: "https://w-p.ai", // Replace with your actual URL
+  author: "Aaron Landy",
   social: {
     twitter: "https://twitter.com/wordpresssage", // Replace with your actual Twitter URL
     github: "https://github.com/yourusername/wordpress-sage", // Replace with your actual GitHub URL

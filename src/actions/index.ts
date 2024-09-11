@@ -1,5 +1,3 @@
-'use server';
-
-export * from './chat';
+export * from './ai';
 export * from './site';
 

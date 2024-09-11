@@ -15,14 +15,44 @@ datasource db {
 }
 
 
+type SftpCredentials {
+  host              String
+  port              Int
+  username          String
+  password          String
+  connected         Boolean?
+}
+
 model wp_site {
-  id          String   @id @map("_id")
-  user_id     String   @map("user_id")
-  name        String
-  base_url    String   @map("base_url")
-  api_key     String   @map("api_key")
-  logo_url    String?
-  connected   Boolean?
-  created_at  DateTime @default(now()) @map("created_at")
-  updated_at  DateTime @updatedAt @map("updated_at")
+  id                    String   @id @map("_id")
+  user_id               String   @map("user_id")
+  name                  String
+  base_url              String   @map("base_url")
+  api_key               String   @map("api_key")
+  logo_url              String?
+  connected             Boolean?
+  last_connected_date   DateTime?
+  sftp_credentials      SftpCredentials?
+  created_at            DateTime @default(now()) @map("created_at")
+  updated_at            DateTime @updatedAt @map("updated_at")
+}
+
+model chat {
+  id        String   @id @map("_id")
+  title     String
+  createdAt DateTime @default(now())
+  userId    String
+  siteId    String
+  path      String
+  sharePath String?
+  messages  message[]
+}
+
+model message {
+  id        String   @id @map("_id")
+  chatId    String
+  chat      chat     @relation(fields: [chatId], references: [id])
+  content   String
+  role      String
+  createdAt DateTime @default(now())
 }

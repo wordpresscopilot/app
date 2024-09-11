@@ -1,11 +1,12 @@
 "use client";
 
-import { CodeBlock } from "@/components/ui/codeblock";
 import { IconOpenAI, IconUser } from "@/components/ui/icons";
 import { MemoizedReactMarkdown } from "@/components/ui/markdown";
 import { useStreamableText } from "@/hooks/use-streamable-text";
 import { cn } from "@/lib/utils";
 import { StreamableValue } from "ai/rsc";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { spinner } from "./spinner";
@@ -27,16 +28,22 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
 
 export function BotMessage({
   content,
+  showAvatar = true,
   className,
 }: {
   content: string | StreamableValue<string>;
+  showAvatar?: boolean;
   className?: string;
 }) {
   const text = useStreamableText(content);
-
   return (
     <div className={cn("group relative flex items-start md:-ml-12", className)}>
-      <div className="flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm">
+      <div
+        className={cn(
+          "flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",
+          !showAvatar && "invisible"
+        )}
+      >
         <IconOpenAI />
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
@@ -47,34 +54,59 @@ export function BotMessage({
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>;
             },
-            code({ node, inline, className, children, ...props }) {
-              if (children.length) {
-                if (children[0] == "▍") {
-                  return (
-                    <span className="mt-1 animate-pulse cursor-default">▍</span>
-                  );
-                }
+            // code({ node, inline, className, children, ...props }) {
+            //   if (children && children.length) {
+            //     if (typeof children === "string" && children.startsWith("▍")) {
+            //       return (
+            //         <span className="mt-1 animate-pulse cursor-default">▍</span>
+            //       );
+            //     }
 
-                children[0] = (children[0] as string).replace("`▍`", "▍");
-              }
+            //     if (
+            //       Array.isArray(children) &&
+            //       typeof children[0] === "string"
+            //     ) {
+            //       children = [
+            //         children[0].replace("`▍`", "▍"),
+            //         ...children.slice(1),
+            //       ];
+            //     }
+            //   }
 
+            //   const match = /language-(\w+)/.exec(className || "");
+
+            //   if (inline) {
+            //     return (
+            //       <code className={className} {...props}>
+            //         {children}
+            //       </code>
+            //     );
+            //   }
+
+            //   return (
+            //     <CodeBlock
+            //       key={Math.random()}
+            //       language={(match && match[1]) || ""}
+            //       value={String(children).replace(/\n$/, "")}
+            //       {...props}
+            //     />
+            //   );
+            // },
+            code(props) {
+              const { children, className, node, ...rest } = props;
               const match = /language-(\w+)/.exec(className || "");
-
-              if (inline) {
-                return (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                );
-              }
-
-              return (
-                <CodeBlock
-                  key={Math.random()}
-                  language={(match && match[1]) || ""}
-                  value={String(children).replace(/\n$/, "")}
-                  {...props}
+              return match ? (
+                <SyntaxHighlighter
+                  {...rest}
+                  PreTag="div"
+                  children={String(children).replace(/\n$/, "")}
+                  language={match[1]}
+                  style={dark}
                 />
+              ) : (
+                <code {...rest} className={className}>
+                  {children}
+                </code>
               );
             },
           }}
@@ -97,7 +129,7 @@ export function BotCard({
     <div className="group relative flex items-start md:-ml-12">
       <div
         className={cn(
-          "flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",
+          "flex size-[24px] shrink-0 select-none items-center gap-2 justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",
           !showAvatar && "invisible"
         )}
       >
