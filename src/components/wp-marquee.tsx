@@ -1,5 +1,8 @@
+"use client";
+
 import Marquee from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const features = [
   {
@@ -71,14 +74,29 @@ const FeatureCard = ({
 };
 
 export function WPMarquee() {
+  const [isHovering, setIsHovering] = useState(false);
+
   return (
-    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[50vw] flex-col items-center justify-center overflow-hidden">
-      <Marquee pauseOnHover className="[--duration:20s]">
+    <div
+      className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[50vw] flex-col items-center justify-center overflow-hidden"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <Marquee
+        pauseOnHover={false}
+        play={isHovering}
+        className="[--duration:20s]"
+      >
         {firstRow.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}
       </Marquee>
-      <Marquee reverse pauseOnHover className="[--duration:20s]">
+      <Marquee
+        reverse
+        pauseOnHover={false}
+        play={isHovering}
+        className="[--duration:20s]"
+      >
         {secondRow.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}

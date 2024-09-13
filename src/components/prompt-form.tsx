@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSelectedSite } from "@/contexts/selected-site";
 import { useEnterSubmit } from "@/hooks/use-enter-submit";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,7 @@ export function PromptForm({
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const { submitUserMessage } = useActions();
   const [_, setMessages] = useUIState<typeof AI>();
+  const { selectedSite } = useSelectedSite();
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -60,7 +62,7 @@ export function PromptForm({
         ]);
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value);
+        const responseMessage = await submitUserMessage(value, selectedSite);
         setMessages((currentMessages) => [...currentMessages, responseMessage]);
       }}
     >

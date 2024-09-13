@@ -77,28 +77,30 @@ export default async function ChatPage({
   const chat = await getChat(params.chat_id, userId);
 
   if (!chat || "error" in chat) {
-    redirect("/");
+    redirect(`/sites/${searchParams?.site_id}/chat/new`);
   } else {
     if (chat?.userId !== user?.id) {
       notFound();
     }
 
     return (
-      <AI
-        initialAIState={{
-          chatId: chat?.id,
-          siteId: chat?.siteId || searchParams.site_id,
-          messages: chat?.messages || [],
-        }}
-      >
-        <Chat
-          id={chat?.id}
-          site_id={chat?.siteId || searchParams.site_id}
-          user={mapClerkUserForClient(user)}
-          initialMessages={chat.messages || []}
-          missingKeys={missingKeys || []}
-        />
-      </AI>
+      <>
+        <AI
+          initialAIState={{
+            chatId: chat?.id,
+            siteId: chat?.siteId || searchParams.site_id,
+            messages: chat?.messages || [],
+          }}
+        >
+          <Chat
+            id={chat?.id}
+            site_id={chat?.siteId || searchParams.site_id}
+            user={mapClerkUserForClient(user)}
+            initialMessages={chat.messages || []}
+            missingKeys={missingKeys || []}
+          />
+        </AI>
+      </>
     );
   }
 }

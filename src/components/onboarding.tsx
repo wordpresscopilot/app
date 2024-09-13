@@ -27,8 +27,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function Onboarding() {
-  const [site, setSite] = useState<WpSite | null>(null);
+export default function Onboarding({ user_site }: { user_site?: WpSite }) {
+  const [site, setSite] = useState<WpSite | null>(user_site);
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
@@ -218,6 +218,7 @@ export default function Onboarding() {
                     <li>
                       <Link
                         href="/plugin"
+                        target="_blank"
                         className="text-blue-500 hover:underline inline-flex items-center"
                       >
                         <Download className="w-4 h-4 mr-1" /> Download the

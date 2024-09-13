@@ -4,21 +4,21 @@ import * as React from "react";
 import { retrieveSites } from "@/actions";
 import { Button } from "@/components/ui/button";
 import { IconNextChat, IconSeparator } from "@/components/ui/icons";
-import { mapClerkUserForClient } from "@/lib/utils";
 import { WpSite } from "@/types";
+import { UserButton } from "@clerk/nextjs";
 import { currentUser, User } from "@clerk/nextjs/server";
 import { ChatHistory } from "./chat-history";
 import ProjectSelector from "./project-selector";
 import { SidebarMobile } from "./sidebar-mobile";
 import { SidebarToggle } from "./sidebar-toggle";
-import { UserMenu } from "./user-menu";
 
 async function UserOrLogin({ user }: { user: User }) {
   return (
     <>
       <div className="flex items-center">
         {user ? (
-          <UserMenu user={mapClerkUserForClient(user!)} />
+          // <UserMenu user={mapClerkUserForClient(user!)} />
+          <UserButton />
         ) : (
           <Button variant="link" asChild className="-ml-2">
             <Link href="/sign-in">Login</Link>

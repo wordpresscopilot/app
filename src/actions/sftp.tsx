@@ -1,6 +1,41 @@
-// "use server";
+import { WpSite } from "@/types";
+import Client from "ssh2-sftp-client";
 
-// import { WpSite } from "@/types";
+export async function checkSFTPHealth(
+  site: WpSite
+): Promise<{ success: boolean; message: string }> {
+  if (
+    !site.sftp_credentials?.host ||
+    !site.sftp_credentials?.username ||
+    !site.sftp_credentials?.password
+  ) {
+    return { success: false, message: "SFTP credentials not found" };
+  }
+
+  const sftp = new Client();
+
+  try {
+    await sftp.connect({
+      host: site.sftp_credentials.host,
+      port: site.sftp_credentials.port || 22,
+      username: site.sftp_credentials.username,
+      password: site.sftp_credentials.password,
+    });
+
+    // Perform a simple operation to check connection
+    await sftp.list(".");
+
+    return { success: true, message: "SFTP connection successful" };
+  } catch (error) {
+    console.error("SFTP Health Check Error:", error);
+    return {
+      success: false,
+      message: `SFTP connection failed: ${(error as Error).message}`,
+    };
+  } finally {
+    sftp.end();
+  }
+}
 // import { revalidatePath } from "next/cache";
 
 // export async function runSFTPHealthCheck(

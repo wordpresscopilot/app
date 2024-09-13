@@ -45,13 +45,12 @@ model chat {
   siteId    String
   path      String
   sharePath String?
-  messages  message[]
 }
 
 model message {
   id        String   @id @map("_id")
   chatId    String
-  chat      chat     @relation(fields: [chatId], references: [id])
+  siteId    String
   content   String
   role      String
   createdAt DateTime @default(now())

@@ -13,8 +13,6 @@ export default async function DashboardPage() {
     user_id: user.id,
   });
 
-  console.log("user_sites", user_sites);
-
   if (user_sites.length === 0) {
     redirect("/onboarding");
   }

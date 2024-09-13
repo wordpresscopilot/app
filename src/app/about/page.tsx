@@ -142,7 +142,7 @@ export default function HomePage() {
               </p>
               <div className="flex space-x-4">
                 <PulsatingButton pulseColor="#FFD700">
-                  <Link href="/dashboard">
+                  <Link href="/sites">
                     <Button
                       size="lg"
                       onMouseEnter={() => setIsHovering(true)}

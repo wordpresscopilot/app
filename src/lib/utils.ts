@@ -3,6 +3,7 @@ import { User } from "@clerk/nextjs/server"
 import { type ClassValue, clsx } from "clsx"
 import { customAlphabet } from 'nanoid'
 import { twMerge } from "tailwind-merge"
+import prisma from "./prisma"
 
 export const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -97,4 +98,21 @@ export const mapClerkUserForClient = (user: User): UserSession => {
     fullName: user?.fullName!,
     imageUrl: user?.imageUrl
   };
+};
+
+export const runSimplePiplineAggregation = async ({
+  pipeline,
+  collectionName,
+  batchSize = 100
+}: {
+  pipeline: any[];
+  collectionName: string;
+  batchSize?: number;
+}) => {
+  const results = await prisma.$runCommandRaw({
+    aggregate: collectionName,
+    pipeline,
+    cursor: { batchSize }
+  });
+  return results?.cursor?.firstBatch;
 };

@@ -7,15 +7,16 @@ import { cache } from "react";
 
 interface SidebarListProps {
   userId?: string;
+  siteId?: string;
   children?: React.ReactNode;
 }
 
-const loadChats = cache(async (userId?: string) => {
-  return await getChats(userId);
+const loadChats = cache(async (userId?: string, siteId?: string) => {
+  return await getChats(userId, siteId);
 });
 
-export async function SidebarList({ userId }: SidebarListProps) {
-  const chats = await loadChats(userId);
+export async function SidebarList({ userId, siteId }: SidebarListProps) {
+  const chats = await loadChats(userId, siteId);
 
   if (!chats || "error" in chats) {
     redirect("/");

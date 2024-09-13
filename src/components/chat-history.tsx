@@ -9,24 +9,36 @@ import { buttonVariants } from "@/components/ui/button";
 import { IconPlus } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
-import { usePathname } from "next/navigation";
+import { useSelectedSite } from "@/contexts/selected-site";
 
 interface ChatHistoryProps {
   userId?: string;
 }
 
 export function ChatHistory({ userId }: ChatHistoryProps) {
-  const pathname = usePathname();
-  const siteIdMatch = pathname.match(/^\/sites\/([^\/]+)/);
-  const siteId = siteIdMatch?.[1];
+  const { selectedSite } = useSelectedSite();
+  console.log("ChatHistory selectedSite", selectedSite);
   return (
     <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center space-x-4">
+          <div
+            className={`h-3 w-3 rounded-full ${
+              selectedSite?.connected ? "bg-green-500" : "bg-red-500"
+              // : "bg-yellow-500 animate-pulse"
+            }`}
+          />
+          <span className="text-sm font-medium">
+            {selectedSite?.connected ? "Site Connected" : "Site Disconnected"}
+          </span>
+        </div>
+      </div>
       <div className="flex items-center justify-between p-4">
         <h4 className="text-sm font-medium">Chat History</h4>
       </div>
       <div className="mb-2 px-2">
         <Link
-          href={`/sites/${siteId}/chat`}
+          href={`/sites/${selectedSite?.id}/chat`}
           className={cn(
             buttonVariants({ variant: "outline" }),
             "h-10 w-full justify-start bg-zinc-50 px-4 shadow-none transition-colors hover:bg-zinc-200/40 dark:bg-zinc-900 dark:hover:bg-zinc-300/10"
@@ -49,7 +61,7 @@ export function ChatHistory({ userId }: ChatHistoryProps) {
         }
       >
         {/* @ts-ignore */}
-        <SidebarList userId={userId} />
+        <SidebarList userId={userId} siteId={selectedSite?.id} />
       </React.Suspense>
     </div>
   );

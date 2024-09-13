@@ -9,8 +9,8 @@ import {
 } from "@/components/stocks/message";
 import { CodeBlock } from "@/components/ui/codeblock";
 import prisma from "@/lib/prisma";
-import { nanoid, sleep } from "@/lib/utils";
-import { AIState, Chat, UIState } from "@/types";
+import { nanoid, runSimplePiplineAggregation, sleep } from "@/lib/utils";
+import { AIState, Chat, UIState, WpSite } from "@/types";
 import { openai } from "@ai-sdk/openai";
 import { currentUser } from "@clerk/nextjs/server";
 import { kv } from "@vercel/kv";
@@ -23,10 +23,12 @@ import {
 } from "ai/rsc";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+import { WP_SAGE_RUN_SQL } from "@/lib/paths";
 import { z } from "zod";
 import { executeWordPressSQL } from "./wp";
 
-export async function getChats(userId?: string | null) {
+export async function getChats(userId?: string | null, siteId?: string | null) {
   const user = await currentUser();
 
   if (!userId) {
@@ -58,9 +60,11 @@ export async function getChats(userId?: string | null) {
 
     // If KV cache fails or is empty, use Prisma
     const prismaChats = await prisma.chat.findMany({
-      where: { userId: userId },
+      where: {
+        userId,
+        ...(siteId ? { siteId } : {}),
+      },
       orderBy: { createdAt: "desc" },
-      include: { messages: true },
     });
 
     return prismaChats as Chat[];
@@ -87,11 +91,28 @@ export async function getChat(id: string, userId: string) {
       return chat;
     }
 
-    // If KV cache fails or chat not found, use Prisma
-    const prismaChat = await prisma.chat.findUnique({
-      where: { id: id },
-      include: { messages: true },
+    // If KV cache fails or chat not found, use MongoDB aggregation
+    const chatWithMessages = await runSimplePiplineAggregation({
+      pipeline: [
+        { $match: { _id: id } },
+        {
+          $lookup: {
+            from: "message",
+            localField: "_id",
+            foreignField: "chatId",
+            as: "messages",
+          },
+        },
+        {
+          $addFields: {
+            id: "$_id",
+          },
+        },
+      ],
+      collectionName: "chat",
     });
+
+    const prismaChat = chatWithMessages[0];
 
     if (!prismaChat || (userId && prismaChat.userId !== userId)) {
       return null;
@@ -179,10 +200,28 @@ export async function getSharedChat(id: string) {
     }
 
     // If KV cache fails or chat not found, use Prisma
-    const prismaChat = await prisma.chat.findUnique({
-      where: { id: id },
-      include: { messages: true },
+    // If KV cache fails or chat not found, use MongoDB aggregation
+    const chatWithMessages = await runSimplePiplineAggregation({
+      pipeline: [
+        { $match: { _id: id } },
+        {
+          $lookup: {
+            from: "message",
+            localField: "_id",
+            foreignField: "chatId",
+            as: "messages",
+          },
+        },
+        {
+          $addFields: {
+            id: "$_id",
+          },
+        },
+      ],
+      collectionName: "chat",
     });
+
+    const prismaChat = chatWithMessages[0];
 
     if (!prismaChat || !prismaChat.sharePath) {
       return null;
@@ -251,7 +290,7 @@ export async function getMissingKeys() {
     .filter((key) => key !== "");
 }
 
-async function submitUserMessage(content: string) {
+async function submitUserMessage(content: string, site: WpSite) {
   "use server";
 
   const aiState = getMutableAIState<typeof AI>();
@@ -334,11 +373,27 @@ async function submitUserMessage(content: string) {
 
           await sleep(1000);
 
+          // if (!site?.connected) {
+          //   return (
+          //     <>
+          //       {textNode}
+          //       <BotCard>
+          //         <BotMessage
+          //           content={`Error executing SQL query: WordPress site not connected.`}
+          //           showAvatar={false}
+          //         />
+          //         <Link href={`/sites/${site?.id}`} className="mt-4">
+          //           <Button>Fix in Site Settings</Button>
+          //         </Link>
+          //       </BotCard>
+          //     </>
+          //   );
+          // }
+
           const result = await executeWordPressSQL({
             query,
-            api_key: "wpsage_test_key_123",
-            api_url:
-              "https://wpsage-1cd140.ingress-haven.ewp.live/wp-json/wpsage/v1/run-sql",
+            api_key: site?.api_key,
+            api_url: `${site?.base_url}${WP_SAGE_RUN_SQL}`,
           });
           let parsedResult;
           let isValidJSON = true;
@@ -350,12 +405,13 @@ async function submitUserMessage(content: string) {
           }
 
           const resultContent = isValidJSON
-            ? `SQL query executed successfully. Result: ${JSON.stringify(
-                parsedResult,
-                null,
-                2
-              )}`
-            : `Error executing SQL query. The result is not valid JSON: ${parsedResult}`;
+            ? parsedResult
+            : // `SQL query executed successfully. Result: ${JSON.stringify(
+              //     parsedResult,
+              //     null,
+              //     2
+              //   )}`
+              `Error executing SQL query. The result is not valid JSON: ${parsedResult}`;
 
           yield (
             <>
@@ -452,30 +508,41 @@ async function submitUserMessage(content: string) {
 
 export const getUIStateFromAIState = (aiState: Chat) => {
   return aiState?.messages
+    ?.map((message) => {
+      if (message.role === "tool" && typeof message.content === "string") {
+        try {
+          const parsedContent = JSON.parse(message.content);
+          return { ...message, content: parsedContent };
+        } catch (error) {
+          return message;
+        }
+      }
+      return message;
+    })
     ?.filter((message) => message.role !== "system")
     ?.map((message, index) => ({
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === "tool" ? (
-          message.content.map((tool) => {
+          message.content.map((tool: any) => {
             return tool.toolName === "executeSQL" ? (
               <BotCard>
                 {(() => {
                   try {
                     const result = tool?.result;
-                    if (!result || typeof result !== "string") {
-                      return (
-                        <div className="text-red-500">
-                          <p>Error parsing JSON result:</p>
-                          <p>{JSON.stringify(tool?.result)}</p>
-                        </div>
-                      );
-                    }
-                    const parsedResult = JSON.parse(result);
+                    // if (!result || typeof result !== "string") {
+                    //   return (
+                    //     <div className="text-red-500">
+                    //       <p>Error parsing JSON result:</p>
+                    //       <p>{JSON.stringify(tool?.result)}</p>
+                    //     </div>
+                    //   );
+                    // }s
+                    // const parsedResult = JSON.parse(result);
                     return (
                       <CodeBlock
                         language="json"
-                        value={JSON.stringify(parsedResult, null, 2)}
+                        value={JSON.stringify(result, null, 2)}
                       />
                     );
                   } catch (error) {
@@ -512,6 +579,7 @@ export const AI = createAI<AIState, UIState>({
 
     if (user?.id) {
       const aiState = getAIState() as Chat;
+
       if (aiState) {
         const uiState = getUIStateFromAIState(aiState);
         return uiState;
@@ -561,9 +629,8 @@ export async function saveChat(chat: Chat) {
       member: `chat:${chat.id}`,
     });
     await pipeline.exec();
-
-    console.log("saveChat", chat);
     // Save or update in Prisma database
+    // Upsert the chat
     await prisma.chat.upsert({
       where: { id: chat.id },
       update: {
@@ -571,17 +638,6 @@ export async function saveChat(chat: Chat) {
         userId: chat.userId,
         siteId: chat.siteId,
         path: chat.path,
-        messages: {
-          deleteMany: {},
-          create: chat.messages.map((message) => ({
-            id: message.id,
-            content:
-              typeof message.content === "string"
-                ? message.content
-                : JSON.stringify(message.content),
-            role: message.role,
-          })),
-        },
       },
       create: {
         id: chat.id,
@@ -589,18 +645,55 @@ export async function saveChat(chat: Chat) {
         userId: chat.userId,
         siteId: chat.siteId!,
         path: chat.path,
-        messages: {
-          create: chat.messages.map((message) => ({
-            id: message.id,
-            content:
-              typeof message.content === "string"
-                ? message.content
-                : JSON.stringify(message.content),
-            role: message.role,
-          })),
-        },
       },
     });
+
+    // Get existing messages for this chat
+    const existingMessages = await prisma.message.findMany({
+      where: { chatId: chat.id },
+      select: { id: true },
+    });
+
+    // Create new messages and update existing ones
+    const upsertPromises = chat.messages.map((message) =>
+      prisma.message.upsert({
+        where: { id: message.id },
+        update: {
+          content:
+            typeof message.content === "string"
+              ? message.content
+              : JSON.stringify(message.content),
+          role: message.role,
+          siteId: chat.siteId,
+        },
+        create: {
+          id: message.id,
+          chatId: chat.id,
+          content:
+            typeof message.content === "string"
+              ? message.content
+              : JSON.stringify(message.content),
+          role: message.role,
+          siteId: chat.siteId,
+        },
+      })
+    );
+
+    await Promise.all(upsertPromises);
+
+    // Delete messages that are no longer relevant
+    const currentMessageIds = new Set(chat.messages.map((m) => m.id));
+    const messagesToDelete = existingMessages.filter(
+      (m) => !currentMessageIds.has(m.id)
+    );
+
+    if (messagesToDelete.length > 0) {
+      await prisma.message.deleteMany({
+        where: {
+          id: { in: messagesToDelete.map((m) => m.id) },
+        },
+      });
+    }
   } else {
     return;
   }
