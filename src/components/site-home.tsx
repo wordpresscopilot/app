@@ -1,6 +1,5 @@
 "use client";
 import { deleteSite, updateSite } from "@/actions";
-import { checkSFTPHealth } from "@/actions/sftp";
 import { Button } from "@/components/ui/button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { SftpCredentials, WpSite } from "@/types";
@@ -75,8 +74,8 @@ export default function SiteHome({ site }: { site: WpSite }) {
   };
 
   const handleSaveSftpCredentials = async () => {
-    const sftphealth = await checkSFTPHealth(site);
-    console.log("sftphealth", sftphealth);
+    // const sftphealth = await checkSFTPHealth(site);
+    // console.log("sftphealth", sftphealth);
     toast.promise(
       updateSite({
         id: site.id,

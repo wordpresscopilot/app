@@ -60,7 +60,6 @@
     "remark-math": "^6.0.0",
     "sftp-promises": "^1.8.0",
     "sonner": "^1.5.0",
-    "ssh2-sftp-client": "^11.0.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0",

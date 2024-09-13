@@ -99,7 +99,6 @@ export const mapClerkUserForClient = (user: User): UserSession => {
     imageUrl: user?.imageUrl
   };
 };
-
 export const runSimplePiplineAggregation = async ({
   pipeline,
   collectionName,
@@ -114,5 +113,11 @@ export const runSimplePiplineAggregation = async ({
     pipeline,
     cursor: { batchSize }
   });
-  return results?.cursor?.firstBatch;
+
+  if (typeof results === 'object' && results !== null && 'cursor' in results) {
+    const cursor = results.cursor as { firstBatch?: unknown[] };
+    return cursor.firstBatch || [];
+  }
+
+  return [];
 };

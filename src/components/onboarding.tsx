@@ -28,7 +28,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Onboarding({ user_site }: { user_site?: WpSite }) {
-  const [site, setSite] = useState<WpSite | null>(user_site);
+  const [site, setSite] = useState<WpSite | null>(user_site ?? null);
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
   const [baseUrl, setBaseUrl] = useState("");

@@ -112,9 +112,9 @@ export async function getChat(id: string, userId: string) {
       collectionName: "chat",
     });
 
-    const prismaChat = chatWithMessages[0];
+    const prismaChat = chatWithMessages[0] as Chat;
 
-    if (!prismaChat || (userId && prismaChat.userId !== userId)) {
+    if (!prismaChat || (userId && prismaChat?.userId !== userId)) {
       return null;
     }
 
@@ -221,7 +221,7 @@ export async function getSharedChat(id: string) {
       collectionName: "chat",
     });
 
-    const prismaChat = chatWithMessages[0];
+    const prismaChat = chatWithMessages[0] as Chat;
 
     if (!prismaChat || !prismaChat.sharePath) {
       return null;
@@ -257,9 +257,9 @@ export async function shareChat(id: string) {
     }
 
     // If KV cache fails or chat not found, use Prisma
-    const prismaChat = await prisma.chat.findUnique({
+    const prismaChat = (await prisma.chat.findUnique({
       where: { id: id },
-    });
+    })) as Chat;
 
     if (!prismaChat || prismaChat.userId !== user.id) {
       return {
@@ -664,7 +664,7 @@ export async function saveChat(chat: Chat) {
               ? message.content
               : JSON.stringify(message.content),
           role: message.role,
-          siteId: chat.siteId,
+          siteId: chat.siteId!,
         },
         create: {
           id: message.id,
@@ -674,7 +674,7 @@ export async function saveChat(chat: Chat) {
               ? message.content
               : JSON.stringify(message.content),
           role: message.role,
-          siteId: chat.siteId,
+          siteId: chat.siteId || "",
         },
       })
     );

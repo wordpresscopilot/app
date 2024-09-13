@@ -11,8 +11,11 @@ export const metadata: Metadata = {
 
 export default async function OnboardingPage() {
   const user = await currentUser();
+  if (!user) {
+    return redirect("/sign-in");
+  }
   const user_sites = await retrieveSites({
-    user_id: user.id,
+    user_id: user?.id,
   });
 
   if (user_sites?.length > 1 || user_sites?.[0]?.connected) {
