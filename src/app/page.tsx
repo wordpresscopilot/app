@@ -1,35 +1,18 @@
 "use client";
 
 import { Footer } from "@/components/footer";
+import { JoinWaitlistForm } from "@/components/JoinWaitlistForm";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { WPMarquee } from "@/components/wp-marquee";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
-// import { ShinyButton } from "@/components/magicui/shiny-button";
-
-// export const metadata: Metadata = {
-//   metadataBase: new URL(
-//     process.env.NEXT_PUBLIC_APP_URL === "http://localhost:3000"
-//       ? "http://127.0.0.1:3000"
-//       : process.env.NEXT_PUBLIC_APP_URL!
-//   ),
-//   title: "Wordpress Copilot",
-//   description: "AI-Powered Wordpress Development",
-//   openGraph: {
-//     title: "Wordpress Copilot",
-//     description: "AI-Powered Wordpress Development",
-//     url: process.env.NEXT_PUBLIC_APP_URL!,
-//     images: "/wp.png",
-//     locale: "en_US",
-//     type: "website",
-//   },
-// };
 
 export default function Home() {
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+  const waitlistFormRef = React.useRef<HTMLFormElement>(null);
 
   React.useEffect(() => {
     function handleResize() {
@@ -45,9 +28,22 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const scrollToWaitlistForm = () => {
+    if (waitlistFormRef.current) {
+      const yOffset = -100; // Adjust this value to increase or decrease the top padding
+      const element = waitlistFormRef.current;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+      window.scrollTo({ top: y, behavior: "smooth" });
+      setTimeout(() => element.querySelector("input")?.focus(), 500); // Focus on the input after scrolling
+    }
+  };
+
   return (
     <div className="p-3 md:p-5 flex flex-col gap-2.5 max-w-[1440px] mx-auto min-h-[100vh]">
       <main className="flex flex-col gap-2.5">
+        <Navigation scrollToWaitlistForm={scrollToWaitlistForm} />
         <section className="w-full relative overflow-hidden rounded-md bg-black">
           <Image
             src="/landing/hero.webp"
@@ -69,13 +65,6 @@ export default function Home() {
             }}
           />
           <div className="relative z-20 flex flex-col gap-4 md:gap-8 justify-between w-full h-full sm:w-[calc(100%-4rem)] mx-auto px-2.5 items-center py-[64px] md:py-[80px]">
-            <Image
-              src="/logo-color.svg"
-              alt="Logo"
-              width={100}
-              height={100}
-              className="relative z-20 -mb-6"
-            />
             <h1 className="z-10 text-[40px] md:text-8xl text-white font-semibold text-center w-full">
               AI Powered Wordpress Copilot
             </h1>
@@ -86,10 +75,7 @@ export default function Home() {
               Wordpress Copilot is the fastest way to build and interact with
               your Wordpress site.
             </p>
-            <div className="flex flex-col sm:flex-row gap-2.5 items-end justify-center mt-2 lg:min-w-[600px] font-semibold">
-              <Input placeholder="Enter your email" className="bg-gray-100" />
-              <Button className="w-fit text-lg">Join the Waitlist</Button>
-            </div>
+            <JoinWaitlistForm ref={waitlistFormRef} />
           </div>
         </section>
         <Section
@@ -146,10 +132,7 @@ export default function Home() {
           />
           <div className="z-100 flex flex-col items-center justify-center gap-8 text-white">
             <h1 className="text-5xl">Join the Waitlist Now</h1>
-            <div className="flex flex-col sm:flex-row gap-2.5 items-end justify-center mt-2 lg:min-w-[600px] font-semibold">
-              <Input placeholder="Enter your email" className="bg-gray-100" />
-              <Button className="w-fit text-lg">Join the Waitlist</Button>
-            </div>
+            <JoinWaitlistForm />
           </div>
         </div>
       </main>
@@ -157,6 +140,122 @@ export default function Home() {
     </div>
   );
 }
+
+const Navigation = ({
+  scrollToWaitlistForm,
+}: {
+  scrollToWaitlistForm: () => void;
+}) => {
+  const links = [
+    {
+      label: "About",
+      href: "/about",
+    },
+    {
+      label: "Account",
+      href: "/account",
+    },
+    {
+      label: "Onboarding",
+      href: "/onboarding",
+    },
+    {
+      label: "Privacy Policy",
+      href: "/privacy-policy",
+    },
+    {
+      label: "Share",
+      href: "/share",
+    },
+    {
+      label: "Sign In",
+      href: "/sign-in",
+    },
+    {
+      label: "Sign Up",
+      href: "/sign-up",
+    },
+  ];
+
+  return (
+    <nav>
+      <div className="hidden lg:block">
+        <div className="w-full flex justify-between items-stretch gap-2.5">
+          {/* LOGO */}
+          <div className="rounded-md bg-background h-fit flex navbar-logo px-1.5 py-[7px] pr-3 dark:bg-gray-100">
+            <Link
+              href="/"
+              className="flex items-center gap-1 text-white dark:text-black"
+            >
+              <div className="w-9 h-9 inline-block relative">
+                <Image
+                  alt="logo"
+                  src="/logo/logo-color.svg"
+                  width={36}
+                  height={36}
+                />
+              </div>
+              <div className="relative">WP Copilot</div>
+            </Link>
+          </div>
+          {/* NAV LINKS */}
+          <div className="rounded-md bg-background py-2 px-2 flex-1 h-[50px] text-white dark:bg-gray-100 dark:text-black">
+            <div className="flex items-center gap-1.5">
+              {links.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="flex items-center justify-center text-text-on-fill text-base leading-[110%] gt-standard-mono px-3 py-2 rounded-md hover:bg-[#F5F5F5] hover:text-black"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          {/* WAITLIST BUTTON */}
+          <Button
+            variant="default"
+            size="lg"
+            className="h-[50px] px-[18px] text-base gt-standard-mono"
+            onClick={scrollToWaitlistForm}
+          >
+            Join the Waitlist
+          </Button>
+        </div>
+      </div>
+      <div className="flex h-full w-full items-center lg:hidden">
+        <div className="flex justify-between bg-black items-center w-full rounded-md px-2 py-1.5">
+          <Link href="/" className="flex items-center gap-1.5">
+            <Image
+              alt="logo"
+              src="/assets/images/logo.png"
+              width={24}
+              height={24}
+            />
+            <Image
+              alt="logo-words"
+              src="/assets/images/logo-words.svg"
+              width={80.336}
+              height={13.32}
+            />
+          </Link>
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 512 512"
+            className="text-white h-6 w-6"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M432 176H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h352c8.8 0 16 7.2 16 16s-7.2 16-16 16zM432 272H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h352c8.8 0 16 7.2 16 16s-7.2 16-16 16zM432 368H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h352c8.8 0 16 7.2 16 16s-7.2 16-16 16z" />
+          </svg>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 const Section = ({
   color,

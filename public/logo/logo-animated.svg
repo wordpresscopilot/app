@@ -17,7 +17,7 @@
       25% { fill: #14b7a5; }
       50% { fill: #5459a7; }
       75% { fill: #f27085; }
-    }
+    } 
     @keyframes colorSwitch4 {
       0%, 100% { fill: #14b7a5; }
       25% { fill: #5459a7; }
