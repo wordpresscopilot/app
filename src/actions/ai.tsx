@@ -23,19 +23,13 @@ import {
 } from "ai/rsc";
 import { redirect } from "next/navigation";
 
-import { WP_SAGE_RUN_SQL } from "@/lib/paths";
+import { AI_TOOL_EXECUTE_SQL } from "@/lib/constants";
+import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { z } from "zod";
 import { executeWordPressSQL } from "./wp";
 
 export async function refreshHistory(path: string) {
   redirect(path);
-}
-
-export async function getMissingKeys() {
-  const keysRequired = ["OPENAI_API_KEY"];
-  return keysRequired
-    .map((key) => (process.env[key] ? "" : key))
-    .filter((key) => key !== "");
 }
 
 async function submitUserMessage(content: string, site: WpSite) {
@@ -103,17 +97,20 @@ async function submitUserMessage(content: string, site: WpSite) {
       return textNode;
     },
     tools: {
-      executeSQL: {
+      [AI_TOOL_EXECUTE_SQL]: {
         description: "Execute SQL query on the WordPress database.",
         parameters: z.object({
           query: z.string().describe("The SQL query to execute"),
         }),
         generate: async function* ({ query }) {
-          // Ensure the AI text stream is always visible
           yield (
             <>
               {textNode}
               <BotCard>
+                <BotMessage
+                  content={`Executing SQL query: ${query}`}
+                  showAvatar={false}
+                />
                 <CodeExecutionSkeleton />
               </BotCard>
             </>
@@ -138,71 +135,39 @@ async function submitUserMessage(content: string, site: WpSite) {
           //   );
           // }
 
-          const result = await executeWordPressSQL({
+          const { status, ok, data } = await executeWordPressSQL({
             query,
             api_key: site?.api_key,
-            api_url: `${site?.base_url}${WP_SAGE_RUN_SQL}`,
+            api_url: `${site?.base_url}${WP_PATH_RUN_SQL}`,
           });
-          let parsedResult;
-          let isValidJSON = true;
-          try {
-            parsedResult = JSON.parse(result);
-          } catch (error) {
-            isValidJSON = false;
-            parsedResult = result;
-          }
-
-          const resultContent = isValidJSON
-            ? parsedResult
-            : // `SQL query executed successfully. Result: ${JSON.stringify(
-              //     parsedResult,
-              //     null,
-              //     2
-              //   )}`
-              `Error executing SQL query. The result is not valid JSON: ${parsedResult}`;
-
-          yield (
-            <>
-              {textNode}
-              <BotCard>
-                <BotMessage
-                  content={`Executing SQL query: ${query}`}
-                  showAvatar={false}
-                />
-                <CodeExecutionSkeleton />
-              </BotCard>
-            </>
-          );
-
-          await sleep(500);
-
           const toolCallId = nanoid();
 
           aiState.done({
             ...aiState.get(),
             messages: [
               ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: "assistant",
-                content: [
-                  {
-                    type: "tool-call",
-                    toolName: "executeSQL",
-                    toolCallId,
-                    args: { query },
-                  },
-                ],
-              },
+
+              // {
+              //   id: nanoid(),
+              //   role: "assistant",
+              //   content: [
+              //     {
+              //       type: "tool-call",
+              //       toolName: "executeSQL",
+              //       toolCallId,
+              //       args: { query },
+              //     },
+              //   ],
+              // },
               {
                 id: nanoid(),
                 role: "tool",
                 content: [
                   {
                     type: "tool-result",
-                    toolName: "executeSQL",
+                    toolName: AI_TOOL_EXECUTE_SQL,
                     toolCallId,
-                    result: resultContent,
+                    result: data,
                   },
                 ],
               },
@@ -217,16 +182,14 @@ async function submitUserMessage(content: string, site: WpSite) {
                   content={`Executing SQL query: ${query}`}
                   showAvatar={false}
                 />
-                {/* <BotMessage content={result} showAvatar={false} /> */}
                 <div className={"group relative flex items-start"}>
                   <div className="flex-1 space-y-2 overflow-hidden">
                     {(() => {
                       try {
-                        const parsedResult = JSON.parse(result);
                         return (
                           <CodeBlock
                             language="json"
-                            value={JSON.stringify(parsedResult, null, 2)}
+                            value={JSON.stringify(data, null, 2)}
                           />
                         );
                       } catch (error) {
@@ -273,20 +236,11 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       display:
         message.role === "tool" ? (
           message.content.map((tool: any) => {
-            return tool.toolName === "executeSQL" ? (
+            return tool.toolName === AI_TOOL_EXECUTE_SQL ? (
               <BotCard>
                 {(() => {
                   try {
                     const result = tool?.result;
-                    // if (!result || typeof result !== "string") {
-                    //   return (
-                    //     <div className="text-red-500">
-                    //       <p>Error parsing JSON result:</p>
-                    //       <p>{JSON.stringify(tool?.result)}</p>
-                    //     </div>
-                    //   );
-                    // }s
-                    // const parsedResult = JSON.parse(result);
                     return (
                       <CodeBlock
                         language="json"

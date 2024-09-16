@@ -72,7 +72,7 @@ export default function Home() {
                 <p className="font-semibold text-5xl w-full">
                   AI Copilot for Wordpress Development
                 </p>
-                <AnimatedGradientText className="font-medium text-2xl inline-flex items-center justify-center px-4 py-1 transition ease-out">
+                <AnimatedGradientText className="font-thin text-2xl inline-flex items-center justify-center px-4 py-1 transition ease-out">
                   Built to make you extraordinarily productive at Wordpress.
                 </AnimatedGradientText>
               </div>

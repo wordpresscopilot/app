@@ -1,7 +1,7 @@
 import * as React from "react";
 
+import { shareChat } from "@/actions";
 import type { AI } from "@/actions/ai";
-import { shareChat } from "@/actions/ai";
 import { ButtonScrollToBottom } from "@/components/button-scroll-to-bottom";
 import { ChatShareDialog } from "@/components/chat-share-dialog";
 import { PromptForm } from "@/components/prompt-form";

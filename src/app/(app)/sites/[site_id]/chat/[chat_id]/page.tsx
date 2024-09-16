@@ -1,9 +1,9 @@
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { AI, getChat, getMissingKeys } from "@/actions";
+import { AI, getChat } from "@/actions";
 import { Chat } from "@/components/chat";
-import { mapClerkUserForClient, nanoid } from "@/lib/utils";
+import { getMissingKeys, mapClerkUserForClient, nanoid } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
 
 export interface ChatPageProps {

@@ -5,6 +5,7 @@ import { MemoizedReactMarkdown } from "@/components/ui/markdown";
 import { useStreamableText } from "@/hooks/use-streamable-text";
 import { cn } from "@/lib/utils";
 import { StreamableValue } from "ai/rsc";
+import { Settings2Icon } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
@@ -24,6 +25,18 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
+}
+
+export function ToolMessage({
+  content,
+  showAvatar = true,
+  className,
+}: {
+  content: string | StreamableValue<string>;
+  showAvatar?: boolean;
+  className?: string;
+}) {
+  const text = useStreamableText(content);
 }
 
 export function BotMessage({
@@ -116,6 +129,28 @@ export function BotMessage({
           {text}
         </MemoizedReactMarkdown>
       </div>
+    </div>
+  );
+}
+
+export function ToolCard({
+  children,
+  showAvatar = true,
+}: {
+  children: React.ReactNode;
+  showAvatar?: boolean;
+}) {
+  return (
+    <div className="group relative flex items-start md:-ml-12">
+      <div
+        className={cn(
+          "flex size-[24px] shrink-0 select-none items-center gap-2 justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",
+          !showAvatar && "invisible"
+        )}
+      >
+        <Settings2Icon />
+      </div>
+      <div className="ml-4 flex-1 pl-2">{children}</div>
     </div>
   );
 }
