@@ -12,11 +12,9 @@ export const metadata = {
     ? new URL(`https://${process.env.VERCEL_URL}`)
     : undefined,
   title: {
-    default: "W-P.ai",
-    template: `%s - WordPress Sage AI Worker Agent`,
+    default: "Wordpress Copilot",
   },
-  description:
-    "An AI-powered worker agent for WordPress Sage, enhancing development and optimization.",
+  description: "AI-Powered Wordpress Development",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",

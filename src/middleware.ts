@@ -1,11 +1,6 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from './lib/prisma';
-
-// const isProtectedRoute = createRouteMatcher([
-//   "/sites(.*)"
-// ]);
-
 
 
 export async function AddSiteIDSearchParams(req: NextRequest) {
@@ -42,14 +37,18 @@ export async function AddSiteIDSearchParams(req: NextRequest) {
 };
 
 
+const isProtectedRoute = createRouteMatcher([
+  "/sites",
+  "/sites(.*)",
+  "/dashboard",
+
+]);
 
 
 
 export default clerkMiddleware((auth, req) => {
-  // if (isProtectedRoute(req)) auth().protect();
-  // const pathname = req.nextUrl.pathname;
+  if (isProtectedRoute(req)) auth().protect();
   const response = AddSiteIDSearchParams(req);
-
   return response;
 
 })
@@ -66,6 +65,5 @@ export const config = {
     '/(api|trpc)(.*)',
     // Match routes with sites/
     '/sites/:id*',
-    '/chat/:id*',
   ],
 };

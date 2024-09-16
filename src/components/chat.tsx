@@ -41,7 +41,7 @@ export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
         window.history.replaceState({}, "", `/sites/${site_id}/chat/${id}`);
       }
     }
-  }, [id, path, user, messages]);
+  }, [id, path, user, messages, site_id]);
 
   useEffect(() => {
     const messagesLength = aiState.messages?.length;
@@ -86,7 +86,7 @@ export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
               ></path>
             </svg>
             <span>
-              Warning: The AI Agent is unable to connect to your WordPress site.
+              Warning: We are unable to connect to your WordPress site.
             </span>
           </div>
         )}

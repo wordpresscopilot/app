@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WP_SAGE_HEALTH } from "@/lib/paths";
+import { WP_PATH_HEALTH } from "@/lib/paths";
 import { SiteHealthStatus, WpSite } from "@/types";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
@@ -29,7 +29,7 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
   const getHealthCheckUrl = () => {
     try {
       if (site.base_url) {
-        const url = new URL(WP_SAGE_HEALTH, site.base_url);
+        const url = new URL(WP_PATH_HEALTH, site.base_url);
         return url.toString();
       }
       return "";

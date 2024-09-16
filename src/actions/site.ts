@@ -1,6 +1,6 @@
 'use server';
 
-import { WP_SAGE_RUN_SQL } from "@/lib/paths";
+import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
 import { nanoid } from "@/lib/utils";
 import { SftpCredentials, WpSite } from "@/types";
@@ -16,6 +16,8 @@ const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY! });
 export async function currentSite(pathname: string) {
   const user = await currentUser();
   
+
+
   if (!user) throw new Error('User not found');
 
   return await prisma.wp_site.findFirst({
@@ -193,18 +195,24 @@ export async function getCoreSiteData(siteId: string) {
   `;
   let endpoint_url;
   try {
-    endpoint_url = new URL(WP_SAGE_RUN_SQL, site.base_url).toString();
+    endpoint_url = new URL(WP_PATH_RUN_SQL, site.base_url).toString();
   } catch (error) {
     return;
   }
   
-  let result = await executeWordPressSQL({
+  let {
+    status,
+    ok,
+    data
+  } = await executeWordPressSQL({
     query,
     api_key: site?.api_key,
     api_url: endpoint_url
   });
-
-  const parsedResult = JSON.parse(result) as { option_name: string; option_value: string }[];
+  if(!ok) {
+    return {};
+  }
+  const parsedResult = data as { option_name: string; option_value: string }[];
 
   const core_site_data = parsedResult.reduce((acc: Record<string, string>, { option_name, option_value }) => {
       acc[option_name] = option_value;
