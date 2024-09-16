@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <style>
+    @keyframes colorSwitch1 {
+      0%, 100% { fill: #5459a7; }
+      25% { fill: #f27085; }
+      50% { fill: #fcd34d; }
+      75% { fill: #14b7a5; }
+    }
+    @keyframes colorSwitch2 {
+      0%, 100% { fill: #f27085; }
+      25% { fill: #fcd34d; }
+      50% { fill: #14b7a5; }
+      75% { fill: #5459a7; }
+    }
+    @keyframes colorSwitch3 {
+      0%, 100% { fill: #fcd34d; }
+      25% { fill: #14b7a5; }
+      50% { fill: #5459a7; }
+      75% { fill: #f27085; }
+    }
+    @keyframes colorSwitch4 {
+      0%, 100% { fill: #14b7a5; }
+      25% { fill: #5459a7; }
+      50% { fill: #f27085; }
+      75% { fill: #fcd34d; }
+    }
+    @keyframes pulse {
+      0%, 25%, 50%, 75%, 100% { opacity: 1; }
+      12.5%, 37.5%, 62.5%, 87.5% { opacity: 0.5; }
+    }
+    .diamond {
+      animation-duration: 8s;
+      animation-timing-function: steps(1), alternate;
+      animation-iteration-count: infinite, infinite;
+    }
+    .diamond1 { fill: #5459a7; animation-name: colorSwitch1, pulse; animation-delay: 0s; }
+    .diamond2 { fill: #f27085; animation-name: colorSwitch2, pulse; animation-delay: 1s; }
+    .diamond3 { fill: #fcd34d; animation-name: colorSwitch3, pulse; animation-delay: 2s; }
+    .diamond4 { fill: #14b7a5; animation-name: colorSwitch4, pulse; animation-delay: 3s; }
+    .diamond:hover {
+      animation-play-state: paused, paused;
+    }
+  </style>
+  
+  <g class="diamond diamond1">
+    <path d="M253.23,26.18l-46.21,111.57,48.98,118.26,48.98-118.26-46.21-111.57c-1.02-2.47-4.52-2.47-5.54,0Z"/>
+    <path d="M258.77,485.82l46.21-111.57-48.98-118.26-48.98,118.26,46.21,111.57c1.02,2.47,4.52,2.47,5.54,0Z"/>
+  </g>
+  <g class="diamond diamond2">
+    <path d="M95.45,420.47l111.57-46.21,48.98-118.26-118.26,48.98-46.21,111.57c-1.02,2.47,1.45,4.94,3.92,3.92Z"/>
+    <path d="M416.55,91.53l-111.57,46.21-48.98,118.26,118.26-48.98,46.21-111.57c1.02-2.47-1.45-4.94-3.92-3.92Z"/>
+  </g>
+  <g class="diamond diamond3">
+    <path d="M26.18,258.77l111.57,46.21,118.26-48.98-118.26-48.98L26.18,253.23c-2.47,1.02-2.47,4.52,0,5.54Z"/>
+    <path d="M485.82,253.23l-111.57-46.21-118.26,48.98,118.26,48.98,111.57-46.21c2.47-1.02-2.47-4.52,0-5.54Z"/>
+  </g>
+  <g class="diamond diamond4">
+    <path d="M91.53,95.45l46.21,111.57,118.26,48.98-48.98-118.26-111.57-46.21c-2.47-1.02-4.94,1.45-3.92,3.92Z"/>
+    <path d="M420.47,416.55l-46.21-111.57-118.26-48.98,48.98,118.26,111.57,46.21c2.47,1.02,4.94-1.45,3.92-3.92Z"/>
+  </g>
+</svg>

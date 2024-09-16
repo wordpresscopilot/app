@@ -2,7 +2,6 @@
 
 import Marquee from "@/components/magicui/marquee";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 const features = [
   {
@@ -64,45 +63,26 @@ const FeatureCard = ({
     >
       <div className="flex flex-row items-center gap-2">
         <span className="text-2xl">{icon}</span>
-        <figcaption className="text-sm font-medium dark:text-white">
-          {title}
-        </figcaption>
+        <figcaption className="text-base font-medium">{title}</figcaption>
       </div>
-      <p className="mt-2 text-xs">{description}</p>
+      <p className="mt-2 text-sm">{description}</p>
     </figure>
   );
 };
 
 export function WPMarquee() {
-  const [isHovering, setIsHovering] = useState(false);
-
   return (
-    <div
-      className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[50vw] flex-col items-center justify-center overflow-hidden"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <Marquee
-        pauseOnHover={false}
-        play={isHovering}
-        className="[--duration:20s]"
-      >
+    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[100%] flex-col items-center justify-center overflow-hidden">
+      <Marquee pauseOnHover={true} className="[--duration:20s]">
         {firstRow.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}
       </Marquee>
-      <Marquee
-        reverse
-        pauseOnHover={false}
-        play={isHovering}
-        className="[--duration:20s]"
-      >
+      <Marquee reverse pauseOnHover={true} className="[--duration:20s]">
         {secondRow.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}
       </Marquee>
-      {/* <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div> */}
-      {/* <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div> */}
     </div>
   );
 }
