@@ -28,9 +28,57 @@ import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { z } from "zod";
 import { executeWordPressSQL } from "./wp";
 
-export async function refreshHistory(path: string) {
-  redirect(path);
-}
+export const AI = createAI<AIState, UIState>({
+  actions: {
+    submitUserMessage,
+  },
+  initialUIState: [],
+  initialAIState: { chatId: nanoid(), siteId: "", messages: [] },
+  onGetUIState: async () => {
+    "use server";
+
+    const user = await currentUser();
+
+    if (user?.id) {
+      const aiState = getAIState() as Chat;
+
+      if (aiState) {
+        const uiState = getUIStateFromAIState(aiState);
+        return uiState;
+      }
+    } else {
+      return;
+    }
+  },
+  onSetAIState: async ({ state }) => {
+    "use server";
+
+    const user = await currentUser();
+    if (user) {
+      const { chatId, siteId, messages } = state;
+
+      const createdAt = new Date();
+      const userId = user.id as string;
+      const path = `/sites/${siteId}/chat/${chatId}`;
+
+      const firstMessageContent = messages[0].content as string;
+      const title = firstMessageContent.substring(0, 100);
+
+      const chat: Chat = {
+        id: chatId,
+        title,
+        userId,
+        siteId,
+        createdAt,
+        messages,
+        path,
+      };
+      await saveChat(chat);
+    } else {
+      return;
+    }
+  },
+});
 
 async function submitUserMessage(content: string, site: WpSite) {
   "use server";
@@ -268,58 +316,6 @@ export const getUIStateFromAIState = (aiState: Chat) => {
     }));
 };
 
-export const AI = createAI<AIState, UIState>({
-  actions: {
-    submitUserMessage,
-  },
-  initialUIState: [],
-  initialAIState: { chatId: nanoid(), siteId: "", messages: [] },
-  onGetUIState: async () => {
-    "use server";
-
-    const user = await currentUser();
-
-    if (user?.id) {
-      const aiState = getAIState() as Chat;
-
-      if (aiState) {
-        const uiState = getUIStateFromAIState(aiState);
-        return uiState;
-      }
-    } else {
-      return;
-    }
-  },
-  onSetAIState: async ({ state }) => {
-    "use server";
-
-    const user = await currentUser();
-    if (user) {
-      const { chatId, siteId, messages } = state;
-
-      const createdAt = new Date();
-      const userId = user.id as string;
-      const path = `/sites/${siteId}/chat/${chatId}`;
-
-      const firstMessageContent = messages[0].content as string;
-      const title = firstMessageContent.substring(0, 100);
-
-      const chat: Chat = {
-        id: chatId,
-        title,
-        userId,
-        siteId,
-        createdAt,
-        messages,
-        path,
-      };
-      await saveChat(chat);
-    } else {
-      return;
-    }
-  },
-});
-
 export async function saveChat(chat: Chat) {
   const user = await currentUser();
   if (user) {
@@ -399,4 +395,8 @@ export async function saveChat(chat: Chat) {
   } else {
     return;
   }
+}
+
+export async function refreshHistory(path: string) {
+  redirect(path);
 }
