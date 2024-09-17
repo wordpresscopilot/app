@@ -8,25 +8,11 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useFeatureFlagEnabled } from "posthog-js/react";
 import React from "react";
 
 export default function Home() {
-  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const waitlistFormRef = React.useRef<HTMLFormElement>(null);
-
-  React.useEffect(() => {
-    function handleResize() {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const scrollToWaitlistForm = () => {
     if (waitlistFormRef.current) {
@@ -146,6 +132,7 @@ const Navigation = ({
 }: {
   scrollToWaitlistForm: () => void;
 }) => {
+  const showAppEntryFlag = useFeatureFlagEnabled("show_app_entry");
   const links = [
     {
       label: "About",
@@ -185,7 +172,7 @@ const Navigation = ({
           <div className="rounded-md bg-background h-fit flex navbar-logo px-1.5 py-[7px] pr-3 dark:bg-gray-100">
             <Link
               href="/"
-              className="flex items-center gap-1 text-white dark:text-black"
+              className="flex items-center gap-1 text-black dark:text-white cursor-pointer"
             >
               <div className="w-9 h-9 inline-block relative">
                 <Image
@@ -199,24 +186,26 @@ const Navigation = ({
             </Link>
           </div>
           {/* NAV LINKS */}
-          <div className="rounded-md bg-background py-2 px-2 flex-1 h-[50px] text-white dark:bg-gray-100 dark:text-black">
+          <div className="rounded-md bg-background py-2 px-2 flex-1 h-[50px] text-black dark:text-white">
             <div className="flex items-center gap-1.5">
-              {links.map((item, index) => (
-                <Link
-                  key={index}
-                  href={item.href}
-                  className="flex items-center justify-center text-text-on-fill text-base leading-[110%] gt-standard-mono px-3 py-2 rounded-md hover:bg-[#F5F5F5] hover:text-black"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {showAppEntryFlag
+                ? links.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className="flex items-center justify-center text-black dark:text-white text-base leading-[110%] gt-standard-mono px-3 py-2 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 hover:text-black dark:hover:text-white cursor-pointer transition-colors duration-200"
+                    >
+                      {item.label}
+                    </Link>
+                  ))
+                : null}
             </div>
           </div>
           {/* WAITLIST BUTTON */}
           <Button
             variant="default"
             size="lg"
-            className="h-[50px] px-[18px] text-base gt-standard-mono"
+            className="h-[50px] px-[18px] text-base gt-standard-mono cursor-pointer"
             onClick={scrollToWaitlistForm}
           >
             Join the Waitlist
@@ -224,8 +213,8 @@ const Navigation = ({
         </div>
       </div>
       <div className="flex h-full w-full items-center lg:hidden">
-        <div className="flex justify-between bg-black items-center w-full rounded-md px-2 py-1.5">
-          <Link href="/" className="flex items-center gap-1.5">
+        <div className="flex justify-between bg-black dark:bg-gray-800 items-center w-full rounded-md px-2 py-1.5">
+          <Link href="/" className="flex items-center gap-1.5 cursor-pointer">
             <Image
               alt="logo"
               src="/assets/images/logo.png"
@@ -244,7 +233,7 @@ const Navigation = ({
             fill="currentColor"
             strokeWidth="0"
             viewBox="0 0 512 512"
-            className="text-white h-6 w-6"
+            className="text-white dark:text-gray-200 h-6 w-6 cursor-pointer"
             height="1em"
             width="1em"
             xmlns="http://www.w3.org/2000/svg"

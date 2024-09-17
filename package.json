@@ -49,6 +49,7 @@
     "next-themes": "^0.3.0",
     "nextjs-node-loader": "^1.1.5",
     "postgres": "^3.4.4",
+    "posthog-js": "^1.161.5",
     "prisma": "^5.19.1",
     "react": "^18",
     "react-day-picker": "8.10.1",
