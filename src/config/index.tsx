@@ -1,7 +1,8 @@
 export const config = {
-  siteName: "PROMPT. DEVELOP. WORDPRESS.",
-  description: "An AI Agent for wordpress development.",
-  url: "https://w-p.ai", // Replace with your actual URL
+  siteName: "AI Powered Wordpress Copilot",
+  description:
+    "Wordpress Copilot is the fastest way to build and interact with your Wordpress site.",
+  url: "https://wordpresscopilot.com", // Replace with your actual URL
   author: "Aaron Landy",
   social: {
     twitter: "https://twitter.com/wordpresssage", // Replace with your actual Twitter URL

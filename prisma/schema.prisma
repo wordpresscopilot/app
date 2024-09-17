@@ -55,3 +55,9 @@ model message {
   role      String
   createdAt DateTime @default(now())
 }
+
+model waitlist {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
