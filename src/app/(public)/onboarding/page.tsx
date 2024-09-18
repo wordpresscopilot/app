@@ -4,9 +4,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 export const metadata: Metadata = {
-  title: "Onboarding | w-p.ai",
+  title: "Onboarding | Wordpress Copilot",
   description:
-    "Set up your project with w-p.ai - AI-Powered WordPress Development",
+    "Set up your project with Wordpress Copilot - AI-Powered WordPress Development",
 };
 
 export default async function OnboardingPage() {
@@ -18,11 +18,11 @@ export default async function OnboardingPage() {
     user_id: user?.id,
   });
 
-  if (user_sites?.length > 1 || user_sites?.[0]?.connected) {
+  if (user_sites?.length > 1 || user_sites?.[0]?.plugin_connected) {
     return redirect("/sites");
   }
 
-  if (user_sites?.length === 1 && !user_sites?.[0]?.connected) {
+  if (user_sites?.length === 1 && !user_sites?.[0]?.plugin_connected) {
     return <Onboarding user_site={user_sites?.[0]} />;
   }
   return <Onboarding />;

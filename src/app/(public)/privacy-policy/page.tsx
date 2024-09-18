@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | w-p.ai",
-  description: "Privacy Policy for w-p.ai - AI-Powered WordPress Development",
+  title: "Privacy Policy | Wordpress Copilot",
+  description:
+    "Privacy Policy for Wordpress Copilot - AI-Powered WordPress Development",
 };
 
 export default function PrivacyPolicy() {
@@ -14,7 +15,7 @@ export default function PrivacyPolicy() {
       <section className="mb-6">
         <h2 className="text-2xl font-semibold mb-3">1. Introduction</h2>
         <p>
-          Welcome to w-p.ai (&quot;we,&quot; &quot;our,&quot; or
+          Welcome to Wordpress Copilot (&quot;we,&quot; &quot;our,&quot; or
           &quot;us&quot;). We are committed to protecting your personal
           information and your right to privacy. This Privacy Policy explains
           how we collect, use, disclose, and safeguard your information when you
@@ -91,7 +92,7 @@ export default function PrivacyPolicy() {
         <h2 className="text-2xl font-semibold mb-3">8. Contact Us</h2>
         <p>
           If you have any questions about this Privacy Policy, please contact us
-          at support@w-p.ai.
+          at support@Wordpress Copilot.
         </p>
       </section>
     </div>

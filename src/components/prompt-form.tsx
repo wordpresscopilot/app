@@ -14,7 +14,7 @@ import {
 import { useSelectedSite } from "@/contexts/selected-site";
 import { useEnterSubmit } from "@/hooks/use-enter-submit";
 import { nanoid } from "nanoid";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserMessage } from "./stocks/message";
 
 export function PromptForm({
@@ -30,6 +30,7 @@ export function PromptForm({
   const { submitUserMessage } = useActions();
   const [_, setMessages] = useUIState<typeof AI>();
   const { selectedSite } = useSelectedSite();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -62,7 +63,7 @@ export function PromptForm({
         ]);
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value, selectedSite);
+        const responseMessage = await submitUserMessage(value, pathname);
         setMessages((currentMessages) => [...currentMessages, responseMessage]);
       }}
     >

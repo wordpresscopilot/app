@@ -13,20 +13,27 @@ export async function executeWordPressSQL({
       api_key,
       api_url,
     });
-    const response = await fetch(`${api_url}?api_key=${api_key}`, {
+    console.log(
+      "`${api_url}?api_key=${api_key}`",
+      `${api_url}?api_key=${api_key}`
+    );
+    const response = await fetch(api_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `${api_key}`,
       },
       body: JSON.stringify({ query }),
     });
-
     if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
       return {
         status: response.status,
         ok: response.ok,
+        error: errorData || {
+          message: `HTTP error! status: ${response.status}`,
+        },
       };
-      // throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
@@ -34,6 +41,7 @@ export async function executeWordPressSQL({
       status: response.status,
       ok: response.ok,
       data,
+      error: undefined,
     };
   } catch (error) {
     console.error("Error executing WordPress SQL:", error);

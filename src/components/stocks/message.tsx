@@ -6,10 +6,9 @@ import { useStreamableText } from "@/hooks/use-streamable-text";
 import { cn } from "@/lib/utils";
 import { StreamableValue } from "ai/rsc";
 import { Settings2Icon } from "lucide-react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { CodeBlock } from "../ui/codeblock";
 import { spinner } from "./spinner";
 
 // Different types of message bubbles.
@@ -20,7 +19,7 @@ export function UserMessage({ children }: { children: React.ReactNode }) {
       <div className="flex size-[25px] shrink-0 select-none items-center justify-center rounded-md border bg-background shadow-sm">
         <IconUser />
       </div>
-      <div className="ml-4 flex-1 space-y-2 overflow-hidden pl-2">
+      <div className="font-semibold ml-4 flex-1 space-y-2 overflow-hidden pl-2">
         {children}
       </div>
     </div>
@@ -67,68 +66,88 @@ export function BotMessage({
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>;
             },
-            // code({ node, inline, className, children, ...props }) {
-            //   if (children && children.length) {
-            //     if (typeof children === "string" && children.startsWith("▍")) {
-            //       return (
-            //         <span className="mt-1 animate-pulse cursor-default">▍</span>
-            //       );
-            //     }
+            code({
+              node,
+              inline,
+              className,
+              children,
+              ...props
+            }: {
+              node?: any; // Make node optional
+              inline?: boolean;
+              className?: string;
+              children?: React.ReactNode;
+            }) {
+              if (children) {
+                if (typeof children === "string" && children.startsWith("▍")) {
+                  return (
+                    <span className="mt-1 animate-pulse cursor-default">▍</span>
+                  );
+                }
 
-            //     if (
-            //       Array.isArray(children) &&
-            //       typeof children[0] === "string"
-            //     ) {
-            //       children = [
-            //         children[0].replace("`▍`", "▍"),
-            //         ...children.slice(1),
-            //       ];
-            //     }
-            //   }
+                if (
+                  Array.isArray(children) &&
+                  typeof children[0] === "string"
+                ) {
+                  children = [
+                    children[0].replace("`▍`", "▍"),
+                    ...children.slice(1),
+                  ];
+                }
+              }
 
-            //   const match = /language-(\w+)/.exec(className || "");
-
-            //   if (inline) {
-            //     return (
-            //       <code className={className} {...props}>
-            //         {children}
-            //       </code>
-            //     );
-            //   }
-
-            //   return (
-            //     <CodeBlock
-            //       key={Math.random()}
-            //       language={(match && match[1]) || ""}
-            //       value={String(children).replace(/\n$/, "")}
-            //       {...props}
-            //     />
-            //   );
-            // },
-            code(props) {
-              const { children, className, node, ...rest } = props;
               const match = /language-(\w+)/.exec(className || "");
-              const { ref, ...restWithoutRef } = rest; // Remove ref from rest
-              return match ? (
-                <SyntaxHighlighter
-                  {...restWithoutRef}
-                  language={match[1]}
-                  style={dark}
-                  PreTag="div"
-                >
-                  {String(children)}
-                </SyntaxHighlighter>
-              ) : (
-                <code {...rest} className={className}>
-                  {children}
-                </code>
+
+              if (inline) {
+                return (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              }
+
+              return (
+                <CodeBlock
+                  key={Math.random()}
+                  language={(match && match[1]) || ""}
+                  value={String(children).replace(/\n$/, "")}
+                  {...props}
+                />
               );
             },
+            // code(props) {
+            //   const { children, className, node, ...rest } = props;
+            //   const match = /language-(\w+)/.exec(className || "");
+            //   const { ref, ...restWithoutRef } = rest; // Remove ref from rest
+            //   return match ? (
+            //     <SyntaxHighlighter
+            //       {...restWithoutRef}
+            //       language={match[1]}
+            //       style={dark}
+            //       PreTag="div"
+            //     >
+            //       {String(children)}
+            //     </SyntaxHighlighter>
+            //   ) : (
+            //     <code {...rest} className={className}>
+            //       {children}
+            //     </code>
+            //   );
+            // },
           }}
         >
           {text}
         </MemoizedReactMarkdown>
       </div>
+    </div>
+  );
+}
+export function ToolCommandCard({ command }: { command: string }) {
+  return (
+    <div className="max-w-3xl w-full">
+      <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto">
+        <code className="text-sm font-mono">{command}</code>
+      </pre>
     </div>
   );
 }
@@ -141,7 +160,7 @@ export function ToolCard({
   showAvatar?: boolean;
 }) {
   return (
-    <div className="group relative flex items-start md:-ml-12">
+    <div className="group relative flex items-start md:-ml-12 mt-2">
       <div
         className={cn(
           "flex size-[24px] shrink-0 select-none items-center gap-2 justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",

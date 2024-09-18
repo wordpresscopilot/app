@@ -2,7 +2,7 @@
 import { deleteSite, updateSite } from "@/actions";
 import { Button } from "@/components/ui/button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { SftpCredentials, WpSite } from "@/types";
+import { SSH, WpSite } from "@/types";
 import { Label } from "@radix-ui/react-label";
 import { CheckCircle2, Copy } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -27,14 +27,7 @@ import WpSiteStatus from "./wp-site-status";
 export default function SiteHome({ site }: { site: WpSite }) {
   const { copyToClipboard } = useCopyToClipboard({ timeout: 1000 });
   const [copied, setCopied] = useState(false);
-  const [sftpCredentials, setSftpCredentials] = useState<SftpCredentials>(
-    site.sftp_credentials || {
-      host: "",
-      port: 22,
-      username: "",
-      password: "",
-    }
-  );
+  const [sshCredentials, setSSHCredentials] = useState<SSH>();
 
   const handleCopyApiKey = useCallback(() => {
     if (!site.api_key) {
@@ -63,32 +56,31 @@ export default function SiteHome({ site }: { site: WpSite }) {
     }
   };
 
-  const handleSftpCredentialChange = (
-    field: keyof SftpCredentials,
+  const handleSSHCredentialChange = (
+    field: keyof SSH,
     value: string | number
   ) => {
-    setSftpCredentials((prev) => ({
+    setSSHCredentials((prev: any) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const handleSaveSftpCredentials = async () => {
-    // const sftphealth = await checkSFTPHealth(site);
-    // console.log("sftphealth", sftphealth);
+  const handleSaveSSHCredentials = async () => {
+    // const sshhealth = await checkSSHHealth(site);
+    // console.log("sshhealth", sshhealth);
     toast.promise(
       updateSite({
         id: site.id,
         fields: {
           name: site.name,
           base_url: site.base_url,
-          sftp_credentials: sftpCredentials,
         },
       }),
       {
-        loading: "Updating SFTP credentials...",
-        success: "SFTP credentials updated successfully",
-        error: "Failed to update SFTP credentials",
+        loading: "Updating SSH credentials...",
+        success: "SSH credentials updated successfully",
+        error: "Failed to update SSH credentials",
       }
     );
   };
@@ -163,37 +155,37 @@ export default function SiteHome({ site }: { site: WpSite }) {
         </Card>
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>SFTP Credentials</CardTitle>
+            <CardTitle>SSH Credentials</CardTitle>
             <CardDescription>
-              Manage your SFTP credentials for WordPress connection
+              Manage your SSH credentials for WordPress connection
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible>
-              <AccordionItem value="sftp-credentials">
-                <AccordionTrigger>View/Edit SFTP Credentials</AccordionTrigger>
+              <AccordionItem value="ssh-credentials">
+                <AccordionTrigger>View/Edit SSH Credentials</AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="sftp-host">Host</Label>
+                      <Label htmlFor="ssh-host">Host</Label>
                       <Input
-                        id="sftp-host"
-                        placeholder="Enter SFTP host"
-                        value={sftpCredentials.host}
+                        id="ssh-host"
+                        placeholder="Enter SSH host"
+                        value={sshCredentials?.host}
                         onChange={(e) =>
-                          handleSftpCredentialChange("host", e.target.value)
+                          handleSSHCredentialChange("host", e.target.value)
                         }
                       />
                     </div>
                     <div>
-                      <Label htmlFor="sftp-port">Port</Label>
+                      <Label htmlFor="ssh-port">Port</Label>
                       <Input
-                        id="sftp-port"
+                        id="ssh-port"
                         type="number"
-                        placeholder="Enter SFTP port"
-                        value={sftpCredentials.port}
+                        placeholder="Enter SSH port"
+                        value={sshCredentials?.port}
                         onChange={(e) =>
-                          handleSftpCredentialChange(
+                          handleSSHCredentialChange(
                             "port",
                             parseInt(e.target.value, 10)
                           )
@@ -201,30 +193,30 @@ export default function SiteHome({ site }: { site: WpSite }) {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="sftp-username">Username</Label>
+                      <Label htmlFor="ssh-username">Username</Label>
                       <Input
-                        id="sftp-username"
-                        placeholder="Enter SFTP username"
-                        value={sftpCredentials.username}
+                        id="ssh-username"
+                        placeholder="Enter SSH username"
+                        value={sshCredentials?.username}
                         onChange={(e) =>
-                          handleSftpCredentialChange("username", e.target.value)
+                          handleSSHCredentialChange("username", e.target.value)
                         }
                       />
                     </div>
                     <div>
-                      <Label htmlFor="sftp-password">Password</Label>
+                      <Label htmlFor="ssh-password">Password</Label>
                       <Input
-                        id="sftp-password"
+                        id="ssh-password"
                         type="password"
-                        placeholder="Enter SFTP password"
-                        value={sftpCredentials.password}
+                        placeholder="Enter SSH password"
+                        value={sshCredentials?.password}
                         onChange={(e) =>
-                          handleSftpCredentialChange("password", e.target.value)
+                          handleSSHCredentialChange("password", e.target.value)
                         }
                       />
                     </div>
-                    <Button onClick={handleSaveSftpCredentials}>
-                      Save SFTP Credentials
+                    <Button onClick={handleSaveSSHCredentials}>
+                      Save SSH Credentials
                     </Button>
                   </div>
                 </AccordionContent>

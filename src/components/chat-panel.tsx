@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { IconShare } from "@/components/ui/icons";
 import { useAIState, useActions, useUIState } from "ai/rsc";
 import { nanoid } from "nanoid";
+import { usePathname } from "next/navigation";
 import { UserMessage } from "./stocks/message";
 
 export interface ChatPanelProps {
@@ -32,7 +33,7 @@ export function ChatPanel({
   const [messages, setMessages] = useUIState<typeof AI>();
   const { submitUserMessage } = useActions();
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
-
+  const pathname = usePathname();
   const exampleMessages = [
     {
       heading: "Export all",
@@ -82,7 +83,8 @@ export function ChatPanel({
                   ]);
 
                   const responseMessage = await submitUserMessage(
-                    example.message
+                    example.message,
+                    pathname
                   );
 
                   setMessages((currentMessages) => [
