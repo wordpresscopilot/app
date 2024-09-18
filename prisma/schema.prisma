@@ -15,12 +15,13 @@ datasource db {
 }
 
 
-type SftpCredentials {
-  host              String
-  port              Int
-  username          String
-  password          String
-  connected         Boolean?
+type SSH {
+  host                    String
+  port                    Int     @default(22)
+  username                String
+  password                String?
+  wp_root_dir_path        String?
+  healthy                 Boolean?
 }
 
 model wp_site {
@@ -30,9 +31,9 @@ model wp_site {
   base_url              String   @map("base_url")
   api_key               String   @map("api_key")
   logo_url              String?
-  connected             Boolean?
+  plugin_connected      Boolean?
   last_connected_date   DateTime?
-  sftp_credentials      SftpCredentials?
+  ssh                   SSH?
   created_at            DateTime @default(now()) @map("created_at")
   updated_at            DateTime @updatedAt @map("updated_at")
 }

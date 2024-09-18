@@ -16,7 +16,7 @@ const features = [
     icon: "🗃️",
   },
   {
-    title: "SFTP Integration",
+    title: "SSH Integration",
     description:
       "Search, understand, and generate WordPress theme code with a simple prompt.",
     icon: "📂",

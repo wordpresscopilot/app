@@ -2,42 +2,34 @@
 
 import * as React from "react";
 
-import Link from "next/link";
-
-import { SidebarList } from "@/components/sidebar-list";
-import { buttonVariants } from "@/components/ui/button";
-import { IconPlus } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
-
-import { useSelectedSite } from "@/contexts/selected-site";
-
 interface ChatHistoryProps {
   userId?: string;
 }
 
 export function ChatHistory({ userId }: ChatHistoryProps) {
-  const { selectedSite } = useSelectedSite();
-  console.log("ChatHistory selectedSite", selectedSite);
+  // const { selectedSite } = useSelectedSite();
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4">
+      {/* <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
           <div
             className={`h-3 w-3 rounded-full ${
-              selectedSite?.connected ? "bg-green-500" : "bg-red-500"
+              selectedSite?.plugin_connected ? "bg-green-500" : "bg-red-500"
               // : "bg-yellow-500 animate-pulse"
             }`}
           />
           <span className="text-sm font-medium">
-            {selectedSite?.connected ? "Site Connected" : "Site Disconnected"}
+            {selectedSite?.plugin_connected
+              ? "Site Connected"
+              : "Site Disconnected"}
           </span>
         </div>
-      </div>
+      </div> */}
       <div className="flex items-center justify-between p-4">
         <h4 className="text-sm font-medium">Chat History</h4>
       </div>
       <div className="mb-2 px-2">
-        <Link
+        {/* <Link
           href={`/sites/${selectedSite?.id}/chat`}
           className={cn(
             buttonVariants({ variant: "outline" }),
@@ -46,7 +38,7 @@ export function ChatHistory({ userId }: ChatHistoryProps) {
         >
           <IconPlus className="-translate-x-2 stroke-2" />
           New Chat
-        </Link>
+        </Link> */}
       </div>
       <React.Suspense
         fallback={
@@ -61,7 +53,7 @@ export function ChatHistory({ userId }: ChatHistoryProps) {
         }
       >
         {/* @ts-ignore */}
-        <SidebarList userId={userId} siteId={selectedSite?.id} />
+        {/* <SidebarList userId={userId} siteId={selectedSite?.id} /> */}
       </React.Suspense>
     </div>
   );

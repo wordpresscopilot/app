@@ -190,7 +190,7 @@ export default function HomePage() {
       <footer className="relative z-10 py-6 px-4 md:px-6 border-t border-gray-800 bg-gray-900">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 w-p.ai All rights reserved.
+            © 2024 Wordpress Copilot All rights reserved.
           </p>
           <nav className="flex gap-4 sm:gap-6 mt-4 sm:mt-0">
             <a

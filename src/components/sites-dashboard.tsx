@@ -29,7 +29,7 @@ export default function SitesDashboard({ wp_sites }: { wp_sites: WpSite[] }) {
                   <div className="flex items-center space-x-2">
                     <div
                       className={`w-3 h-3 rounded-full ${
-                        site.connected ? "bg-green-500" : "bg-red-500"
+                        site.plugin_connected ? "bg-green-500" : "bg-red-500"
                       }`}
                     />
                     <span className="font-semibold truncate text-gray-900 dark:text-gray-100">
@@ -37,10 +37,10 @@ export default function SitesDashboard({ wp_sites }: { wp_sites: WpSite[] }) {
                     </span>
                   </div>
                   <Badge
-                    variant={site.connected ? "default" : "secondary"}
+                    variant={site.plugin_connected ? "default" : "secondary"}
                     className="dark:bg-gray-700 dark:text-gray-100"
                   >
-                    {site.connected ? "Connected" : "Disconnected"}
+                    {site.plugin_connected ? "Connected" : "Disconnected"}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -61,7 +61,7 @@ export default function SitesDashboard({ wp_sites }: { wp_sites: WpSite[] }) {
                 </div>
               </CardContent>
               <CardFooter className="bg-gray-50 dark:bg-gray-700 p-4 flex justify-between">
-                {site.connected ? (
+                {site.plugin_connected ? (
                   <Button variant="default" size="sm" asChild>
                     <Link href={`/sites/${site.id}/chat`}>
                       <MessageSquare className="w-4 h-4 mr-2" />

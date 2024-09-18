@@ -72,7 +72,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:support@w-p.ai"
+                  href="mailto:support@Wordpress Copilot"
                   className="hover:text-white transition-colors"
                 >
                   Contact

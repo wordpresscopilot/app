@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | w-p.ai",
-  description: "Terms of Service for w-p.ai - AI-Powered WordPress Development",
+  title: "Terms of Service | Wordpress Copilot",
+  description:
+    "Terms of Service for Wordpress Copilot - AI-Powered WordPress Development",
 };
 
 export default function TermsOfService() {
@@ -14,9 +15,9 @@ export default function TermsOfService() {
       <section className="mb-6">
         <h2 className="text-2xl font-semibold mb-3">1. Acceptance of Terms</h2>
         <p>
-          By accessing or using w-p.ai (&quot;the Service&quot;), you agree to
-          be bound by these Terms of Service. If you disagree with any part of
-          the terms, you may not access the Service.
+          By accessing or using Wordpress Copilot (&quot;the Service&quot;), you
+          agree to be bound by these Terms of Service. If you disagree with any
+          part of the terms, you may not access the Service.
         </p>
       </section>
 
@@ -25,9 +26,9 @@ export default function TermsOfService() {
           2. Description of Service
         </h2>
         <p>
-          w-p.ai provides AI-powered WordPress development tools and services.
-          We reserve the right to modify or discontinue, temporarily or
-          permanently, the Service with or without notice.
+          Wordpress Copilot provides AI-powered WordPress development tools and
+          services. We reserve the right to modify or discontinue, temporarily
+          or permanently, the Service with or without notice.
         </p>
       </section>
 
@@ -46,9 +47,9 @@ export default function TermsOfService() {
         </h2>
         <p>
           The Service and its original content, features, and functionality are
-          owned by w-p.ai and are protected by international copyright,
-          trademark, patent, trade secret, and other intellectual property or
-          proprietary rights laws.
+          owned by Wordpress Copilot and are protected by international
+          copyright, trademark, patent, trade secret, and other intellectual
+          property or proprietary rights laws.
         </p>
       </section>
 
@@ -66,11 +67,11 @@ export default function TermsOfService() {
           6. Limitation of Liability
         </h2>
         <p>
-          In no event shall w-p.ai, nor its directors, employees, partners,
-          agents, suppliers, or affiliates, be liable for any indirect,
-          incidental, special, consequential or punitive damages, including
-          without limitation, loss of profits, data, use, goodwill, or other
-          intangible losses, resulting from your access to or use of or
+          In no event shall Wordpress Copilot, nor its directors, employees,
+          partners, agents, suppliers, or affiliates, be liable for any
+          indirect, incidental, special, consequential or punitive damages,
+          including without limitation, loss of profits, data, use, goodwill, or
+          other intangible losses, resulting from your access to or use of or
           inability to access or use the Service.
         </p>
       </section>
@@ -98,7 +99,7 @@ export default function TermsOfService() {
         <h2 className="text-2xl font-semibold mb-3">9. Contact Us</h2>
         <p>
           If you have any questions about these Terms, please contact us at
-          support@w-p.ai.
+          support@Wordpress Copilot.
         </p>
       </section>
     </div>

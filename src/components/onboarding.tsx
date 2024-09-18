@@ -102,7 +102,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">
-            Welcome to w-p.ai
+            Welcome to Wordpress Copilot
           </CardTitle>
           <CardDescription>
             The GPT AI Agent to 10x developing and managing your site.
@@ -222,7 +222,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                         className="text-blue-500 hover:underline inline-flex items-center"
                       >
                         <Download className="w-4 h-4 mr-1" /> Download the
-                        w-p.ai connector plugin
+                        Wordpress Copilot connector plugin
                       </Link>
                     </li>
                     <li>
@@ -236,7 +236,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"
                       >
-                        Settings &gt; w-p.ai{" "}
+                        Settings &gt; Wordpress Copilot{" "}
                         <ExternalLink className="inline-block w-4 h-4" />
                       </Link>
                     </li>
@@ -271,9 +271,9 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                 <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
                 <h3 className="text-2xl font-semibold">All Set!</h3>
                 <p>
-                  Your WordPress site is now connected to w-p.ai. You are ready
-                  to start using the power of AI to manage and develop your
-                  site.
+                  Your WordPress site is now connected to Wordpress Copilot. You
+                  are ready to start using the power of AI to manage and develop
+                  your site.
                 </p>
                 <Link href={`/sites/${site?.id}`}>
                   <Button className="w-full">Go to Site Dashboard</Button>

@@ -3,7 +3,7 @@
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
 import { nanoid } from "@/lib/utils";
-import { SftpCredentials, WpSite } from "@/types";
+import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Unkey } from "@unkey/api";
 import { kv } from "@vercel/kv";
@@ -13,19 +13,18 @@ import { executeWordPressSQL } from "./wp";
 const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY! });
 
 
-export async function currentSite(pathname: string) {
+export async function currentSite(id: string) {
   const user = await currentUser();
-  
-
 
   if (!user) throw new Error('User not found');
 
   return await prisma.wp_site.findFirst({
     where: {
-      user_id: user.id,
+      id,
     },
   });
 }
+
 export async function createSiteProject(formData: FormData): Promise<WpSite> {
   const user = await currentUser()
   if (!user) throw new Error('User not found');
@@ -51,7 +50,7 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
       name,
       base_url: baseUrl,
       api_key: created_key?.result?.key!,
-      connected: false,
+      plugin_connected: false,
     },
   }) as WpSite;
 
@@ -77,7 +76,6 @@ export async function updateSite({
   fields: {
     name: string;
     base_url: string;
-    sftp_credentials?: SftpCredentials
   };
 }) {
   return await prisma.wp_site.update({
@@ -151,7 +149,7 @@ export async function runSiteHealthCheck(id: string, url: string): Promise<boole
         id,
       },
       data: {
-        connected: response.ok,
+        plugin_connected: response.ok,
         ...(response.ok && { last_connected_date: new Date() }),
       },
     });
@@ -163,7 +161,7 @@ export async function runSiteHealthCheck(id: string, url: string): Promise<boole
   return false;
 }
 
-export async function runSFTPHealthCheck(credentials: SftpCredentials) {
+export async function runSSHHealthCheck(credentials: SSH) {
 
 }
 
@@ -184,7 +182,7 @@ export async function getCoreSiteData(siteId: string) {
     return;
   }
 
-  if(!site?.connected) {
+  if(!site?.plugin_connected) {
     return;
   }
 

@@ -69,7 +69,7 @@ export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
         className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
         ref={scrollRef}
       >
-        {!selectedSite?.connected && (
+        {/* {!selectedSite?.plugin_connected && (
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 flex items-center">
             <svg
               className="w-6 h-6 mr-2"
@@ -89,7 +89,7 @@ export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
               Warning: We are unable to connect to your WordPress site.
             </span>
           </div>
-        )}
+        )} */}
         <div
           className={cn("pb-[200px] pt-4 md:pt-10", className)}
           ref={messagesRef}

@@ -20,10 +20,10 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
   const [baseUrl, setBaseUrl] = useState(site?.base_url);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<SiteHealthStatus>(
-    site?.connected ? "connected" : "disconnected"
+    site?.plugin_connected ? "connected" : "disconnected"
   );
-  const [statusSFTP, setStatusSFTP] = useState<SiteHealthStatus>(
-    site?.sftp_connected ? "connected" : "disconnected"
+  const [statusSSH, setStatusSSH] = useState<SiteHealthStatus>(
+    site?.ssh?.healthy ? "connected" : "disconnected"
   );
 
   const getHealthCheckUrl = () => {
@@ -56,18 +56,18 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
     }
   };
 
-  const checkSiteSFTPHealth = async () => {
+  const checkSiteSSHHealth = async () => {
     try {
-      setStatusSFTP("checking");
-      // const healthStatus = await runSFTPHealthCheck(site);
+      setStatusSSH("checking");
+      // const healthStatus = await runSSHHealthCheck(site);
       const healthStatus = {
         success: false,
-        message: "SFTP connection successful",
+        message: "SSH connection successful",
       };
       if (healthStatus?.success) {
-        setStatusSFTP("connected");
+        setStatusSSH("connected");
       } else {
-        setStatusSFTP("disconnected");
+        setStatusSSH("disconnected");
       }
     } catch (error) {
       console.error("Error checking status:", error);
@@ -115,30 +115,30 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
             <div className="flex items-center space-x-4">
               <div
                 className={`h-3 w-3 rounded-full ${
-                  statusSFTP === "connected"
+                  statusSSH === "connected"
                     ? "bg-green-500"
-                    : statusSFTP === "disconnected"
+                    : statusSSH === "disconnected"
                     ? "bg-red-500"
                     : "bg-yellow-500 animate-pulse"
                 }`}
               />
               <span className="font-medium">
-                {statusSFTP === "connected"
-                  ? "SFTP Connected"
-                  : statusSFTP === "disconnected"
-                  ? "SFTP Disconnected"
-                  : "Checking SFTP..."}
+                {statusSSH === "connected"
+                  ? "SSH Connected"
+                  : statusSSH === "disconnected"
+                  ? "SSH Disconnected"
+                  : "Checking SSH..."}
               </span>
             </div>
             <Button
               onClick={() => {
-                checkSiteSFTPHealth();
+                checkSiteSSHHealth();
               }}
               variant="outline"
               size="sm"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh SFTP Status
+              Refresh SSH Status
             </Button>
           </div>
         </div>

@@ -1,11 +1,13 @@
 import { CoreMessage } from 'ai';
 
-export interface SftpCredentials {
+export type SSH = {
   host: string;
   port: number;
   username: string;
-  password: string;
-}
+  password?: string;
+  healthy?: boolean;
+  wp_root_dir_path?: string;
+};
 
 export interface WpSite {
   id: string;
@@ -13,10 +15,9 @@ export interface WpSite {
   name: string;
   base_url: string;
   api_key: string;
-  connected?: boolean;
-  last_connected_date: Date;
-  sftp_credentials?: SftpCredentials; 
-  sftp_connected?: boolean;
+  plugin_connected?: boolean;
+  last_connected_date?: Date;
+  ssh?: SSH;
   created_at: Date;
   updated_at: Date;
 }
