@@ -6,7 +6,6 @@ import { nanoid } from "@/lib/utils";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Unkey } from "@unkey/api";
-import { kv } from "@vercel/kv";
 import { executeWordPressSQL } from "./wp";
 
 const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY! });
@@ -53,15 +52,15 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
   })) as WpSite;
 
   // Update Redis cache
-  const cacheKey = `sites:${user.id}`;
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${user.id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    const updatedSites = [...(cachedSites.sites as WpSite[]), newSite];
-    await kv.hmset(cacheKey, { sites: updatedSites });
-  } else {
-    await kv.hmset(cacheKey, { sites: [newSite] });
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   const updatedSites = [...(cachedSites.sites as WpSite[]), newSite];
+  //   await kv.hmset(cacheKey, { sites: updatedSites });
+  // } else {
+  //   await kv.hmset(cacheKey, { sites: [newSite] });
+  // }
 
   return newSite;
 }
@@ -101,15 +100,15 @@ export async function deleteSite(id: string) {
   });
 
   // Update cache
-  const cacheKey = `sites:${site.user_id}`;
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${site.user_id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    const updatedSites = (cachedSites.sites as WpSite[]).filter(
-      (s) => s.id !== id
-    );
-    await kv.hmset(cacheKey, { sites: updatedSites });
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   const updatedSites = (cachedSites.sites as WpSite[]).filter(
+  //     (s) => s.id !== id
+  //   );
+  //   await kv.hmset(cacheKey, { sites: updatedSites });
+  // }
 
   return true;
 }
@@ -119,13 +118,12 @@ export async function retrieveSites({
 }: {
   user_id: string;
 }): Promise<WpSite[]> {
-  const cacheKey = `sites:${user_id}`;
-  // @TODO: There is a bug that when deleting a site, the cache is not updated. I deleted a site and then got an error
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${user_id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    return cachedSites.sites as WpSite[];
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   return cachedSites.sites as WpSite[];
+  // }
 
   const sites = (await prisma.wp_site.findMany({
     where: {
@@ -133,7 +131,7 @@ export async function retrieveSites({
     },
   })) as WpSite[];
 
-  await kv.hmset(cacheKey, { sites });
+  // await kv.hmset(cacheKey, { sites });
   return sites;
 }
 
@@ -168,12 +166,12 @@ export async function runSiteHealthCheck(
 export async function runSSHHealthCheck(credentials: SSH) {}
 
 export async function getCoreSiteData(siteId: string) {
-  const cacheKey = `core_site_data:${siteId}`;
-  const cachedData = await kv.get(cacheKey);
+  // const cacheKey = `core_site_data:${siteId}`;
+  // const cachedData = await kv.get(cacheKey);
 
-  if (cachedData) {
-    return cachedData;
-  }
+  // if (cachedData) {
+  //   return cachedData;
+  // }
 
   const site = await prisma.wp_site.findUnique({
     where: {
@@ -229,8 +227,8 @@ export async function getCoreSiteData(siteId: string) {
     });
   }
   // Cache the result for 1 hour
-  await kv.set(cacheKey, core_site_data, { ex: 43200 });
+  // await kv.set(cacheKey, core_site_data, { ex: 43200 });
   // Invalidate the user's sites cache
-  await kv.del(`sites:${site.user_id}`);
+  // await kv.del(`sites:${site.user_id}`);
   return core_site_data;
 }

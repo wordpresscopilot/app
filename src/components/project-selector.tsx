@@ -1,8 +1,7 @@
 "use client";
 
-import { Check, ChevronsUpDown, Globe, PlusCircle } from "lucide-react";
-import * as React from "react";
-
+import { CreateProjectModal } from "@/components/create-project-modal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -20,10 +19,10 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { WpSite } from "@/types";
+import { Check, ChevronsUpDown, Globe, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CreateProjectModal } from "./create-project-modal";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import * as React from "react";
 
 export default function ProjectSelector({
   user_sites,
@@ -57,6 +56,9 @@ export default function ProjectSelector({
   //   }
   // }, [pathname, user_sites, setSelectedSite]);
 
+  const site = user_sites.find((site: WpSite) => site.id === siteId);
+  console.log(site);
+
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -65,25 +67,25 @@ export default function ProjectSelector({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[250px] justify-between"
+            className="w-fit justify-between"
           >
             <div className="flex items-center gap-4">
               {siteId && (
                 <Avatar className="ml-2 h-6 w-6">
-                  <AvatarImage src="/logo.png" alt="Logo" />
+                  <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
                   <AvatarFallback>
-                    <AvatarImage src="/logo.png" alt="Logo" />
+                    <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
                   </AvatarFallback>
                 </Avatar>
               )}
               {siteId
-                ? user_sites.find((site: WpSite) => site.id === siteId)?.name
+                ? site?.name || site?.base_url
                 : "Select wordpress site..."}
             </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[250px] p-0">
+        <PopoverContent className="w-fit p-0">
           <Command>
             <CommandInput placeholder="Search sites..." />
             <CommandEmpty>No site found.</CommandEmpty>
@@ -105,7 +107,7 @@ export default function ProjectSelector({
                           siteId === site.id ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {site.name}
+                      {site.name || site.base_url}
                       <Link
                         href={"/sites"}
                         target="_blank"

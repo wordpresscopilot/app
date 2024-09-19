@@ -1,6 +1,7 @@
 "use client";
 
 import { createSiteProject, retrieveSites } from "@/actions/site";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,7 +26,6 @@ import {
   Globe,
   Loader2,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -464,25 +464,3 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
     </div>
   );
 }
-
-const Logo = ({
-  className,
-  width,
-  height,
-}: {
-  className?: string;
-  width?: number;
-  height?: number;
-}) => {
-  return (
-    <Image
-      src="/logo/logo-color.svg"
-      alt="logo"
-      width={width || 32}
-      height={height || 32}
-      fetchPriority="high"
-      decoding="async"
-      className={cn("object-cover", className)}
-    />
-  );
-};
