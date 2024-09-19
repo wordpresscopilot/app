@@ -17,7 +17,7 @@ export interface WpSite {
   api_key: string;
   plugin_connected?: boolean;
   last_connected_date?: Date;
-  ssh?: SSH;
+  ssh?: SSH | null;
   created_at: Date;
   updated_at: Date;
 }
