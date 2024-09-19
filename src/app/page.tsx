@@ -138,14 +138,22 @@ const Navigation = ({
       label: "About",
       href: "/about",
     },
-    {
-      label: "Account",
-      href: "/account",
-    },
-    {
-      label: "Onboarding",
-      href: "/onboarding",
-    },
+    ...(showAppEntryFlag
+      ? [
+          {
+            label: "Account",
+            href: "/account",
+          },
+        ]
+      : []),
+    ...(showAppEntryFlag
+      ? [
+          {
+            label: "Onboarding",
+            href: "/onboarding",
+          },
+        ]
+      : []),
     {
       label: "Privacy Policy",
       href: "/privacy-policy",
@@ -154,14 +162,22 @@ const Navigation = ({
       label: "Share",
       href: "/share",
     },
-    {
-      label: "Sign In",
-      href: "/sign-in",
-    },
-    {
-      label: "Sign Up",
-      href: "/sign-up",
-    },
+    ...(showAppEntryFlag
+      ? [
+          {
+            label: "Sign In",
+            href: "/sign-in",
+          },
+        ]
+      : []),
+    ...(showAppEntryFlag
+      ? [
+          {
+            label: "Sign Up",
+            href: "/sign-up",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -169,10 +185,10 @@ const Navigation = ({
       <div className="hidden lg:block">
         <div className="w-full flex justify-between items-stretch gap-2.5">
           {/* LOGO */}
-          <div className="rounded-md bg-background h-fit flex navbar-logo px-1.5 py-[7px] pr-3 dark:bg-gray-100">
+          <div className="rounded-md bg-background h-fit flex navbar-logo px-1.5 py-[7px] pr-3 text-white bg-black dark:text-white dark:bg-gray-100">
             <Link
               href="/"
-              className="flex items-center gap-1 text-black dark:text-white cursor-pointer"
+              className="flex items-center gap-1 text-white dark:text-black cursor-pointer"
             >
               <div className="w-9 h-9 inline-block relative">
                 <Image
@@ -186,19 +202,17 @@ const Navigation = ({
             </Link>
           </div>
           {/* NAV LINKS */}
-          <div className="rounded-md bg-background py-2 px-2 flex-1 h-[50px] text-black dark:text-white">
+          <div className="rounded-md bg-background py-2 px-2 flex-1 h-[50px] text-white bg-black dark:text-black dark:bg-gray-100">
             <div className="flex items-center gap-1.5">
-              {showAppEntryFlag
-                ? links.map((item, index) => (
-                    <Link
-                      key={index}
-                      href={item.href}
-                      className="flex items-center justify-center text-black dark:text-white text-base leading-[110%] gt-standard-mono px-3 py-2 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 hover:text-black dark:hover:text-white cursor-pointer transition-colors duration-200"
-                    >
-                      {item.label}
-                    </Link>
-                  ))
-                : null}
+              {links.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="flex items-center justify-center text-inherit text-base leading-[110%] gt-standard-mono px-3 py-2 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 hover:text-black dark:hover:text-white cursor-pointer transition-colors duration-200"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
           {/* WAITLIST BUTTON */}
