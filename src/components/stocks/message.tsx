@@ -63,9 +63,9 @@ export function BotMessage({
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
-            p({ children }) {
-              return <p className="mb-2 last:mb-0">{children}</p>;
-            },
+            // p({ children }) {
+            //   return <p className="mb-2 last:mb-0">{children}</p>;
+            // },
             code({
               node,
               inline,

@@ -40,7 +40,6 @@ export async function generateMetadata({
     };
   }
 }
-
 export default async function ChatPage({
   params,
   searchParams,
@@ -52,55 +51,45 @@ export default async function ChatPage({
     redirect(`/sign-in?next=/chat/${params.chat_id}`);
   }
 
+  let chatId: string;
+  let siteId: string;
+  let messages: any[] = [];
+
   if (params.chat_id === "new") {
-    const new_chat_id = nanoid();
-    return (
-      <AI
-        initialAIState={{
-          chatId: new_chat_id,
-          siteId: searchParams.site_id,
-          messages: [],
-        }}
-      >
-        <Chat
-          id={new_chat_id}
-          site_id={searchParams.site_id}
-          user={mapClerkUserForClient(user)}
-          initialMessages={[]}
-          missingKeys={missingKeys || []}
-        />
-      </AI>
-    );
-  }
-
-  const userId = user.id as string;
-  const chat = await getChat(params.chat_id, userId);
-
-  if (!chat || "error" in chat) {
-    redirect(`/sites/${searchParams?.site_id}/chat/new`);
+    chatId = nanoid();
+    siteId = searchParams.site_id;
   } else {
+    const userId = user.id as string;
+    const chat = await getChat(params.chat_id, userId);
+
+    if (!chat || "error" in chat) {
+      redirect(`/sites/${searchParams?.site_id}/chat/new`);
+    }
+
     if (chat?.userId !== user?.id) {
       notFound();
     }
 
-    return (
-      <>
-        <AI
-          initialAIState={{
-            chatId: chat?.id,
-            siteId: chat?.siteId || searchParams.site_id,
-            messages: chat?.messages || [],
-          }}
-        >
-          <Chat
-            id={chat?.id}
-            site_id={chat?.siteId || searchParams.site_id}
-            user={mapClerkUserForClient(user)}
-            initialMessages={chat.messages || []}
-            missingKeys={missingKeys || []}
-          />
-        </AI>
-      </>
-    );
+    chatId = chat.id;
+    siteId = chat.siteId || searchParams.site_id;
+    messages = chat.messages || [];
   }
+
+  return (
+    <AI
+      initialAIState={{
+        chatId,
+        siteId,
+        messages,
+      }}
+    >
+      <Chat
+        id={chatId}
+        site_id={siteId}
+        user={mapClerkUserForClient(user)}
+        initialMessages={messages}
+        missingKeys={missingKeys || []}
+      />
+    </AI>
+  );
 }
