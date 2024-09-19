@@ -2,6 +2,7 @@
 
 import { Footer } from "@/components/footer";
 import { JoinWaitlistForm } from "@/components/JoinWaitlistForm";
+import { PluginsMarquee } from "@/components/plugins-marquee";
 import { Button } from "@/components/ui/button";
 import { WPMarquee } from "@/components/wp-marquee";
 import { cn } from "@/lib/utils";
@@ -80,7 +81,7 @@ export default function Home() {
         />
         <Section
           color="#7dc7ff"
-          label="Need some data? Just ask."
+          label={`Need some data?\nJust ask.`}
           description={`"Hey copilot, show me our top 10 products by revenue."`}
           image="https://placehold.co/1920x1080.png"
           imageWidth={1920}
@@ -88,7 +89,7 @@ export default function Home() {
         />
         <Section
           color="#f7cd72"
-          label="Updates at the speed of AI."
+          label={`Updates at the\nspeed of AI.`}
           description="Write a new about page, add a tax-line to your checkout, and so much more."
           image="https://placehold.co/1920x1080.png"
           imageWidth={1920}
@@ -102,6 +103,17 @@ export default function Home() {
         >
           <div className="w-full max-w-[100%] relative">
             <WPMarquee />
+          </div>
+        </Section>
+        {/* Supported plugins */}
+        <Section
+          color="#F5F5F5"
+          label={`What plugins\ndo we support?`}
+          description="Idk, like, all of them."
+          className="md:pb-0 pb-0"
+        >
+          <div className="w-full max-w-[100%] relative">
+            <PluginsMarquee />
           </div>
         </Section>
         <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
