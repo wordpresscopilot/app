@@ -2,6 +2,7 @@
 
 import Marquee from "@/components/magicui/marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 const plugins = [
   {
@@ -111,7 +112,8 @@ const PluginCard = ({
   description: string;
 }) => {
   return (
-    <div
+    <Link
+      href={`/plugins/${name}`}
       className={
         "flex flex-col gap-3 cursor-pointer overflow-hidden rounded-md border border-2 border-gray-300 bg-white p-4"
       }
@@ -127,6 +129,6 @@ const PluginCard = ({
         <span className="text-2xl">{name}</span>
       </div>
       <span className="text-base font-medium">{description}</span>
-    </div>
+    </Link>
   );
 };
