@@ -71,7 +71,7 @@ export default function ProjectSelector({
           >
             <div className="flex items-center gap-4">
               {siteId && (
-                <Avatar className="ml-2 h-6 w-6">
+                <Avatar className="h-6 w-6">
                   <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
                   <AvatarFallback>
                     <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
