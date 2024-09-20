@@ -5,22 +5,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { plugins } from "@/constants/plugins";
 import Link from "next/link";
 
-const firstRow = plugins.slice(0, plugins.length / 2);
-const secondRow = plugins.slice(plugins.length / 2);
+const dividePlugins = (
+  plugins: typeof import("@/constants/plugins").plugins
+) => {
+  const third = Math.ceil(plugins.length / 3);
+  return [
+    plugins.slice(0, third),
+    plugins.slice(third, 2 * third),
+    plugins.slice(2 * third),
+  ];
+};
+
+const rows = dividePlugins(plugins);
 
 export function PluginsMarquee() {
   return (
-    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[100%] flex-col items-center justify-center overflow-hidden">
-      <Marquee pauseOnHover={true} className="[--duration:20s]">
-        {firstRow.map((plugin) => (
-          <PluginCard key={plugin.name} {...plugin} />
-        ))}
-      </Marquee>
-      <Marquee reverse pauseOnHover={true} className="[--duration:20s]">
-        {secondRow.map((plugin) => (
-          <PluginCard key={plugin.name} {...plugin} />
-        ))}
-      </Marquee>
+    <div className="relative flex h-[442px] w-full max-w-[100vw] lg:max-w-[100%] flex-col items-center justify-center overflow-hidden">
+      {rows.map((row, index) => (
+        <Marquee
+          key={index}
+          pauseOnHover={true}
+          className="[--duration:20s]"
+          reverse={index % 2 === 1}
+        >
+          {row.map((plugin) => (
+            <PluginCard key={plugin.name} {...plugin} />
+          ))}
+        </Marquee>
+      ))}
     </div>
   );
 }
