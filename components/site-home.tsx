@@ -87,7 +87,7 @@ export default function SiteHome({ site }: { site: WpSite }) {
 
   return (
     <div className="w-full overflow-y-scroll">
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container p-4 max-w-3xl">
         <WpSiteStatus site={site} />
         <Card className="mb-8">
           <CardHeader>
