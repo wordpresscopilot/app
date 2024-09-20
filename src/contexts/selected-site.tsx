@@ -1,6 +1,8 @@
 "use client";
 
+import { currentSite } from "@/actions/site";
 import { WpSite } from "@/types";
+import { usePathname } from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -12,8 +14,8 @@ import {
 } from "react";
 
 interface SelectedSiteContextType {
-  selectedSite: WpSite;
-  setSelectedSite: Dispatch<SetStateAction<any>>;
+  selectedSite: WpSite | null;
+  setSelectedSite: Dispatch<SetStateAction<WpSite | null>>;
 }
 const SelectedSiteContext = createContext<SelectedSiteContextType | null>(null);
 
@@ -24,13 +26,34 @@ interface SelectedSiteProviderProps {
 export const SelectedSiteProvider = ({
   children,
 }: SelectedSiteProviderProps) => {
-  const [selectedSite, setSelectedSite] = useState(() => {
-    const savedSite = sessionStorage.getItem("selectedSite");
-    return savedSite ? JSON.parse(savedSite) : null;
-  });
+  const pathname = usePathname();
+  const [selectedSite, setSelectedSite] = useState<WpSite | null>(null);
 
   useEffect(() => {
-    sessionStorage.setItem("selectedSite", JSON.stringify(selectedSite));
+    const fetchSite = async () => {
+      const savedSite = sessionStorage.getItem("selectedSite");
+      if (savedSite) {
+        setSelectedSite(JSON.parse(savedSite));
+      } else {
+        const siteIdMatch = pathname.match(/\/sites\/([^\/]+)/);
+        if (siteIdMatch) {
+          const siteId = siteIdMatch[1];
+          const site = (await currentSite(siteId)) as WpSite;
+          if (site) {
+            setSelectedSite(site);
+            sessionStorage.setItem("selectedSite", JSON.stringify(site));
+          }
+        }
+      }
+    };
+
+    fetchSite();
+  }, [pathname]);
+
+  useEffect(() => {
+    if (selectedSite) {
+      sessionStorage.setItem("selectedSite", JSON.stringify(selectedSite));
+    }
   }, [selectedSite]);
 
   return (

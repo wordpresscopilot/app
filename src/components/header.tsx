@@ -1,16 +1,15 @@
-import Link from "next/link";
-import * as React from "react";
-
 import { retrieveSites } from "@/actions";
+import { ChatHistory } from "@/components/chat-history";
+import ProjectSelector from "@/components/project-selector";
+import { SidebarMobile } from "@/components/sidebar-mobile";
+import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Button } from "@/components/ui/button";
 import { IconNextChat, IconSeparator } from "@/components/ui/icons";
 import { WpSite } from "@/types";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser, User } from "@clerk/nextjs/server";
-import { ChatHistory } from "./chat-history";
-import ProjectSelector from "./project-selector";
-import { SidebarMobile } from "./sidebar-mobile";
-import { SidebarToggle } from "./sidebar-toggle";
+import Link from "next/link";
+import * as React from "react";
 
 async function UserOrLogin({ user }: { user: User }) {
   return (

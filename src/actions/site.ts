@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
@@ -6,17 +6,14 @@ import { nanoid } from "@/lib/utils";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Unkey } from "@unkey/api";
-import { kv } from "@vercel/kv";
 import { executeWordPressSQL } from "./wp";
 
-
 const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY! });
-
 
 export async function currentSite(id: string) {
   const user = await currentUser();
 
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error("User not found");
 
   return await prisma.wp_site.findFirst({
     where: {
@@ -26,24 +23,24 @@ export async function currentSite(id: string) {
 }
 
 export async function createSiteProject(formData: FormData): Promise<WpSite> {
-  const user = await currentUser()
-  if (!user) throw new Error('User not found');
+  const user = await currentUser();
+  if (!user) throw new Error("User not found");
 
-  const name = formData.get('name') as string;
-  const baseUrl = formData.get('baseUrl') as string;
+  const name = formData.get("name") as string;
+  const baseUrl = formData.get("baseUrl") as string;
   const new_site_id = nanoid();
 
   const created_key = await unkey.keys.create({
     apiId: process.env.UNKEY_API_ID!,
-    prefix:"sage",
-    byteLength:16,
+    prefix: "sage",
+    byteLength: 16,
     externalId: user.id,
-    meta:{
+    meta: {
       site_id: new_site_id,
     },
-    enabled: true
-  })
-  const newSite = await prisma.wp_site.create({
+    enabled: true,
+  });
+  const newSite = (await prisma.wp_site.create({
     data: {
       id: new_site_id,
       user_id: user.id,
@@ -52,18 +49,18 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
       api_key: created_key?.result?.key!,
       plugin_connected: false,
     },
-  }) as WpSite;
+  })) as WpSite;
 
   // Update Redis cache
-  const cacheKey = `sites:${user.id}`;
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${user.id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    const updatedSites = [...(cachedSites.sites as WpSite[]), newSite];
-    await kv.hmset(cacheKey, { sites: updatedSites });
-  } else {
-    await kv.hmset(cacheKey, { sites: [newSite] });
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   const updatedSites = [...(cachedSites.sites as WpSite[]), newSite];
+  //   await kv.hmset(cacheKey, { sites: updatedSites });
+  // } else {
+  //   await kv.hmset(cacheKey, { sites: [newSite] });
+  // }
 
   return newSite;
 }
@@ -91,11 +88,11 @@ export async function updateSite({
 export async function deleteSite(id: string) {
   const site = await prisma.wp_site.findUnique({
     where: { id },
-    select: { user_id: true }
+    select: { user_id: true },
   });
 
   if (!site) {
-    throw new Error('Site not found');
+    throw new Error("Site not found");
   }
 
   await prisma.wp_site.delete({
@@ -103,13 +100,15 @@ export async function deleteSite(id: string) {
   });
 
   // Update cache
-  const cacheKey = `sites:${site.user_id}`;
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${site.user_id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    const updatedSites = (cachedSites.sites as WpSite[]).filter(s => s.id !== id);
-    await kv.hmset(cacheKey, { sites: updatedSites });
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   const updatedSites = (cachedSites.sites as WpSite[]).filter(
+  //     (s) => s.id !== id
+  //   );
+  //   await kv.hmset(cacheKey, { sites: updatedSites });
+  // }
 
   return true;
 }
@@ -119,29 +118,32 @@ export async function retrieveSites({
 }: {
   user_id: string;
 }): Promise<WpSite[]> {
-  const cacheKey = `sites:${user_id}`;
-  const cachedSites = await kv.hgetall(cacheKey);
+  // const cacheKey = `sites:${user_id}`;
+  // const cachedSites = await kv.hgetall(cacheKey);
 
-  if (cachedSites && cachedSites.sites) {
-    return cachedSites.sites as WpSite[];
-  }
+  // if (cachedSites && cachedSites.sites) {
+  //   return cachedSites.sites as WpSite[];
+  // }
 
-  const sites = await prisma.wp_site.findMany({
+  const sites = (await prisma.wp_site.findMany({
     where: {
       user_id,
     },
-  }) as WpSite[];
+  })) as WpSite[];
 
-  await kv.hmset(cacheKey, { sites });
+  // await kv.hmset(cacheKey, { sites });
   return sites;
 }
 
-export async function runSiteHealthCheck(id: string, url: string): Promise<boolean> {
+export async function runSiteHealthCheck(
+  id: string,
+  url: string
+): Promise<boolean> {
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'User-Agent': 'WordPress Sage Health Check',
+        "User-Agent": "WordPress Sage Health Check",
       },
     });
     await prisma.wp_site.update({
@@ -153,25 +155,23 @@ export async function runSiteHealthCheck(id: string, url: string): Promise<boole
         ...(response.ok && { last_connected_date: new Date() }),
       },
     });
-    
+
     return response.ok;
   } catch (error) {
-    console.error('Health check failed:', error);
+    console.error("Health check failed:", error);
   }
   return false;
 }
 
-export async function runSSHHealthCheck(credentials: SSH) {
-
-}
+export async function runSSHHealthCheck(credentials: SSH) {}
 
 export async function getCoreSiteData(siteId: string) {
-  const cacheKey = `core_site_data:${siteId}`;
-  const cachedData = await kv.get(cacheKey);
+  // const cacheKey = `core_site_data:${siteId}`;
+  // const cachedData = await kv.get(cacheKey);
 
-  if (cachedData) {
-    return cachedData;
-  }
+  // if (cachedData) {
+  //   return cachedData;
+  // }
 
   const site = await prisma.wp_site.findUnique({
     where: {
@@ -182,7 +182,7 @@ export async function getCoreSiteData(siteId: string) {
     return;
   }
 
-  if(!site?.plugin_connected) {
+  if (!site?.plugin_connected) {
     return;
   }
 
@@ -197,27 +197,26 @@ export async function getCoreSiteData(siteId: string) {
   } catch (error) {
     return;
   }
-  
-  let {
-    status,
-    ok,
-    data
-  } = await executeWordPressSQL({
+
+  let { status, ok, data } = await executeWordPressSQL({
     query,
     api_key: site?.api_key,
-    api_url: endpoint_url
+    api_url: endpoint_url,
   });
-  if(!ok) {
+  if (!ok) {
     return {};
   }
   const parsedResult = data as { option_name: string; option_value: string }[];
 
-  const core_site_data = parsedResult.reduce((acc: Record<string, string>, { option_name, option_value }) => {
+  const core_site_data = parsedResult.reduce(
+    (acc: Record<string, string>, { option_name, option_value }) => {
       acc[option_name] = option_value;
       return acc;
-  }, {});
+    },
+    {}
+  );
 
-  if(core_site_data?.blogname && core_site_data?.blogname !== site?.name) {
+  if (core_site_data?.blogname && core_site_data?.blogname !== site?.name) {
     await prisma.wp_site.update({
       where: {
         id: siteId,
@@ -228,8 +227,8 @@ export async function getCoreSiteData(siteId: string) {
     });
   }
   // Cache the result for 1 hour
-  await kv.set(cacheKey, core_site_data, { ex: 43200 });
+  // await kv.set(cacheKey, core_site_data, { ex: 43200 });
   // Invalidate the user's sites cache
-  await kv.del(`sites:${site.user_id}`);
+  // await kv.del(`sites:${site.user_id}`);
   return core_site_data;
 }

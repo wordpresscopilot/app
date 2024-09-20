@@ -42,6 +42,23 @@ const features = [
 const firstRow = features.slice(0, features.length / 2);
 const secondRow = features.slice(features.length / 2);
 
+export function WPMarquee() {
+  return (
+    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[100%] flex-col items-center justify-center overflow-hidden">
+      <Marquee pauseOnHover={true} className="[--duration:20s]">
+        {firstRow.map((feature) => (
+          <FeatureCard key={feature.title} {...feature} />
+        ))}
+      </Marquee>
+      <Marquee reverse pauseOnHover={true} className="[--duration:20s]">
+        {secondRow.map((feature) => (
+          <FeatureCard key={feature.title} {...feature} />
+        ))}
+      </Marquee>
+    </div>
+  );
+}
+
 const FeatureCard = ({
   icon,
   title,
@@ -69,20 +86,3 @@ const FeatureCard = ({
     </figure>
   );
 };
-
-export function WPMarquee() {
-  return (
-    <div className="relative flex h-[400px] w-full max-w-[100vw] lg:max-w-[100%] flex-col items-center justify-center overflow-hidden">
-      <Marquee pauseOnHover={true} className="[--duration:20s]">
-        {firstRow.map((feature) => (
-          <FeatureCard key={feature.title} {...feature} />
-        ))}
-      </Marquee>
-      <Marquee reverse pauseOnHover={true} className="[--duration:20s]">
-        {secondRow.map((feature) => (
-          <FeatureCard key={feature.title} {...feature} />
-        ))}
-      </Marquee>
-    </div>
-  );
-}
