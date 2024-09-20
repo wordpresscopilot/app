@@ -1,6 +1,6 @@
 "use client";
 
-import { createSiteProject, retrieveSites } from "@/actions/site";
+import { createSiteProject } from "@/actions/site";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { retrieveSites } from "@/data/site";
 import { cn } from "@/lib/utils";
 import { WpSite } from "@/types";
 import { useAuth } from "@clerk/clerk-react";
