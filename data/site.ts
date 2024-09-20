@@ -137,3 +137,13 @@ export async function getCoreSiteData(siteId: string) {
   // await kv.del(`sites:${site.user_id}`);
   return core_site_data;
 }
+
+export async function getSshCredentials(siteId: string): Promise<SSH | null> {
+  const site = await prisma.wp_site.findUnique({
+    where: {
+      id: siteId,
+    },
+  });
+
+  return (site?.ssh as SSH) || null;
+}

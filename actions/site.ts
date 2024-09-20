@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { nanoid } from "@/lib/utils";
-import { WpSite } from "@/types";
+import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Unkey } from "@unkey/api";
 
@@ -59,6 +59,25 @@ export async function updateSite({
   fields: {
     name: string;
     base_url: string;
+  };
+}) {
+  return await prisma.wp_site.update({
+    where: {
+      id,
+    },
+    data: {
+      ...fields,
+    },
+  });
+}
+
+export async function updateSiteSSH({
+  id,
+  fields,
+}: {
+  id: string;
+  fields: {
+    ssh: SSH;
   };
 }) {
   return await prisma.wp_site.update({

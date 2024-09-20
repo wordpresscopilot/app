@@ -1,33 +1,54 @@
 "use client";
-import { deleteSite, updateSite } from "@/actions";
-import { Button } from "@/components/ui/button";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { SSH, WpSite } from "@/types";
-import { Label } from "@radix-ui/react-label";
-import { CheckCircle2, Copy } from "lucide-react";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
-import EditSiteDialog from "./edit-site-dialog";
+
+import { deleteSite, updateSiteSSH } from "@/actions";
+import EditSiteDialog from "@/components/edit-site-dialog";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./ui/accordion";
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Input } from "./ui/input";
-import WpSiteStatus from "./wp-site-status";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import WpSiteStatus from "@/components/wp-site-status";
+import { getSshCredentials } from "@/data/site";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { SSH, WpSite } from "@/types";
+import { Label } from "@radix-ui/react-label";
+import { CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export default function SiteHome({ site }: { site: WpSite }) {
   const { copyToClipboard } = useCopyToClipboard({ timeout: 1000 });
   const [copied, setCopied] = useState(false);
   const [sshCredentials, setSSHCredentials] = useState<SSH>();
+  const [isSavingSshCredentials, setIsSavingSshCredentials] = useState(false);
+  const isSshCredentialsValid = useMemo(() => {
+    return (
+      sshCredentials?.host &&
+      sshCredentials?.port &&
+      sshCredentials?.username &&
+      sshCredentials?.password
+    );
+  }, [sshCredentials]);
+
+  useEffect(() => {
+    const fetchSshCredentials = async () => {
+      const credentials = await getSshCredentials(site.id);
+      if (credentials) {
+        setSSHCredentials(credentials);
+      }
+    };
+    fetchSshCredentials();
+  }, [site.id]);
 
   const handleCopyApiKey = useCallback(() => {
     if (!site.api_key) {
@@ -67,22 +88,25 @@ export default function SiteHome({ site }: { site: WpSite }) {
   };
 
   const handleSaveSSHCredentials = async () => {
+    if (isSavingSshCredentials || !sshCredentials) return;
+    setIsSavingSshCredentials(true);
+    toast.loading("Updating SSH credentials...");
     // const sshhealth = await checkSSHHealth(site);
     // console.log("sshhealth", sshhealth);
-    toast.promise(
-      updateSite({
+
+    try {
+      await updateSiteSSH({
         id: site.id,
         fields: {
-          name: site.name,
-          base_url: site.base_url,
+          ssh: sshCredentials,
         },
-      }),
-      {
-        loading: "Updating SSH credentials...",
-        success: "SSH credentials updated successfully",
-        error: "Failed to update SSH credentials",
-      }
-    );
+      });
+      toast.success("SSH credentials updated successfully");
+    } catch (error) {
+      toast.error("Failed to update SSH credentials");
+    } finally {
+      setIsSavingSshCredentials(false);
+    }
   };
 
   return (
@@ -215,8 +239,17 @@ export default function SiteHome({ site }: { site: WpSite }) {
                         }
                       />
                     </div>
-                    <Button onClick={handleSaveSSHCredentials}>
-                      Save SSH Credentials
+                    <Button
+                      disabled={
+                        isSavingSshCredentials || !isSshCredentialsValid
+                      }
+                      onClick={handleSaveSSHCredentials}
+                      className="flex items-center gap-1"
+                    >
+                      {isSavingSshCredentials && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                      <span>Save SSH Credentials</span>
                     </Button>
                   </div>
                 </AccordionContent>
