@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { retrieveSites } from "@/actions/site";
 import { ModeToggle } from "@/components/mode-toggle";
 import { config } from "@/config";
+import { retrieveSites } from "@/data/site";
 import { currentUser } from "@clerk/nextjs/server";
 import ProjectSelector from "./project-selector";
 

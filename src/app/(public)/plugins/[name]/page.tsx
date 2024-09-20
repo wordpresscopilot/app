@@ -4,7 +4,9 @@ import Image from "next/image";
 
 export default function PluginPage({ params }: { params: { name: string } }) {
   const decodedName = decodeURIComponent(params.name);
-  const plugin = plugins.find((plugin) => plugin.name === decodedName);
+  const plugin = plugins.find(
+    (plugin) => plugin.name.toLowerCase() === decodedName.toLowerCase()
+  );
 
   if (!plugin) {
     return <div>Plugin not found</div>;

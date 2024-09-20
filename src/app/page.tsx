@@ -51,7 +51,9 @@ export default function Home() {
           />
           <div className="relative z-20 flex flex-col gap-4 md:gap-8 justify-between w-full h-full sm:w-[calc(100%-4rem)] mx-auto px-2.5 items-center py-[64px] md:py-[80px]">
             <h1 className="z-10 text-[40px] md:text-8xl text-white font-semibold text-center w-full">
-              AI Powered Wordpress Copilot
+              AI Powered
+              <br />
+              Wordpress Copilot
             </h1>
             <p
               className="leading-[140%] text-xl md:text-4xl text-center text-white font-base sm:max-w-[70%] mx-auto"

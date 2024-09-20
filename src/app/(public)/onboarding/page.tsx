@@ -1,5 +1,5 @@
-import { retrieveSites } from "@/actions/site";
 import { Onboarding } from "@/components/onboarding";
+import { retrieveSites } from "@/data/site";
 import { currentUser } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";

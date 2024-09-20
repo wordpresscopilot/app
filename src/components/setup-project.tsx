@@ -1,6 +1,5 @@
 "use client";
 
-import { runSiteHealthCheck, updateSite } from "@/actions/site";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { runSiteHealthCheck, updateSite } from "@/data/site";
 import { SiteHealthStatus, WpSite } from "@/types";
 import {
   AlertCircle,

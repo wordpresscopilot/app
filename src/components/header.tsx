@@ -1,10 +1,10 @@
-import { retrieveSites } from "@/actions";
 import { ChatHistory } from "@/components/chat-history";
 import ProjectSelector from "@/components/project-selector";
 import { SidebarMobile } from "@/components/sidebar-mobile";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Button } from "@/components/ui/button";
 import { IconNextChat, IconSeparator } from "@/components/ui/icons";
+import { retrieveSites } from "@/data/site";
 import { WpSite } from "@/types";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser, User } from "@clerk/nextjs/server";

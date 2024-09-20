@@ -1,5 +1,4 @@
 "use client";
-import { runSiteHealthCheck } from "@/actions/site";
 import {
   Accordion,
   AccordionContent,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { runSiteHealthCheck } from "@/data/site";
 import { WP_PATH_HEALTH } from "@/lib/paths";
 import { SiteHealthStatus, WpSite } from "@/types";
 import { RefreshCw } from "lucide-react";

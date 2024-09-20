@@ -364,7 +364,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                   </ol>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span
+                  <div
                     className={cn(
                       "relative flex h-3 w-3",
                       !isPluginConnected ? "mt-1" : "mt-[1px]"
@@ -375,14 +375,14 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                         "animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75",
                         !isPluginConnected ? "opacity-75" : "opacity-0"
                       )}
-                    />
+                    ></span>
                     <span
                       className={cn(
                         "relative inline-flex rounded-full h-3 w-3",
                         !isPluginConnected ? "bg-red-500" : "bg-green-500"
                       )}
                     ></span>
-                  </span>
+                  </div>
                   <span>
                     {isPluginConnected
                       ? "Plugin Connected"

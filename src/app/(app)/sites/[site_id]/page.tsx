@@ -1,5 +1,5 @@
-import { getCoreSiteData } from "@/actions";
 import SiteHome from "@/components/site-home";
+import { getCoreSiteData } from "@/data/site";
 import prisma from "@/lib/prisma";
 import { WpSite } from "@/types";
 

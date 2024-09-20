@@ -31,9 +31,9 @@ import {
 } from "@/lib/constants";
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { z } from "zod";
-import { currentSite } from "./site";
-import { SSHProxyClient } from "./ssh";
-import { executeWordPressSQL } from "./wp";
+import { currentSite } from "@/data/site";
+import { SSHProxyClient } from "@/actions/ssh";
+import { executeWordPressSQL } from "@/actions/wp";
 
 export async function getMissingKeys() {
   const keysRequired = ["OPENAI_API_KEY"];

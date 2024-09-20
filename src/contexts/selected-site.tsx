@@ -1,6 +1,6 @@
 "use client";
 
-import { currentSite } from "@/actions/site";
+import { currentSite } from "@/data/site";
 import { WpSite } from "@/types";
 import { usePathname } from "next/navigation";
 import {

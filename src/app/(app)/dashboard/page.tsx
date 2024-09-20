@@ -1,5 +1,5 @@
-import { retrieveSites } from "@/actions/site";
 import { DashboardContent } from "@/components/dashboard";
+import { retrieveSites } from "@/data/site";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
