@@ -25,7 +25,7 @@ export interface ChatProps extends React.ComponentProps<"div"> {
 }
 
 export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
-  const router = useRouter();
+  const { replace, refresh } = useRouter();
   const path = usePathname();
   const [messages] = useUIState();
   const [aiState] = useAIState();
@@ -37,20 +37,20 @@ export function Chat({ id, site_id, className, user, missingKeys }: ChatProps) {
   useEffect(() => {
     if (user?.id) {
       if (path === `/sites/${site_id}/chat` && messages.length === 1) {
-        window.history.replaceState({}, "", `/sites/${site_id}/chat/${id}`);
+        replace(`/sites/${site_id}/chat/${id}`);
       }
       if (path === `/chat/new` && messages.length === 1) {
-        window.history.replaceState({}, "", `/sites/${site_id}/chat/${id}`);
+        replace(`/sites/${site_id}/chat/${id}`);
       }
     }
-  }, [id, path, user, messages, site_id]);
+  }, [id, path, user, messages, site_id, replace]);
 
   useEffect(() => {
     const messagesLength = aiState.messages?.length;
     if (messagesLength === 2) {
-      router.refresh();
+      refresh();
     }
-  }, [aiState.messages, router]);
+  }, [aiState.messages, refresh]);
 
   useEffect(() => {
     setNewChatId(id);

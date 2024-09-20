@@ -8,7 +8,6 @@ import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-
 export async function getChats(userId?: string | null, siteId?: string | null) {
   const user = await currentUser();
 
@@ -259,4 +258,3 @@ export async function shareChat(id: string) {
     return { error: "Failed to share chat" };
   }
 }
-

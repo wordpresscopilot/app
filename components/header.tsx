@@ -1,3 +1,5 @@
+"use client";
+
 import { ChatHistory } from "@/components/chat-history";
 import ProjectSelector from "@/components/project-selector";
 import { SidebarMobile } from "@/components/sidebar-mobile";
@@ -6,16 +8,16 @@ import { Button } from "@/components/ui/button";
 import { IconNextChat, IconSeparator } from "@/components/ui/icons";
 import { retrieveSites } from "@/data/site";
 import { WpSite } from "@/types";
+import { useAuth } from "@clerk/clerk-react";
 import { UserButton } from "@clerk/nextjs";
-import { currentUser, User } from "@clerk/nextjs/server";
 import Link from "next/link";
 import * as React from "react";
 
-async function UserOrLogin({ user }: { user: User }) {
+function UserOrLogin({ userId }: { userId: string }) {
   return (
     <>
       <div className="flex items-center">
-        {user ? (
+        {userId ? (
           // <UserMenu user={mapClerkUserForClient(user!)} />
           <UserButton />
         ) : (
@@ -28,21 +30,30 @@ async function UserOrLogin({ user }: { user: User }) {
   );
 }
 
-export async function Header() {
-  const user = await currentUser();
-  let user_sites = [] as WpSite[];
-  if (user) {
-    user_sites = await retrieveSites({
-      user_id: user.id,
-    });
-  }
+export function Header() {
+  const { userId } = useAuth();
+  const [userSites, setUserSites] = React.useState([] as WpSite[]);
+
+  React.useEffect(() => {
+    const fetchSites = async () => {
+      const sites = await retrieveSites({
+        user_id: userId!,
+      });
+      setUserSites(sites);
+    };
+
+    if (userId) {
+      fetchSites();
+    }
+  }, [userId]);
+
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full h-16 px-4 border-b shrink-0 bg-gradient-to-b from-background/10 via-background/50 to-background/80 backdrop-blur-xl">
       <div className="flex items-center">
-        {user ? (
+        {userId ? (
           <>
             <SidebarMobile>
-              <ChatHistory userId={user?.id!} />
+              <ChatHistory userId={userId!} />
             </SidebarMobile>
             <SidebarToggle />
           </>
@@ -55,13 +66,13 @@ export async function Header() {
         <IconSeparator className="size-6 text-muted-foreground/50" />
 
         <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-          <ProjectSelector user_sites={user_sites} />
+          <ProjectSelector user_sites={userSites} />
         </React.Suspense>
       </div>
 
       <div className="flex items-center justify-end space-x-2">
         <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-          <UserOrLogin user={user!} />
+          <UserOrLogin userId={userId!} />
           {/* <UserButton /> */}
         </React.Suspense>
       </div>

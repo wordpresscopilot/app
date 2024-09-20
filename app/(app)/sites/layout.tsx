@@ -1,17 +1,30 @@
+"use client";
+
 import { Header } from "@/components/header";
 import { SidebarDesktop } from "@/components/sidebar-desktop";
+import { useSidebar } from "@/hooks/use-sidebar";
+import { cn } from "@/lib/utils";
 
-interface ChatLayoutProps {
+export default function ChatLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
+}) {
+  const { isSidebarOpen } = useSidebar();
 
-export default async function ChatLayout({ children }: ChatLayoutProps) {
   return (
     <>
       <Header />
-      <div className="relative flex flex-col h-[calc(100vh_-_theme(spacing.16))] overflow-hidden">
+      <div className="relative flex h-[calc(100vh_-_theme(spacing.16))] overflow-hidden">
         <SidebarDesktop />
-        {children}
+        <div
+          className={cn(
+            isSidebarOpen && "translate-x-[250px]",
+            "transition-transform duration-300 ease-in-out"
+          )}
+        >
+          {children}
+        </div>
       </div>
     </>
   );
