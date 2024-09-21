@@ -1,4 +1,3 @@
-import { CoreMessage } from 'ai';
 
 export type SSH = {
   host: string;
@@ -24,9 +23,15 @@ export interface WpSite {
 
 export type SiteHealthStatus = 'connected' | 'disconnected' | 'checking'
 
-
-export type Message = CoreMessage & {
-  id: string
+export type Message = {
+  role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
+  content: string
+  id?: string
+  name?: string
+  display?: {
+    name: string
+    props: Record<string, any>
+  }
 }
 
 export interface Chat extends Record<string, any> {
@@ -87,3 +92,9 @@ export type UIState = {
   display: React.ReactNode;
 }[];
 
+
+export type Plugin = {
+  name: string;
+  image_url: string;
+  description: string;
+}

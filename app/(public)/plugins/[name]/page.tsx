@@ -1,25 +1,41 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PluginAI } from "@/actions/plugin-ai";
+import BrandCard from "@/components/plugins/brand-card";
+import { PluginChat } from "@/components/plugins/chat";
 import { plugins } from "@/constants/plugins";
-import Image from "next/image";
-
-export default function PluginPage({ params }: { params: { name: string } }) {
+import { mapClerkUserForClient } from "@/lib/utils";
+import { Plugin } from "@/types";
+import { currentUser } from "@clerk/nextjs/server";
+import { nanoid } from "nanoid";
+export default async function PluginPage({
+  params,
+}: {
+  params: { name: string };
+}) {
+  const user = await currentUser();
   const decodedName = decodeURIComponent(params.name);
   const plugin = plugins.find(
     (plugin) => plugin.name.toLowerCase() === decodedName.toLowerCase()
-  );
+  ) as Plugin;
 
   if (!plugin) {
     return <div>Plugin not found</div>;
   }
 
+  const id = nanoid();
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{plugin.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Image src={plugin.img} alt={plugin.name} width={100} height={100} />
-      </CardContent>
-    </Card>
+    <div>
+      <BrandCard plugin={plugin} />
+      <PluginAI
+        initialAIState={{ chatId: id, interactions: [], messages: [], plugin }}
+      >
+        <PluginChat
+          id={id}
+          user={mapClerkUserForClient(user!)}
+          initialMessages={[]}
+          missingKeys={[]}
+        />
+      </PluginAI>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Footer } from "@/components/footer";
 import { JoinWaitlistForm } from "@/components/JoinWaitlistForm";
 import { MarketingNavigation } from "@/components/marketing-navigation";
 import Image from "next/image";
@@ -23,8 +22,8 @@ export default function Layout({ children }: PluginLayoutProps) {
   };
 
   return (
-    <div className="p-3 md:p-5 flex flex-col gap-2.5 max-w-[1440px] mx-auto min-h-[100vh]">
-      <main className="flex flex-col gap-2.5">
+    <div className="w-full p-3 md:p-5 flex flex-col gap-2.5 max-w-[1440px] mx-auto min-h-[100vh]">
+      <div className="flex flex-col gap-2.5">
         <MarketingNavigation scrollToWaitlistForm={scrollToWaitlistForm} />
         {children}
         <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
@@ -44,8 +43,8 @@ export default function Layout({ children }: PluginLayoutProps) {
             <JoinWaitlistForm />
           </div>
         </div>
-      </main>
-      <Footer />
+      </div>
+      {/* <Footer /> */}
     </div>
   );
 }

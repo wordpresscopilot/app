@@ -24,16 +24,16 @@ import {
 } from "ai/rsc";
 import { redirect } from "next/navigation";
 
+import { SSHProxyClient } from "@/actions/ssh";
+import { executeWordPressSQL } from "@/actions/wp";
 import JSONArrayTable from "@/components/ui/json-table";
+import { currentSite } from "@/data/site";
 import {
   AI_TOOL_EXECUTE_SQL_COMMAND,
   AI_TOOL_EXECUTE_SSH_COMMAND,
 } from "@/lib/constants";
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { z } from "zod";
-import { currentSite } from "@/data/site";
-import { SSHProxyClient } from "@/actions/ssh";
-import { executeWordPressSQL } from "@/actions/wp";
 
 export async function getMissingKeys() {
   const keysRequired = ["OPENAI_API_KEY"];
@@ -87,13 +87,16 @@ async function submitUserMessage(content: string, pathname: string) {
     1. execute SQL queries on the WordPress database to assist users.
     2. execute bash scripts on the WordPress server from the public_html/ directory to retrieve output from the remote server for further processing. Bias to use the wp cli tool.
     
-    If you need more information for a task, better to tell the user and do an initial task and allow the user to ask you to do the rest.
     If the user asks for something that requires many tasks, you can run multiple sql or bash commands in one script to complete the task.
     
-    When a user requests a task or asks about a solution, analyze it carefully and ask clarifying questions to understand what must be done and offer a solution when you have one that works.
+    
+    Use wp cli or sql commands to solve the problem.
     
     Always prioritize security and best practices. Never do anything or run any command which will harm the database, server, or the site.
     `,
+    // When a user requests a task or asks about a solution, analyze it carefully and ask clarifying questions to understand what must be done and offer a solution when you have one that works.
+    // If you need more information for a task, better to tell the user and do an initial task and allow the user to ask you to do the rest.
+
     //     1. Launch an agent capable of multi step tasks which can execute both SQL and SSH commands, and modify the WordPress site in a complex way.
     //     If the users request requires multiple steps, launch an agent tool to execute the tasks in sequence.
 
@@ -387,12 +390,28 @@ async function submitUserMessage(content: string, pathname: string) {
           const sshClient = new SSHProxyClient();
           const toolCallId = nanoid();
           try {
-            await sshClient.connect(
+            const connectionOutput = await sshClient.connect(
               site?.ssh?.host!,
               site?.ssh?.port || 22,
               site?.ssh?.username!,
               site?.ssh?.password!,
               site?.ssh?.wp_root_dir_path!
+            );
+            yield (
+              <>
+                {textNode}
+                <BotCard>
+                  <BotMessage
+                    content="SSH Connection Established"
+                    showAvatar={false}
+                  />
+                  <div className={"group relative flex items-start"}>
+                    <div className="flex-1 space-y-2 overflow-hidden">
+                      <CodeBlock language="text" value={connectionOutput} />
+                    </div>
+                  </div>
+                </BotCard>
+              </>
             );
             const output = await sshClient.executeCommand(bash_script);
             aiState.done({

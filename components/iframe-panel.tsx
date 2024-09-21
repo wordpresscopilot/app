@@ -43,7 +43,7 @@ export const IframePanel = (props: { src: string }) => {
   return (
     <div className="h-full flex flex-col">
       <div className="p-2 flex justify-between items-center bg-secondary">
-        <h2 className="text-lg font-semibold">WordPress Preview</h2>
+        <h2 className="text-lg font-semibold pl-2">Live Site Preview</h2>
         {!isMobile && (
           <Button variant="ghost" size="icon" onClick={toggleVisibility}>
             {isVisible ? (
