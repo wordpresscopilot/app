@@ -38,11 +38,11 @@ export function PluginsMarquee() {
 }
 
 const PluginCard = ({
-  img,
+  image_url,
   name,
   description,
 }: {
-  img: string;
+  image_url: string;
   name: string;
   description: string;
 }) => {
@@ -55,7 +55,7 @@ const PluginCard = ({
     >
       <div className="flex justify-center items-center gap-3">
         <Avatar>
-          <AvatarImage src={img} alt={name} height={38} width={38} />
+          <AvatarImage src={image_url} alt={name} height={38} width={38} />
           <AvatarFallback>
             {name.charAt(0)}
             {name.charAt(1)}
@@ -63,7 +63,7 @@ const PluginCard = ({
         </Avatar>
         <span className="text-2xl">{name}</span>
       </div>
-      <span className="text-base font-medium">{description}</span>
+      {/* <span className="text-base font-medium">{description}</span> */}
     </Link>
   );
 };

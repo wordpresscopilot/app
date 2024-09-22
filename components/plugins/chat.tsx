@@ -1,26 +1,30 @@
 "use client";
 
 import { ChatList } from "@/components/chat-list";
-import { EmptyScreen } from "@/components/empty-screen";
 import { useScrollAnchor } from "@/hooks/use-scroll-anchor";
-import { Message } from "@/lib/chat/actions";
 import { cn } from "@/lib/utils";
+import { Message, Plugin } from "@/types";
 import { useAIState, useUIState } from "ai/rsc";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ChatPanel } from "./chat-panel";
-
+import { PluginPromptForm } from "./plugin-prompt-form";
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
   id?: string;
   missingKeys: string[];
   user: any;
+  plugin: Plugin;
 }
 
-export function PluginChat({ id, className, user, missingKeys }: ChatProps) {
+export function PluginChat({
+  id,
+  className,
+  user,
+  missingKeys,
+  plugin,
+}: ChatProps) {
   const router = useRouter();
-  const path = usePathname();
   const [input, setInput] = useState("");
   const [messages] = useUIState();
   const [aiState] = useAIState();
@@ -44,9 +48,9 @@ export function PluginChat({ id, className, user, missingKeys }: ChatProps) {
   return (
     <div
       className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
-      ref={scrollRef}
+      // ref={scrollRef}
     >
-      <div className={cn("pb-[200px] pt-4", className)} ref={messagesRef}>
+      <div className={cn("pb-[200px]", className)} ref={messagesRef}>
         {messages.length ? (
           <ChatList messages={messages} isShared={false} />
         ) : (
@@ -55,12 +59,18 @@ export function PluginChat({ id, className, user, missingKeys }: ChatProps) {
         )}
         <div className="h-px w-full" ref={visibilityRef} />
       </div>
-      <ChatPanel
-        input={input}
-        setInput={setInput}
-        isAtBottom={isAtBottom}
-        scrollToBottom={scrollToBottom}
-      />
+      <div className="bg-white w-full pt-4 fixed bottom-0 left-0 right-0 mx-auto sm:max-w-2xl sm:px-4">
+        <div className="grid gap-4 sm:pb-4">
+          <PluginPromptForm input={input} setInput={setInput} plugin={plugin} />
+          <p
+            className={cn(
+              "px-2 text-center text-xs leading-normal text-zinc-500"
+            )}
+          >
+            Please do not send sensitive information.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

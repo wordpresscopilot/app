@@ -4,6 +4,7 @@ import Textarea from "react-textarea-autosize";
 import { useActions, useUIState } from "ai/rsc";
 
 import { type AI } from "@/actions/ai";
+import { UserMessage } from "@/components/stocks/message";
 import { Button } from "@/components/ui/button";
 import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
 import {
@@ -13,15 +14,18 @@ import {
 } from "@/components/ui/tooltip";
 import { useSelectedSite } from "@/contexts/selected-site";
 import { useEnterSubmit } from "@/hooks/use-enter-submit";
+import { Plugin } from "@/types";
 import { nanoid } from "nanoid";
 import { usePathname, useRouter } from "next/navigation";
-import { UserMessage } from "./stocks/message";
-export function PromptForm({
+
+export function PluginPromptForm({
   input,
   setInput,
+  plugin,
 }: {
   input: string;
   setInput: (value: string) => void;
+  plugin: Plugin;
 }) {
   const router = useRouter();
   const { formRef, onKeyDown } = useEnterSubmit();
@@ -62,7 +66,7 @@ export function PromptForm({
         ]);
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value, pathname);
+        const responseMessage = await submitUserMessage(value, plugin);
         setMessages((currentMessages) => [...currentMessages, responseMessage]);
       }}
     >

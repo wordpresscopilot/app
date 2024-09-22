@@ -407,7 +407,10 @@ async function submitUserMessage(content: string, pathname: string) {
                   />
                   <div className={"group relative flex items-start"}>
                     <div className="flex-1 space-y-2 overflow-hidden">
-                      <CodeBlock language="text" value={connectionOutput} />
+                      <CodeBlock
+                        language="text"
+                        value={String(connectionOutput)}
+                      />
                     </div>
                   </div>
                 </BotCard>
@@ -640,7 +643,7 @@ export async function saveChat(chat: Chat) {
           siteId: chat.siteId!,
         },
         create: {
-          id: message.id,
+          id: message.id as string,
           chatId: chat.id,
           content:
             typeof message.content === "string"
@@ -649,7 +652,7 @@ export async function saveChat(chat: Chat) {
               ? JSON.stringify(message.content)
               : "",
           role: message.role,
-          siteId: chat.siteId || "",
+          siteId: chat.siteId || "4z",
         },
       })
     );

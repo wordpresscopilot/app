@@ -14,6 +14,10 @@ export const MarketingNavigation = ({
       label: "About",
       href: "/about",
     },
+    {
+      label: "Plugins",
+      href: "/plugins",
+    },
     ...(showAppEntryFlag
       ? [
           {

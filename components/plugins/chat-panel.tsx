@@ -4,11 +4,12 @@ import type { AI } from "@/actions";
 import { shareChat } from "@/actions";
 import { ButtonScrollToBottom } from "@/components/button-scroll-to-bottom";
 import { ChatShareDialog } from "@/components/chat-share-dialog";
-import { PromptForm } from "@/components/prompt-form";
 import { Button } from "@/components/ui/button";
 import { IconShare } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
-import { useAIState, useActions, useUIState } from "ai/rsc";
+import { Plugin } from "@/types";
+import { useAIState, useUIState } from "ai/rsc";
+import { PluginPromptForm } from "./plugin-prompt-form";
 
 export interface ChatPanelProps {
   id?: string;
@@ -17,6 +18,7 @@ export interface ChatPanelProps {
   setInput: (value: string) => void;
   isAtBottom: boolean;
   scrollToBottom: () => void;
+  plugin: Plugin;
 }
 
 export function ChatPanel({
@@ -26,10 +28,10 @@ export function ChatPanel({
   setInput,
   isAtBottom,
   scrollToBottom,
+  plugin,
 }: ChatPanelProps) {
   const [aiState] = useAIState();
   const [messages, setMessages] = useUIState<typeof AI>();
-  const { submitUserMessage } = useActions();
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
 
   return (
@@ -124,7 +126,7 @@ export function ChatPanel({
         ) : null}
 
         <div className="grid gap-4 sm:pb-4">
-          <PromptForm input={input} setInput={setInput} />
+          <PluginPromptForm input={input} setInput={setInput} plugin={plugin} />
           <p
             className={cn(
               "px-2 text-center text-xs leading-normal text-zinc-500"

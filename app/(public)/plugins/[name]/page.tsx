@@ -34,6 +34,7 @@ export default async function PluginPage({
           user={mapClerkUserForClient(user!)}
           initialMessages={[]}
           missingKeys={[]}
+          plugin={plugin}
         />
       </PluginAI>
     </div>

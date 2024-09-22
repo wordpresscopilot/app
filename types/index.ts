@@ -25,7 +25,7 @@ export type SiteHealthStatus = 'connected' | 'disconnected' | 'checking'
 
 export type Message = {
   role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
-  content: string
+  content: any;
   id?: string
   name?: string
   display?: {

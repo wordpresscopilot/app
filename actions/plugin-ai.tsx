@@ -9,13 +9,7 @@ import {
 } from "ai/rsc";
 
 import { saveChat } from "@/actions";
-import { BoardingPass } from "@/components/flights/boarding-pass";
-import { Destinations } from "@/components/flights/destinations";
-import { FlightStatus } from "@/components/flights/flight-status";
-import { ListFlights } from "@/components/flights/list-flights";
-import { SelectSeats } from "@/components/flights/select-seats";
-import { Video } from "@/components/media/video";
-import { BotCard, BotMessage } from "@/components/stocks";
+import { BotMessage } from "@/components/stocks";
 import { SpinnerMessage, UserMessage } from "@/components/stocks/message";
 import { CheckIcon, IconSpinner } from "@/components/ui/icons";
 import { rateLimit } from "@/lib/ratelimit";
@@ -25,106 +19,103 @@ import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { streamText } from "ai";
 import { format } from "date-fns";
-import { z } from "zod";
 import { Chat, Message, Plugin } from "../types";
 
 const genAI = new GoogleGenerativeAI(
   process.env.GOOGLE_GENERATIVE_AI_API_KEY || ""
 );
 
-async function describeImage(imageBase64: string) {
-  "use server";
+// async function describeImage(imageBase64: string) {
+//   "use server";
 
-  await rateLimit();
+//   await rateLimit();
 
-  const aiState = getMutableAIState();
-  const spinnerStream = createStreamableUI(null);
-  const messageStream = createStreamableUI(null);
-  const uiStream = createStreamableUI();
+//   const aiState = getMutableAIState();
+//   const spinnerStream = createStreamableUI(null);
+//   const messageStream = createStreamableUI(null);
+//   const uiStream = createStreamableUI();
 
-  uiStream.update(
-    <BotCard>
-      <Video isLoading />
-    </BotCard>
-  );
-  (async () => {
-    try {
-      let text = "";
+//   uiStream.update(
+//     <BotCard>
+//       <Video isLoading />
+//     </BotCard>
+//   );
+//   (async () => {
+//     try {
+//       let text = "";
 
-      // attachment as video for demo purposes,
-      // add your implementation here to support
-      // video as input for prompts.
-      if (imageBase64 === "") {
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+//       // attachment as video for demo purposes,
+//       // add your implementation here to support
+//       // video as input for prompts.
+//       if (imageBase64 === "") {
+//         await new Promise((resolve) => setTimeout(resolve, 5000));
 
-        text = `
-      The books in this image are:
+//         text = `
+//           You are an AI assistant for WordPress site management and development. You help users with tasks related to developing their WordPress site.
 
-      1. The Little Prince by Antoine de Saint-Exupéry
-      2. The Prophet by Kahlil Gibran
-      3. Man's Search for Meaning by Viktor Frankl
-      4. The Alchemist by Paulo Coelho
-      5. The Kite Runner by Khaled Hosseini
-      6. To Kill a Mockingbird by Harper Lee
-      7. The Catcher in the Rye by J.D. Salinger
-      8. The Great Gatsby by F. Scott Fitzgerald
-      9. 1984 by George Orwell
-      10. Animal Farm by George Orwell
-      `;
-      } else {
-        const imageData = imageBase64.split(",")[1];
+//           You have the ability to:
+//           1. execute SQL queries on the WordPress database to assist users.
+//           2. execute bash scripts on the WordPress server from the public_html/ directory to retrieve output from the remote server for further processing. Bias to use the wp cli tool.
 
-        const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-        const prompt = "List the books in this image.";
-        const image = {
-          inlineData: {
-            data: imageData,
-            mimeType: "image/png",
-          },
-        };
+//           If the user asks for something that requires many tasks, you can run multiple sql or bash commands in one script to complete the task.
 
-        const result = await model.generateContent([prompt, image]);
-        text = result.response.text();
-        console.log(text);
-      }
+//           Use wp cli or sql commands to solve the problem.
 
-      spinnerStream.done(null);
-      messageStream.done(null);
+//           Always prioritize security and best practices. Never do anything or run any command which will harm the database, server, or the site.
+//       `;
+//       } else {
+//         const imageData = imageBase64.split(",")[1];
 
-      uiStream.done(
-        <BotCard>
-          <Video isLoading={true} />
-        </BotCard>
-      );
+//         const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+//         const prompt = "List the books in this image.";
+//         const image = {
+//           inlineData: {
+//             data: imageData,
+//             mimeType: "image/png",
+//           },
+//         };
 
-      aiState.done({
-        ...aiState.get(),
-        interactions: [text],
-      });
-    } catch (e) {
-      console.error(e);
+//         const result = await model.generateContent([prompt, image]);
+//         text = result.response.text();
+//         console.log(text);
+//       }
 
-      const error = new Error(
-        "The AI got rate limited, please try again later."
-      );
-      uiStream.error(error);
-      spinnerStream.error(error);
-      messageStream.error(error);
-      aiState.done();
-    }
-  })();
+//       spinnerStream.done(null);
+//       messageStream.done(null);
 
-  return {
-    id: nanoid(),
-    attachments: uiStream.value,
-    spinner: spinnerStream.value,
-    display: messageStream.value,
-  };
-}
+//       uiStream.done(
+//         <BotCard>
+//           <Video isLoading={true} />
+//         </BotCard>
+//       );
+
+//       aiState.done({
+//         ...aiState.get(),
+//         interactions: [text],
+//       });
+//     } catch (e) {
+//       console.error(e);
+
+//       const error = new Error(
+//         "The AI got rate limited, please try again later."
+//       );
+//       uiStream.error(error);
+//       spinnerStream.error(error);
+//       messageStream.error(error);
+//       aiState.done();
+//     }
+//   })();
+
+//   return {
+//     id: nanoid(),
+//     attachments: uiStream.value,
+//     spinner: spinnerStream.value,
+//     display: messageStream.value,
+//   };
+// }
 
 async function submitUserMessage(content: string, plugin: Plugin) {
   "use server";
-
   await rateLimit();
 
   const aiState = getMutableAIState();
@@ -150,94 +141,14 @@ async function submitUserMessage(content: string, plugin: Plugin) {
   const spinnerStream = createStreamableUI(<SpinnerMessage />);
   const messageStream = createStreamableUI(null);
   const uiStream = createStreamableUI();
-
   (async () => {
     try {
       const result = await streamText({
         model: google("models/gemini-1.5-flash"),
-        temperature: 0,
-        tools: {
-          showFlights: {
-            description:
-              "List available flights in the UI. List 3 that match user's query.",
-            parameters: z.object({
-              departingCity: z.string(),
-              arrivalCity: z.string(),
-              departingAirport: z.string().describe("Departing airport code"),
-              arrivalAirport: z.string().describe("Arrival airport code"),
-              date: z
-                .string()
-                .describe(
-                  "Date of the user's flight, example format: 6 April, 1998"
-                ),
-            }),
-          },
-          listDestinations: {
-            description: "List destinations to travel cities, max 5.",
-            parameters: z.object({
-              destinations: z.array(
-                z
-                  .string()
-                  .describe(
-                    "List of destination cities. Include rome as one of the cities."
-                  )
-              ),
-            }),
-          },
-          showSeatPicker: {
-            description:
-              "Show the UI to choose or change seat for the selected flight.",
-            parameters: z.object({
-              departingCity: z.string(),
-              arrivalCity: z.string(),
-              flightCode: z.string(),
-              date: z.string(),
-            }),
-          },
-          showHotels: {
-            description: "Show the UI to choose a hotel for the trip.",
-            parameters: z.object({ city: z.string() }),
-          },
-          checkoutBooking: {
-            description:
-              "Show the UI to purchase/checkout a flight and hotel booking.",
-            parameters: z.object({ shouldConfirm: z.boolean() }),
-          },
-          showBoardingPass: {
-            description: "Show user's imaginary boarding pass.",
-            parameters: z.object({
-              airline: z.string(),
-              arrival: z.string(),
-              departure: z.string(),
-              departureTime: z.string(),
-              arrivalTime: z.string(),
-              price: z.number(),
-              seat: z.string(),
-              date: z
-                .string()
-                .describe("Date of the flight, example format: 6 April, 1998"),
-              gate: z.string(),
-            }),
-          },
-          showFlightStatus: {
-            description:
-              "Get the current status of imaginary flight by flight number and date.",
-            parameters: z.object({
-              flightCode: z.string(),
-              date: z.string(),
-              departingCity: z.string(),
-              departingAirport: z.string(),
-              departingAirportCode: z.string(),
-              departingTime: z.string(),
-              arrivalCity: z.string(),
-              arrivalAirport: z.string(),
-              arrivalAirportCode: z.string(),
-              arrivalTime: z.string(),
-            }),
-          },
-        },
+        temperature: 0.5,
+        tools: {},
         system: `\
-      You are a friendly assistant that helps the user with solving Wordpress related issues. The user is asking questions related to z
+        You are a friendly assistant that helps the user with solving Wordpress related issues. The user is asking questions related to:
         Plugin Name: ${plugin.name}
         Plugin Description: ${plugin.description}
     
@@ -270,145 +181,146 @@ async function submitUserMessage(content: string, plugin: Plugin) {
               },
             ],
           });
-        } else if (type === "tool-call") {
-          const { toolName, args } = delta;
-
-          if (toolName === "listDestinations") {
-            const { destinations } = args;
-
-            uiStream.update(
-              <BotCard>
-                <Destinations destinations={destinations} />
-              </BotCard>
-            );
-
-            aiState.done({
-              ...aiState.get(),
-              interactions: [],
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: "assistant",
-                  content: `Here's a list of holiday destinations based on the books you've read. Choose one to proceed to booking a flight. \n\n ${args.destinations.join(
-                    ", "
-                  )}.`,
-                  display: {
-                    name: "listDestinations",
-                    props: {
-                      destinations,
-                    },
-                  },
-                },
-              ],
-            });
-          } else if (toolName === "showFlights") {
-            aiState.done({
-              ...aiState.get(),
-              interactions: [],
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: "assistant",
-                  content:
-                    "Here's a list of flights for you. Choose one and we can proceed to pick a seat.",
-                  display: {
-                    name: "showFlights",
-                    props: {
-                      summary: args,
-                    },
-                  },
-                },
-              ],
-            });
-
-            uiStream.update(
-              <BotCard>
-                <ListFlights summary={args} />
-              </BotCard>
-            );
-          } else if (toolName === "showSeatPicker") {
-            aiState.done({
-              ...aiState.get(),
-              interactions: [],
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: "assistant",
-                  content:
-                    "Here's a list of available seats for you to choose from. Select one to proceed to payment.",
-                  display: {
-                    name: "showSeatPicker",
-                    props: {
-                      summary: args,
-                    },
-                  },
-                },
-              ],
-            });
-
-            uiStream.update(
-              <BotCard>
-                <SelectSeats summary={args} />
-              </BotCard>
-            );
-          } else if (toolName === "showBoardingPass") {
-            aiState.done({
-              ...aiState.get(),
-              interactions: [],
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: "assistant",
-                  content:
-                    "Here's your boarding pass. Please have it ready for your flight.",
-                  display: {
-                    name: "showBoardingPass",
-                    props: {
-                      summary: args,
-                    },
-                  },
-                },
-              ],
-            });
-
-            uiStream.update(
-              <BotCard>
-                <BoardingPass summary={args} />
-              </BotCard>
-            );
-          } else if (toolName === "showFlightStatus") {
-            aiState.update({
-              ...aiState.get(),
-              interactions: [],
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: "assistant",
-                  content: `The flight status of ${args.flightCode} is as follows:
-                Departing: ${args.departingCity} at ${args.departingTime} from ${args.departingAirport} (${args.departingAirportCode})
-                `,
-                },
-              ],
-              display: {
-                name: "showFlights",
-                props: {
-                  summary: args,
-                },
-              },
-            });
-
-            uiStream.update(
-              <BotCard>
-                <FlightStatus summary={args} />
-              </BotCard>
-            );
-          }
         }
+        // else if (type === "tool-call") {
+        //   const { toolName, args } = delta;
+
+        //   if (toolName === "listDestinations") {
+        //     const { destinations } = args;
+
+        //     uiStream.update(
+        //       <BotCard>
+        //         <Destinations destinations={destinations} />
+        //       </BotCard>
+        //     );
+
+        //     aiState.done({
+        //       ...aiState.get(),
+        //       interactions: [],
+        //       messages: [
+        //         ...aiState.get().messages,
+        //         {
+        //           id: nanoid(),
+        //           role: "assistant",
+        //           content: `Here's a list of holiday destinations based on the books you've read. Choose one to proceed to booking a flight. \n\n ${args.destinations.join(
+        //             ", "
+        //           )}.`,
+        //           display: {
+        //             name: "listDestinations",
+        //             props: {
+        //               destinations,
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     });
+        //   } else if (toolName === "showFlights") {
+        //     aiState.done({
+        //       ...aiState.get(),
+        //       interactions: [],
+        //       messages: [
+        //         ...aiState.get().messages,
+        //         {
+        //           id: nanoid(),
+        //           role: "assistant",
+        //           content:
+        //             "Here's a list of flights for you. Choose one and we can proceed to pick a seat.",
+        //           display: {
+        //             name: "showFlights",
+        //             props: {
+        //               summary: args,
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     });
+
+        //     uiStream.update(
+        //       <BotCard>
+        //         <ListFlights summary={args} />
+        //       </BotCard>
+        //     );
+        //   } else if (toolName === "showSeatPicker") {
+        //     aiState.done({
+        //       ...aiState.get(),
+        //       interactions: [],
+        //       messages: [
+        //         ...aiState.get().messages,
+        //         {
+        //           id: nanoid(),
+        //           role: "assistant",
+        //           content:
+        //             "Here's a list of available seats for you to choose from. Select one to proceed to payment.",
+        //           display: {
+        //             name: "showSeatPicker",
+        //             props: {
+        //               summary: args,
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     });
+
+        //     uiStream.update(
+        //       <BotCard>
+        //         <SelectSeats summary={args} />
+        //       </BotCard>
+        //     );
+        //   } else if (toolName === "showBoardingPass") {
+        //     aiState.done({
+        //       ...aiState.get(),
+        //       interactions: [],
+        //       messages: [
+        //         ...aiState.get().messages,
+        //         {
+        //           id: nanoid(),
+        //           role: "assistant",
+        //           content:
+        //             "Here's your boarding pass. Please have it ready for your flight.",
+        //           display: {
+        //             name: "showBoardingPass",
+        //             props: {
+        //               summary: args,
+        //             },
+        //           },
+        //         },
+        //       ],
+        //     });
+
+        //     uiStream.update(
+        //       <BotCard>
+        //         <BoardingPass summary={args} />
+        //       </BotCard>
+        //     );
+        //   } else if (toolName === "showFlightStatus") {
+        //     aiState.update({
+        //       ...aiState.get(),
+        //       interactions: [],
+        //       messages: [
+        //         ...aiState.get().messages,
+        //         {
+        //           id: nanoid(),
+        //           role: "assistant",
+        //           content: `The flight status of ${args.flightCode} is as follows:
+        //         Departing: ${args.departingCity} at ${args.departingTime} from ${args.departingAirport} (${args.departingAirportCode})
+        //         `,
+        //         },
+        //       ],
+        //       display: {
+        //         name: "showFlights",
+        //         props: {
+        //           summary: args,
+        //         },
+        //       },
+        //     });
+
+        //     uiStream.update(
+        //       <BotCard>
+        //         <FlightStatus summary={args} />
+        //       </BotCard>
+        //     );
+        //   }
+        // }
       }
 
       uiStream.done();
@@ -423,7 +335,7 @@ async function submitUserMessage(content: string, plugin: Plugin) {
       uiStream.error(error);
       textStream.error(error);
       messageStream.error(error);
-      aiState.done();
+      // aiState.done();
     }
   })();
 
@@ -454,7 +366,7 @@ export async function requestCode() {
 
   const ui = createStreamableUI(
     <div className="animate-spin">
-      <SpinnerIcon />
+      <IconSpinner />
     </div>
   );
 
@@ -524,6 +436,7 @@ export type AIState = {
   chatId: string;
   interactions?: string[];
   messages: Message[];
+  plugin: Plugin | null;
 };
 
 export type UIState = {
@@ -538,17 +451,22 @@ export const PluginAI = createAI<AIState, UIState>({
     submitUserMessage,
     requestCode,
     validateCode,
-    describeImage,
+    // describeImage,
   },
   initialUIState: [],
-  initialAIState: { chatId: nanoid(), interactions: [], messages: [] },
+  initialAIState: {
+    chatId: nanoid(),
+    interactions: [],
+    messages: [],
+    plugin: null,
+  },
   onGetUIState: async () => {
     "use server";
 
     const user = await currentUser();
 
     if (user) {
-      const aiState = getAIState();
+      const aiState = getAIState() as Chat;
 
       if (aiState) {
         const uiState = getUIStateFromAIState(aiState);
@@ -595,25 +513,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === "assistant" ? (
-          message.display?.name === "showFlights" ? (
-            <BotCard>
-              <ListFlights summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === "showSeatPicker" ? (
-            <BotCard>
-              <SelectSeats summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === "showBoardingPass" ? (
-            <BotCard>
-              <BoardingPass summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === "listDestinations" ? (
-            <BotCard>
-              <Destinations destinations={message.display.props.destinations} />
-            </BotCard>
-          ) : (
-            <BotMessage content={message.content} />
-          )
+          <BotMessage content={message.content} />
         ) : message.role === "user" ? (
           <UserMessage>{message.content}</UserMessage>
         ) : (
