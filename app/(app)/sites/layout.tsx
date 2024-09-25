@@ -20,7 +20,7 @@ export default function ChatLayout({
         <div
           className={cn(
             "w-full overflow-y-auto",
-            isSidebarOpen && "translate-x-[250px]",
+            isSidebarOpen && "translate-x-[250px] w-[calc(100%-250px)]",
             "transition-transform duration-300 ease-in-out"
           )}
         >
