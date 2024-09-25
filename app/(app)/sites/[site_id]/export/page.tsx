@@ -1,4 +1,4 @@
-import ExportForm from "@/components/pipelines/export";
+import { ExportUI } from "@/components/pipelines";
 import { getCoreSiteData } from "@/data/site";
 import prisma from "@/lib/prisma";
 import { WpSite } from "@/types";
@@ -20,9 +20,9 @@ export default async function ExportPage({
     },
   })) as WpSite;
 
-  const core_site_data = await getCoreSiteData(site.id);
+  const coreSiteData = await getCoreSiteData(site.id);
   console.log({
-    core_site_data,
+    coreSiteData,
   });
-  return <ExportForm site={site} core_site_data={core_site_data} />;
+  return <ExportUI site={site} coreSiteData={coreSiteData} />;
 }

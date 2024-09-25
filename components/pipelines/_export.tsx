@@ -31,7 +31,7 @@ export default function ExportForm({ site, core_site_data }: ExportFormProps) {
       const result = await runExtractionPipeline(
         site,
         core_site_data,
-        userRequest
+        user_request: userRequest,
       );
       if (result.success) {
         setExtractionResult(result.data);

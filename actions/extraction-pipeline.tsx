@@ -1,12 +1,85 @@
 "use server";
 
+import { executeWordPressSQL } from "@/actions/wp";
 import { runSiteHealthCheck } from "@/data/site";
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { WpSite } from "@/types";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { executeWordPressSQL } from "./wp";
+import { ExtractionPipelineFormSchema } from "@/actions/types/extraction-pipeline";
+
+export const runExtractionPipeline = async (
+  formData: z.infer<typeof ExtractionPipelineFormSchema>
+) => {
+  const { userRequest, coreSiteData, wpSite } = formData;
+
+  console.log("runExtractionPipeline", wpSite, userRequest);
+  try {
+    // Step 1: Categorize the request
+    const categories = await categorizeRequest(userRequest);
+    console.log("categories", categories);
+
+    // Step 2: Verify permissions
+    const hasPermissions = await verifyHasPermissions(wpSite);
+    console.log("hasPermissions", hasPermissions);
+    if (!hasPermissions) {
+      throw new Error("Insufficient permissions to perform data extraction.");
+    }
+
+    // Step 3: Recognize entity intent
+    // const recognizedIntent = await recognizeEntityIntent(user_request);
+    // console.log("recognizedIntent", recognizedIntent);
+    // Step 4: Check data availability
+    // const availabilityCheck = await dataAvailabilityCheck(
+    //   recognizedIntent,
+    //   wpSite
+    // );
+    // console.log("availabilityCheck", availabilityCheck);
+    // if (!availabilityCheck.isExtractionFeasible) {
+    //   throw new Error(
+    //     `Data extraction not feasible: ${availabilityCheck.explanation}`
+    //   );
+    // }
+
+    // Step 5: Generate SQL query
+    const generatedQuery = await generateQuery({
+      site: wpSite,
+      user_request: userRequest,
+      core_site_data: coreSiteData,
+    });
+    console.log("generatedQuery", generatedQuery);
+    console.log();
+    // Step 6: Execute the generated query
+    const extractionResult = await executeWordPressSQL({
+      query: generatedQuery?.object?.sqlQuery,
+      api_key: wpSite.api_key,
+      api_url: `${wpSite.base_url}${WP_PATH_RUN_SQL}`,
+    });
+
+    console.log("extractionResult", extractionResult);
+    if (!extractionResult.ok || extractionResult.error) {
+      throw new Error(
+        `Failed to execute extraction query: ${
+          extractionResult.error?.message || "Unknown error"
+        }`
+      );
+    }
+
+    return {
+      success: true,
+      data: extractionResult.data,
+      query: generatedQuery.object?.sqlQuery,
+      explanation: generatedQuery.object?.explanation,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+};
 
 export const categorizeRequest = async (user_request: string) => {
   const result = await generateObject({
@@ -169,76 +242,4 @@ export const generateQuery = async ({
   });
 
   return queryGenerationResult;
-};
-
-export const runExtractionPipeline = async (
-  wpSite: WpSite,
-  core_site_data: any,
-  user_request: string
-) => {
-  console.log("runExtractionPipeline", wpSite, user_request);
-  try {
-    // Step 1: Categorize the request
-    const categories = await categorizeRequest(user_request);
-    console.log("categories", categories);
-
-    // Step 2: Verify permissions
-    const hasPermissions = await verifyHasPermissions(wpSite);
-    console.log("hasPermissions", hasPermissions);
-    if (!hasPermissions) {
-      throw new Error("Insufficient permissions to perform data extraction.");
-    }
-
-    // Step 3: Recognize entity intent
-    // const recognizedIntent = await recognizeEntityIntent(user_request);
-    // console.log("recognizedIntent", recognizedIntent);
-    // Step 4: Check data availability
-    // const availabilityCheck = await dataAvailabilityCheck(
-    //   recognizedIntent,
-    //   wpSite
-    // );
-    // console.log("availabilityCheck", availabilityCheck);
-    // if (!availabilityCheck.isExtractionFeasible) {
-    //   throw new Error(
-    //     `Data extraction not feasible: ${availabilityCheck.explanation}`
-    //   );
-    // }
-
-    // Step 5: Generate SQL query
-    const generatedQuery = await generateQuery({
-      site: wpSite,
-      user_request,
-      core_site_data,
-    });
-    console.log("generatedQuery", generatedQuery);
-    console.log();
-    // Step 6: Execute the generated query
-    const extractionResult = await executeWordPressSQL({
-      query: generatedQuery?.object?.sqlQuery,
-      api_key: wpSite.api_key,
-      api_url: `${wpSite.base_url}${WP_PATH_RUN_SQL}`,
-    });
-
-    console.log("extractionResult", extractionResult);
-    if (!extractionResult.ok || extractionResult.error) {
-      throw new Error(
-        `Failed to execute extraction query: ${
-          extractionResult.error?.message || "Unknown error"
-        }`
-      );
-    }
-
-    return {
-      success: true,
-      data: extractionResult.data,
-      query: generatedQuery.object?.sqlQuery,
-      explanation: generatedQuery.object?.explanation,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unknown error occurred",
-    };
-  }
 };
