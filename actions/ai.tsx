@@ -617,7 +617,7 @@ export async function saveChat(chat: Chat) {
         id: chat.id,
         title: chat.title,
         userId: chat.userId,
-        siteId: chat.siteId!,
+        siteId: chat.siteId || "",
         path: chat.path,
       },
     });

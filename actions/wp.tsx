@@ -13,10 +13,7 @@ export async function executeWordPressSQL({
       api_key,
       api_url,
     });
-    console.log(
-      "`${api_url}?api_key=${api_key}`",
-      `${api_url}?api_key=${api_key}`
-    );
+    console.log("`${api_url}?c=${api_key}`", `${api_url}?api_key=${api_key}`);
     const response = await fetch(api_url, {
       method: "POST",
       headers: {
