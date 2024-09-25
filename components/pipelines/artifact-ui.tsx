@@ -9,7 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArtifactType } from "@/types/export-pipeline";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { Artifact, ArtifactType } from "@/types/export-pipeline";
 
 const CODE_TYPES = [
   ArtifactType.CODE,
@@ -24,31 +26,47 @@ const CODE_TYPES = [
 const JSON_TYPES = [ArtifactType.JSON, ArtifactType.JSON_TABLE];
 
 export function ArtifactUI() {
-  const { activeArtifact } = useExportContext();
+  const { activeArtifact, setActiveArtifact } = useExportContext();
+  const { isAboveLg } = useBreakpoint("lg");
 
+  if (!isAboveLg) {
+    return (
+      <Sheet
+        open={!!activeArtifact}
+        onOpenChange={() => setActiveArtifact(null)}
+      >
+        <SheetContent side="bottom" className="w-full">
+          <ArtifactCard artifact={activeArtifact} />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return <ArtifactCard artifact={activeArtifact} />;
+}
+
+const ArtifactCard = ({ artifact }: { artifact: Artifact | null }) => {
   return (
     <Card>
       <CardHeader>
-        {activeArtifact ? (
+        {artifact ? (
           <>
             <div className="flex justify-between">
-              <CardTitle>{activeArtifact?.title}</CardTitle>
-              <CopyStringIcon
-                stringToCopy={activeArtifact?.content.join("\n")}
-              />
+              <CardTitle>{artifact?.title}</CardTitle>
+              <CopyStringIcon stringToCopy={artifact?.content.join("\n")} />
             </div>
-            <CardDescription>{activeArtifact?.description}</CardDescription>
+            <CardDescription>{artifact?.description}</CardDescription>
           </>
         ) : (
           <CardDescription>Select an artifact to view details.</CardDescription>
         )}
       </CardHeader>
       <CardContent>
-        {activeArtifact?.content.map((content, index) =>
-          CODE_TYPES.includes(activeArtifact?.type) ? (
+        {artifact?.content.map((content, index) =>
+          CODE_TYPES.includes(artifact?.type) ? (
             <pre key={index} className="p-4 rounded overflow-auto">
               <code>
-                {JSON_TYPES.includes(activeArtifact?.type)
+                {JSON_TYPES.includes(artifact?.type)
                   ? JSON.stringify(content, null, 2)
                   : content}
               </code>
@@ -60,4 +78,4 @@ export function ArtifactUI() {
       </CardContent>
     </Card>
   );
-}
+};
