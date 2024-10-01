@@ -17,24 +17,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import WpSiteStatus from "@/components/wp-site-status";
 import { getSshCredentials } from "@/data/site";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { SSH, WpSite } from "@/types";
 import { Label } from "@radix-ui/react-label";
-import { CheckCircle2, Copy, Loader2 } from "lucide-react";
+import { CheckCircle2, Copy, Loader2, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
 export default function SiteHome({ site }: { site: WpSite }) {
   const { copyToClipboard } = useCopyToClipboard({ timeout: 1000 });
   const [copied, setCopied] = useState(false);
   const [sshCredentials, setSSHCredentials] = useState<SSH>();
   const [isSavingSshCredentials, setIsSavingSshCredentials] = useState(false);
+  const [isSSH, setIsSSH] = useState(true);
+
+  const isValidHost = (host: string) => {
+    // Simple regex for IP address or domain name
+    const hostRegex =
+      /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$|^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+    return hostRegex.test(host);
+  };
+
   const isSshCredentialsValid = useMemo(() => {
     return (
       sshCredentials?.host &&
-      sshCredentials?.port &&
+      isValidHost(sshCredentials.host) &&
+      typeof sshCredentials?.port === "number" &&
+      sshCredentials.port > 0 &&
       sshCredentials?.username &&
       sshCredentials?.password
     );
@@ -81,18 +93,21 @@ export default function SiteHome({ site }: { site: WpSite }) {
     field: keyof SSH,
     value: string | number
   ) => {
-    setSSHCredentials((prev: any) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setSSHCredentials((prev: any) => {
+      if (!prev) return undefined;
+      if (field === "port") {
+        const portNumber = parseInt(value as string, 10);
+        return { ...prev, [field]: isNaN(portNumber) ? "" : portNumber };
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   const handleSaveSSHCredentials = async () => {
-    if (isSavingSshCredentials || !sshCredentials) return;
+    if (isSavingSshCredentials || !sshCredentials || !isSshCredentialsValid)
+      return;
     setIsSavingSshCredentials(true);
-    toast.loading("Updating SSH credentials...");
-    // const sshhealth = await checkSSHHealth(site);
-    // console.log("sshhealth", sshhealth);
+    toast.loading(`Updating ${isSSH ? "SSH" : "SFTP"} credentials...`);
 
     try {
       await updateSiteSSH({
@@ -101,18 +116,35 @@ export default function SiteHome({ site }: { site: WpSite }) {
           ssh: sshCredentials,
         },
       });
-      toast.success("SSH credentials updated successfully");
+      toast.success(
+        `${isSSH ? "SSH" : "SFTP"} credentials updated successfully`
+      );
     } catch (error) {
-      toast.error("Failed to update SSH credentials");
+      toast.error(`Failed to update ${isSSH ? "SSH" : "SFTP"} credentials`);
     } finally {
       setIsSavingSshCredentials(false);
     }
   };
 
   return (
-    <div className="w-full overflow-y-scroll">
+    <div className="flex justify-center w-full overflow-y-scroll">
       <div className="container p-4 max-w-3xl">
-        <WpSiteStatus site={site} />
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Site Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col space-y-4">
+              <Link href={`/sites/${site.id}/assistant-nonrsc`}>
+                <Button variant="default" size="lg" className="w-full">
+                  <MessageSquare className="w-5 h-5 mr-2" />
+                  Chat with Site
+                </Button>
+              </Link>
+              {/* Add more action buttons here as needed */}
+            </div>
+          </CardContent>
+        </Card>
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
@@ -141,11 +173,12 @@ export default function SiteHome({ site }: { site: WpSite }) {
             </div>
           </CardContent>
         </Card>
+        <WpSiteStatus site={site} />
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Your API Key</CardTitle>
             <CardDescription>
-              Your API key below to use with WordPress
+              Your API key below to use with the WPCopilot Plugin
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -179,61 +212,87 @@ export default function SiteHome({ site }: { site: WpSite }) {
         </Card>
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>SSH Credentials</CardTitle>
+            <CardTitle>SSH / SFTP Credentials</CardTitle>
             <CardDescription>
-              Manage your SSH credentials for WordPress connection
+              Manage your SSH / SFTP credentials for your WordPress site. You
+              can use either, however more agent functionality is available with
+              SSH.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible>
               <AccordionItem value="ssh-credentials">
-                <AccordionTrigger>View/Edit SSH Credentials</AccordionTrigger>
+                <AccordionTrigger>View/Edit Credentials</AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="ssh-sftp-toggle"
+                        checked={isSSH}
+                        onCheckedChange={setIsSSH}
+                      />
+                      <Label htmlFor="ssh-sftp-toggle">
+                        {isSSH ? "SSH" : "SFTP"}
+                      </Label>
+                    </div>
                     <div>
                       <Label htmlFor="ssh-host">Host</Label>
                       <Input
                         id="ssh-host"
-                        placeholder="Enter SSH host"
-                        value={sshCredentials?.host}
+                        placeholder={`Enter ${isSSH ? "SSH" : "SFTP"} host`}
+                        value={sshCredentials?.host || ""}
                         onChange={(e) =>
                           handleSSHCredentialChange("host", e.target.value)
                         }
                       />
+                      {sshCredentials?.host &&
+                        !isValidHost(sshCredentials.host) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Please enter a valid host (IP address or domain
+                            name)
+                          </p>
+                        )}
                     </div>
                     <div>
                       <Label htmlFor="ssh-port">Port</Label>
                       <Input
                         id="ssh-port"
                         type="number"
-                        placeholder="Enter SSH port"
-                        value={sshCredentials?.port}
+                        placeholder={`Enter ${isSSH ? "SSH" : "SFTP"} port`}
+                        value={sshCredentials?.port || ""}
                         onChange={(e) =>
-                          handleSSHCredentialChange(
-                            "port",
-                            parseInt(e.target.value, 10)
-                          )
+                          handleSSHCredentialChange("port", e.target.value)
                         }
                       />
+                      {(!sshCredentials?.port || sshCredentials.port <= 0) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Please enter a valid port number
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="ssh-username">Username</Label>
                       <Input
                         id="ssh-username"
-                        placeholder="Enter SSH username"
-                        value={sshCredentials?.username}
+                        placeholder={`Enter ${isSSH ? "SSH" : "SFTP"} username`}
+                        value={sshCredentials?.username || ""}
                         onChange={(e) =>
                           handleSSHCredentialChange("username", e.target.value)
                         }
                       />
+                      {!sshCredentials?.username && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Username cannot be empty
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="ssh-password">Password</Label>
                       <Input
                         id="ssh-password"
                         type="password"
-                        placeholder="Enter SSH password"
-                        value={sshCredentials?.password}
+                        placeholder={`Enter ${isSSH ? "SSH" : "SFTP"} password`}
+                        value={sshCredentials?.password || ""}
                         onChange={(e) =>
                           handleSSHCredentialChange("password", e.target.value)
                         }
@@ -249,7 +308,7 @@ export default function SiteHome({ site }: { site: WpSite }) {
                       {isSavingSshCredentials && (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       )}
-                      <span>Save SSH Credentials</span>
+                      <span>Save {isSSH ? "SSH" : "SFTP"} Credentials</span>
                     </Button>
                   </div>
                 </AccordionContent>

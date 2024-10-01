@@ -80,19 +80,15 @@ export default function EditSiteDialog({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger>
-        <Button
-          variant="outline"
-          size="sm"
-          className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
+        <Button variant="outline" size="sm">
           <Edit className="w-4 h-4 mr-2" />
-          Edit Site
+          Edit Site Details
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            Edit Site
+            Edit Site Details
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">

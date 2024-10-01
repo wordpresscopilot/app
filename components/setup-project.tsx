@@ -72,17 +72,9 @@ export default function SetupProject({ site }: { site: WpSite }) {
   };
 
   const checkSiteHealth = async () => {
-    // Simulating an API call to check the status
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // setStatus(Math.random() > 0.5 ? "connected" : "disconnected");
-    // In a real-world scenario, you would make an actual API call here
-    // For example:
     try {
       setStatus("checking");
-      const healthStatus = await runSiteHealthCheck(
-        site?.id,
-        getHealthCheckUrl()
-      );
+      const healthStatus = await runSiteHealthCheck(site?.id);
       if (healthStatus) {
         setStatus("connected");
       } else {
@@ -142,7 +134,9 @@ export default function SetupProject({ site }: { site: WpSite }) {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Your API Key</CardTitle>
-          <CardDescription>Your Wordpress Sage API key below</CardDescription>
+          <CardDescription>
+            Your Wordpress WPCopilot API key below
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex space-x-2">

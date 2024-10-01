@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      {
+        protocol: "https",
+        hostname: "ps.w.org"
+      }
     ],
   },
   webpack: (config, { dev, isServer, webpack, nextRuntime }) => {

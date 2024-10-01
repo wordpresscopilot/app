@@ -16,6 +16,7 @@ import {
 interface SelectedSiteContextType {
   selectedSite: WpSite | null;
   setSelectedSite: Dispatch<SetStateAction<WpSite | null>>;
+  refreshSelectedSite: () => Promise<void>;
 }
 const SelectedSiteContext = createContext<SelectedSiteContextType | null>(null);
 
@@ -28,6 +29,16 @@ export const SelectedSiteProvider = ({
 }: SelectedSiteProviderProps) => {
   const pathname = usePathname();
   const [selectedSite, setSelectedSite] = useState<WpSite | null>(null);
+
+  const refreshSelectedSite = async () => {
+    if (selectedSite?.id) {
+      const updatedSite = await currentSite(selectedSite.id);
+      if (updatedSite) {
+        setSelectedSite(updatedSite as WpSite);
+        sessionStorage.setItem("selectedSite", JSON.stringify(updatedSite));
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchSite = async () => {
@@ -57,7 +68,9 @@ export const SelectedSiteProvider = ({
   }, [selectedSite]);
 
   return (
-    <SelectedSiteContext.Provider value={{ selectedSite, setSelectedSite }}>
+    <SelectedSiteContext.Provider
+      value={{ selectedSite, setSelectedSite, refreshSelectedSite }}
+    >
       {children}
     </SelectedSiteContext.Provider>
   );

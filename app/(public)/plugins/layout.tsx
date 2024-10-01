@@ -1,8 +1,7 @@
 "use client";
 
-import { JoinWaitlistForm } from "@/components/JoinWaitlistForm";
+import { Footer } from "@/components/footer";
 import { MarketingNavigation } from "@/components/marketing-navigation";
-import Image from "next/image";
 import { useRef } from "react";
 interface PluginLayoutProps {
   children: React.ReactNode;
@@ -26,7 +25,7 @@ export default function Layout({ children }: PluginLayoutProps) {
       <div className="flex flex-col gap-2.5">
         <MarketingNavigation scrollToWaitlistForm={scrollToWaitlistForm} />
         {children}
-        <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
+        {/* <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
           <Image
             alt="hero"
             src="/landing/hero.webp"
@@ -42,9 +41,9 @@ export default function Layout({ children }: PluginLayoutProps) {
             <h1 className="text-5xl">Join the Waitlist Now</h1>
             <JoinWaitlistForm />
           </div>
-        </div>
+        </div> */}
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

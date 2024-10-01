@@ -1,5 +1,4 @@
 import SiteHome from "@/components/site-home";
-import { getCoreSiteData } from "@/data/site";
 import prisma from "@/lib/prisma";
 import { WpSite } from "@/types";
 
@@ -19,10 +18,6 @@ export default async function SitePage({
       id: site_id,
     },
   })) as WpSite;
-
-  const core_site_data = await getCoreSiteData(site.id);
-
-  console.log("core_site_data", core_site_data);
 
   if (!site) {
     return <div>Site not found</div>;

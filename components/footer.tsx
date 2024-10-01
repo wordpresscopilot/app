@@ -1,19 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Facebook, Github, Linkedin, Twitter } from "lucide-react";
-
+import { Github } from "lucide-react";
+import Link from "next/link";
+import { XLogoIcon } from "./ui/icons";
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-black text-white rounded-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Product Features */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">Product</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  SQL Powered Prompting
+                  Running SQL
                 </a>
               </li>
               <li>
@@ -34,7 +32,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
@@ -49,9 +46,12 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="/blog"
+                  className="hover:text-white transition-colors"
+                >
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
@@ -60,8 +60,6 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Company */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -89,7 +87,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter Signup */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Stay Updated</h3>
             <p className="mb-4">
@@ -109,42 +106,29 @@ export function Footer() {
               </Button>
             </form>
           </div>
-        </div>
+        </div> */}
 
-        {/* Social Media and Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center">
+        <div className="pt-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center">
           <div className="flex space-x-6 mb-4 sm:mb-0">
-            <a
-              href="#"
+            <Link
+              href="https://x.com/wpcopilot_dev"
               className="text-gray-400 hover:text-white transition-colors"
             >
-              <Facebook className="h-6 w-6" />
-              <span className="sr-only">Facebook</span>
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Twitter className="h-6 w-6" />
-              <span className="sr-only">Twitter</span>
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <Linkedin className="h-6 w-6" />
-              <span className="sr-only">LinkedIn</span>
-            </a>
-            <a
-              href="#"
+              <div className="h-6 w-6">
+                <XLogoIcon />
+                <span className="sr-only">X</span>
+              </div>
+            </Link>
+            <Link
+              href="https://github.com/wordpresscopilot"
               className="text-gray-400 hover:text-white transition-colors"
             >
               <Github className="h-6 w-6" />
               <span className="sr-only">GitHub</span>
-            </a>
+            </Link>
           </div>
-          <div className="text-sm text-gray-400">
-            © {new Date().getFullYear()} WordPress GPT. All rights reserved.
+          <div className="text-sm text-white">
+            © {new Date().getFullYear()} wpc.dev All rights reserved.
           </div>
         </div>
       </div>

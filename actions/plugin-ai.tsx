@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import "server-only";
 
 import {
@@ -6,6 +8,7 @@ import {
   createStreamableValue,
   getAIState,
   getMutableAIState,
+  streamUI,
 } from "ai/rsc";
 
 import { saveChat } from "@/actions";
@@ -14,11 +17,9 @@ import { SpinnerMessage, UserMessage } from "@/components/stocks/message";
 import { CheckIcon, IconSpinner } from "@/components/ui/icons";
 import { rateLimit } from "@/lib/ratelimit";
 import { nanoid, sleep } from "@/lib/utils";
-import { google } from "@ai-sdk/google";
+import { openai } from "@ai-sdk/openai";
 import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { streamText } from "ai";
-import { format } from "date-fns";
 import { Chat, Message, Plugin } from "../types";
 
 const genAI = new GoogleGenerativeAI(
@@ -116,6 +117,8 @@ const genAI = new GoogleGenerativeAI(
 
 async function submitUserMessage(content: string, plugin: Plugin) {
   "use server";
+
+  console.log("submitUserMessage plugin", content, plugin);
   await rateLimit();
 
   const aiState = getMutableAIState();
@@ -137,213 +140,256 @@ async function submitUserMessage(content: string, plugin: Plugin) {
     content: message.content,
   }));
 
-  const textStream = createStreamableValue("");
-  const spinnerStream = createStreamableUI(<SpinnerMessage />);
-  const messageStream = createStreamableUI(null);
-  const uiStream = createStreamableUI();
-  (async () => {
-    try {
-      const result = await streamText({
-        model: google("models/gemini-1.5-flash"),
-        temperature: 0.5,
-        tools: {},
-        system: `\
+  // const textStream = createStreamableValue("");
+  let textStream: undefined | ReturnType<typeof createStreamableValue<string>>;
+  let textNode: undefined | React.ReactNode;
+
+  const result = await streamUI({
+    model: openai(process.env.DEFAULT_OPENAI_MODEL || "gpt-3.5-turbo"),
+    initial: <SpinnerMessage />,
+    system: `\
         You are a friendly assistant that helps the user with solving Wordpress related issues. The user is asking questions related to:
         Plugin Name: ${plugin.name}
         Plugin Description: ${plugin.description}
-    
-        The date today is ${format(new Date(), "d LLLL, yyyy")}. 
-          messages: [...history],
-      `,
         messages: [...history],
-      });
-
-      let textContent = "";
-      spinnerStream.done(null);
-
-      for await (const delta of result.fullStream) {
-        const { type } = delta;
-
-        if (type === "text-delta") {
-          const { textDelta } = delta;
-
-          textContent += textDelta;
-          messageStream.update(<BotMessage content={textContent} />);
-
-          aiState.update({
-            ...aiState.get(),
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: "assistant",
-                content: textContent,
-              },
-            ],
-          });
-        }
-        // else if (type === "tool-call") {
-        //   const { toolName, args } = delta;
-
-        //   if (toolName === "listDestinations") {
-        //     const { destinations } = args;
-
-        //     uiStream.update(
-        //       <BotCard>
-        //         <Destinations destinations={destinations} />
-        //       </BotCard>
-        //     );
-
-        //     aiState.done({
-        //       ...aiState.get(),
-        //       interactions: [],
-        //       messages: [
-        //         ...aiState.get().messages,
-        //         {
-        //           id: nanoid(),
-        //           role: "assistant",
-        //           content: `Here's a list of holiday destinations based on the books you've read. Choose one to proceed to booking a flight. \n\n ${args.destinations.join(
-        //             ", "
-        //           )}.`,
-        //           display: {
-        //             name: "listDestinations",
-        //             props: {
-        //               destinations,
-        //             },
-        //           },
-        //         },
-        //       ],
-        //     });
-        //   } else if (toolName === "showFlights") {
-        //     aiState.done({
-        //       ...aiState.get(),
-        //       interactions: [],
-        //       messages: [
-        //         ...aiState.get().messages,
-        //         {
-        //           id: nanoid(),
-        //           role: "assistant",
-        //           content:
-        //             "Here's a list of flights for you. Choose one and we can proceed to pick a seat.",
-        //           display: {
-        //             name: "showFlights",
-        //             props: {
-        //               summary: args,
-        //             },
-        //           },
-        //         },
-        //       ],
-        //     });
-
-        //     uiStream.update(
-        //       <BotCard>
-        //         <ListFlights summary={args} />
-        //       </BotCard>
-        //     );
-        //   } else if (toolName === "showSeatPicker") {
-        //     aiState.done({
-        //       ...aiState.get(),
-        //       interactions: [],
-        //       messages: [
-        //         ...aiState.get().messages,
-        //         {
-        //           id: nanoid(),
-        //           role: "assistant",
-        //           content:
-        //             "Here's a list of available seats for you to choose from. Select one to proceed to payment.",
-        //           display: {
-        //             name: "showSeatPicker",
-        //             props: {
-        //               summary: args,
-        //             },
-        //           },
-        //         },
-        //       ],
-        //     });
-
-        //     uiStream.update(
-        //       <BotCard>
-        //         <SelectSeats summary={args} />
-        //       </BotCard>
-        //     );
-        //   } else if (toolName === "showBoardingPass") {
-        //     aiState.done({
-        //       ...aiState.get(),
-        //       interactions: [],
-        //       messages: [
-        //         ...aiState.get().messages,
-        //         {
-        //           id: nanoid(),
-        //           role: "assistant",
-        //           content:
-        //             "Here's your boarding pass. Please have it ready for your flight.",
-        //           display: {
-        //             name: "showBoardingPass",
-        //             props: {
-        //               summary: args,
-        //             },
-        //           },
-        //         },
-        //       ],
-        //     });
-
-        //     uiStream.update(
-        //       <BotCard>
-        //         <BoardingPass summary={args} />
-        //       </BotCard>
-        //     );
-        //   } else if (toolName === "showFlightStatus") {
-        //     aiState.update({
-        //       ...aiState.get(),
-        //       interactions: [],
-        //       messages: [
-        //         ...aiState.get().messages,
-        //         {
-        //           id: nanoid(),
-        //           role: "assistant",
-        //           content: `The flight status of ${args.flightCode} is as follows:
-        //         Departing: ${args.departingCity} at ${args.departingTime} from ${args.departingAirport} (${args.departingAirportCode})
-        //         `,
-        //         },
-        //       ],
-        //       display: {
-        //         name: "showFlights",
-        //         props: {
-        //           summary: args,
-        //         },
-        //       },
-        //     });
-
-        //     uiStream.update(
-        //       <BotCard>
-        //         <FlightStatus summary={args} />
-        //       </BotCard>
-        //     );
-        //   }
-        // }
+    `,
+    messages: [
+      ...aiState.get().messages.map((message: any) => ({
+        role: message.role,
+        content: message.content || "", // Ensure content is never null
+        name: message.name,
+      })),
+    ],
+    text: ({ content, done, delta }) => {
+      if (!textStream) {
+        textStream = createStreamableValue("");
+        textNode = <BotMessage content={textStream.value} />;
       }
 
-      uiStream.done();
-      textStream.done();
-      messageStream.done();
-    } catch (e) {
-      console.error(e);
+      console.log("content", content);
 
-      const error = new Error(
-        "The AI got rate limited, please try again later."
-      );
-      uiStream.error(error);
-      textStream.error(error);
-      messageStream.error(error);
-      // aiState.done();
-    }
-  })();
+      if (done) {
+        textStream.done();
+        aiState.done({
+          ...aiState.get(),
+          messages: [
+            ...aiState.get().messages,
+            {
+              id: nanoid(),
+              role: "assistant",
+              content: content || "",
+            },
+          ],
+        });
+      } else {
+        textStream.update(delta);
+      }
+      return textNode;
+    },
+  });
+  console.log("result", result.value);
+
+  // (async () => {
+  //   try {
+  //     const result = await streamText({
+  //       model: google("models/gemini-1.5-flash"),
+  //       temperature: 0.5,
+  //       tools: {},
+  //       system: `\
+  //       You are a friendly assistant that helps the user with solving Wordpress related issues. The user is asking questions related to:
+  //       Plugin Name: ${plugin.name}
+  //       Plugin Description: ${plugin.description}
+  //       messages: [...history],
+  //     `,
+  //       messages: [...history],
+  //     });
+  //     console.log("result", result);
+
+  //     let textContent = "";
+  //     spinnerStream.done(null);
+
+  //      for await (const delta of result.fullStream) {
+  //       console.log("delta", delta);
+  //       const { type } = delta;
+
+  //       if (type === "text-delta") {
+  //         const { textDelta } = delta;
+
+  //         textContent += textDelta;
+  //         messageStream.update(<BotMessage content={textContent} />);
+
+  //         aiState.update({
+  //           ...aiState.get(),
+  //           messages: [
+  //             ...aiState.get().messages,
+  //             {
+  //               id: nanoid(),
+  //               role: "assistant",
+  //               content: textContent,
+  //             },
+  //           ],
+  //         });
+  //       }
+  //       // else if (type === "tool-call") {
+  //       //   const { toolName, args } = delta;
+
+  //       //   if (toolName === "listDestinations") {
+  //       //     const { destinations } = args;
+
+  //       //     uiStream.update(
+  //       //       <BotCard>
+  //       //         <Destinations destinations={destinations} />
+  //       //       </BotCard>
+  //       //     );
+
+  //       //     aiState.done({
+  //       //       ...aiState.get(),
+  //       //       interactions: [],
+  //       //       messages: [
+  //       //         ...aiState.get().messages,
+  //       //         {
+  //       //           id: nanoid(),
+  //       //           role: "assistant",
+  //       //           content: `Here's a list of holiday destinations based on the books you've read. Choose one to proceed to booking a flight. \n\n ${args.destinations.join(
+  //       //             ", "
+  //       //           )}.`,
+  //       //           display: {
+  //       //             name: "listDestinations",
+  //       //             props: {
+  //       //               destinations,
+  //       //             },
+  //       //           },
+  //       //         },
+  //       //       ],
+  //       //     });
+  //       //   } else if (toolName === "showFlights") {
+  //       //     aiState.done({
+  //       //       ...aiState.get(),
+  //       //       interactions: [],
+  //       //       messages: [
+  //       //         ...aiState.get().messages,
+  //       //         {
+  //       //           id: nanoid(),
+  //       //           role: "assistant",
+  //       //           content:
+  //       //             "Here's a list of flights for you. Choose one and we can proceed to pick a seat.",
+  //       //           display: {
+  //       //             name: "showFlights",
+  //       //             props: {
+  //       //               summary: args,
+  //       //             },
+  //       //           },
+  //       //         },
+  //       //       ],
+  //       //     });
+
+  //       //     uiStream.update(
+  //       //       <BotCard>
+  //       //         <ListFlights summary={args} />
+  //       //       </BotCard>
+  //       //     );
+  //       //   } else if (toolName === "showSeatPicker") {
+  //       //     aiState.done({
+  //       //       ...aiState.get(),
+  //       //       interactions: [],
+  //       //       messages: [
+  //       //         ...aiState.get().messages,
+  //       //         {
+  //       //           id: nanoid(),
+  //       //           role: "assistant",
+  //       //           content:
+  //       //             "Here's a list of available seats for you to choose from. Select one to proceed to payment.",
+  //       //           display: {
+  //       //             name: "showSeatPicker",
+  //       //             props: {
+  //       //               summary: args,
+  //       //             },
+  //       //           },
+  //       //         },
+  //       //       ],
+  //       //     });
+
+  //       //     uiStream.update(
+  //       //       <BotCard>
+  //       //         <SelectSeats summary={args} />
+  //       //       </BotCard>
+  //       //     );
+  //       //   } else if (toolName === "showBoardingPass") {
+  //       //     aiState.done({
+  //       //       ...aiState.get(),
+  //       //       interactions: [],
+  //       //       messages: [
+  //       //         ...aiState.get().messages,
+  //       //         {
+  //       //           id: nanoid(),
+  //       //           role: "assistant",
+  //       //           content:
+  //       //             "Here's your boarding pass. Please have it ready for your flight.",
+  //       //           display: {
+  //       //             name: "showBoardingPass",
+  //       //             props: {
+  //       //               summary: args,
+  //       //             },
+  //       //           },
+  //       //         },
+  //       //       ],
+  //       //     });
+
+  //       //     uiStream.update(
+  //       //       <BotCard>
+  //       //         <BoardingPass summary={args} />
+  //       //       </BotCard>
+  //       //     );
+  //       //   } else if (toolName === "showFlightStatus") {
+  //       //     aiState.update({
+  //       //       ...aiState.get(),
+  //       //       interactions: [],
+  //       //       messages: [
+  //       //         ...aiState.get().messages,
+  //       //         {
+  //       //           id: nanoid(),
+  //       //           role: "assistant",
+  //       //           content: `The flight status of ${args.flightCode} is as follows:
+  //       //         Departing: ${args.departingCity} at ${args.departingTime} from ${args.departingAirport} (${args.departingAirportCode})
+  //       //         `,
+  //       //         },
+  //       //       ],
+  //       //       display: {
+  //       //         name: "showFlights",
+  //       //         props: {
+  //       //           summary: args,
+  //       //         },
+  //       //       },
+  //       //     });
+
+  //       //     uiStream.update(
+  //       //       <BotCard>
+  //       //         <FlightStatus summary={args} />
+  //       //       </BotCard>
+  //       //     );
+  //       //   }
+  //       // }
+  //     }
+
+  //     uiStream.done();
+  //     textStream.done();
+  //     messageStream.done();
+  //   } catch (e) {
+  //     console.error(e);
+
+  //     const error = new Error(
+  //       "The AI got rate limited, please try again later."
+  //     );
+  //     uiStream.error(error);
+  //     textStream.error(error);
+  //     messageStream.error(error);
+  //     // aiState.done();
+  //   }
+  // })();
 
   return {
     id: nanoid(),
-    attachments: uiStream.value,
-    spinner: spinnerStream.value,
-    display: messageStream.value,
+    display: result.value,
   };
 }
 

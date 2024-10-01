@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export default function SitesDashboard({ wp_sites }: { wp_sites: WpSite[] }) {
   return (
-    <div className="container min-h-screen py-8">
+    <div className="container min-h-screen overflow-y-scroll py-8">
       <div className="">
         <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">
           Your WordPress Sites
@@ -86,7 +86,7 @@ export default function SitesDashboard({ wp_sites }: { wp_sites: WpSite[] }) {
                 >
                   <Link href={`/sites/${site.id}`}>
                     {/* <Code className="w-4 h-4 mr-2" /> */}
-                    View Site
+                    Site Settings
                   </Link>
                 </Button>
               </CardFooter>

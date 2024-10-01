@@ -1,12 +1,13 @@
 "use server";
 
 import { executeWordPressSQL } from "@/actions/wp";
-import { WP_PATH_RUN_SQL } from "@/lib/paths";
+import { WP_PATH_ADMIN_AUTO_LOGIN, WP_PATH_HEALTH, WP_PATH_INSTALL_PLUGIN, WP_PATH_SITE_INFO } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function currentSite(id: string) {
+  console.log("currentSite", id);
   const user = await currentUser();
 
   if (!user) throw new Error("User not found");
@@ -41,27 +42,35 @@ export async function retrieveSites({
 }
 
 export async function runSiteHealthCheck(
-  id: string,
-  url: string
-): Promise<boolean> {
+  site_id: string,
+): Promise<any> {
   try {
-    const response = await fetch(url, {
+    const site = await currentSite(site_id);
+    const url = new URL(`${site?.base_url}${WP_PATH_HEALTH}`);
+    console.log({
+      url: url.toString(),
+      api_key: site?.api_key,
+    })
+    const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
-        "User-Agent": "WordPress Sage Health Check",
+        "User-Agent": "WPCopilot Health Check",
+        Authorization: `Bearer ${site?.api_key}`,
       },
     });
+    const data = await response.json();
+    console.log({ data });
     await prisma.wp_site.update({
       where: {
-        id,
+        id: site_id,
       },
       data: {
-        plugin_connected: response.ok,
+        plugin_connected: data.api_key_valid,
         ...(response.ok && { last_connected_date: new Date() }),
       },
     });
 
-    return response.ok;
+    return data;
   } catch (error) {
     console.error("Health check failed:", error);
   }
@@ -70,27 +79,16 @@ export async function runSiteHealthCheck(
 
 export async function runSSHHealthCheck(credentials: SSH) {}
 
-export async function getCoreSiteData(siteId: string) {
+export async function getCoreSiteData(site: WpSite) {
   // const cacheKey = `core_site_data:${siteId}`;
   // const cachedData = await kv.get(cacheKey);
 
   // if (cachedData) {
   //   return cachedData;
   // }
-
-  const site = await prisma.wp_site.findUnique({
-    where: {
-      id: siteId,
-    },
-  });
-  if (!site) {
-    return;
-  }
-
   if (!site?.plugin_connected) {
     return;
   }
-
   const query = `
     SELECT option_name, option_value
     FROM wp_options
@@ -98,10 +96,27 @@ export async function getCoreSiteData(siteId: string) {
   `;
   let endpoint_url;
   try {
-    endpoint_url = new URL(WP_PATH_RUN_SQL, site.base_url).toString();
+    endpoint_url = new URL(WP_PATH_SITE_INFO, site.base_url).toString();
   } catch (error) {
     return;
   }
+
+  const response = await fetch(endpoint_url, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${site.api_key}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    console.error(`Failed to fetch from ${endpoint_url}. Status: ${response.status}`);
+    return {};
+  }
+
+  const responseData = await response.json();
+  console.log("responseData", responseData);
+  
 
   let { status, ok, data } = await executeWordPressSQL({
     query,
@@ -124,7 +139,7 @@ export async function getCoreSiteData(siteId: string) {
   if (core_site_data?.blogname && core_site_data?.blogname !== site?.name) {
     await prisma.wp_site.update({
       where: {
-        id: siteId,
+        id: site.id,
       },
       data: {
         name: core_site_data.blogname,
@@ -146,4 +161,50 @@ export async function getSshCredentials(siteId: string): Promise<SSH | null> {
   });
 
   return (site?.ssh as SSH) || null;
+}
+
+export async function installPlugin(siteId: string, plugin_url: string) {
+  const site = await currentSite(siteId);
+  if (!site) {
+    throw new Error('Site not found');
+  }
+  
+  const endpoint_url = new URL(WP_PATH_INSTALL_PLUGIN, site.base_url).toString();
+  
+  const response = await fetch(endpoint_url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${site.api_key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ plugin_url }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    return {
+      error: errorData.message || 'Failed to install plugin',
+      ok: response.ok,
+      status: response.status,
+    }
+  }
+  const data = await response.json();
+  return data;
+}
+
+export async function getAdminAutoLoginLink(siteId: string) {
+  const site = await currentSite(siteId);
+  if (!site) {
+    throw new Error('Site not found');
+  }
+  const endpoint_url = new URL(WP_PATH_ADMIN_AUTO_LOGIN, site.base_url).toString();
+
+  const response = await fetch(endpoint_url, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${site.api_key}`,
+    },
+  });
+  const data = await response.json();
+  return data.auto_login_url;
 }

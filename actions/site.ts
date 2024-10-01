@@ -18,7 +18,7 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
 
   const created_key = await unkey.keys.create({
     apiId: process.env.UNKEY_API_ID!,
-    prefix: "sage",
+    prefix: "wpc",
     byteLength: 16,
     externalId: user.id,
     meta: {

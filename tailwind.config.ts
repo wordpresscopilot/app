@@ -170,6 +170,7 @@ const config = {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
+    require("@assistant-ui/react/tailwindcss"),
     plugin(({ addUtilities, theme }) => {
       const animationDelays = theme("animationDelay") as Record<string, string>;
       const utilities = Object.entries(animationDelays).map(([key, value]) => ({

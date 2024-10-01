@@ -10,7 +10,14 @@ export const useLocalStorage = <T>(
     // Retrieve from localStorage
     const item = window.localStorage.getItem(key)
     if (item) {
-      setStoredValue(JSON.parse(item))
+      try {
+        const parsedItem = JSON.parse(item)
+        if (parsedItem !== undefined) {
+          setStoredValue(parsedItem)
+        }
+      } catch (error) {
+        console.error('Error parsing stored value:', error)
+      }
     }
   }, [key])
 
@@ -18,7 +25,11 @@ export const useLocalStorage = <T>(
     // Save state
     setStoredValue(value)
     // Save to localStorage
-    window.localStorage.setItem(key, JSON.stringify(value))
+    if (value !== undefined) {
+      window.localStorage.setItem(key, JSON.stringify(value))
+    } else {
+      window.localStorage.removeItem(key)
+    }
   }
   return [storedValue, setValue]
 }

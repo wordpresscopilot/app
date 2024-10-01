@@ -6,7 +6,6 @@ import { MarketingNavigation } from "@/components/marketing-navigation";
 import { PluginsMarquee } from "@/components/plugins-marquee";
 import { WPMarquee } from "@/components/wp-marquee";
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -53,36 +52,21 @@ export default function Home() {
             <h1 className="z-10 text-[40px] md:text-8xl text-white font-semibold text-center w-full">
               AI Powered
               <br />
-              Wordpress Copilot
+              Copilot for Wordpress
             </h1>
             <p
               className="leading-[140%] text-xl md:text-4xl text-center text-white font-base sm:max-w-[70%] mx-auto"
               style={{ textWrap: "balance" }}
             >
-              Wordpress Copilot is the fastest way to build and interact with
-              your Wordpress site.
+              The fastest way to build and interact with your Wordpress site.
             </p>
             <JoinWaitlistForm ref={waitlistFormRef} />
           </div>
         </section>
         <Section
-          color="#f8bdf4"
-          label={
-            <>
-              <span>Prompt</span>
-              <ArrowRight size={56} strokeWidth={2.5} className="mt-1.5" />
-              <span>Result</span>
-            </>
-          }
-          description="Modifying and interacting with your Wordpress site has never been easier."
-          image="https://placehold.co/1920x1080.png"
-          imageWidth={1920}
-          imageHeight={1080}
-        />
-        <Section
           color="#7dc7ff"
-          label={`Need some data?\nJust ask.`}
-          description={`"Hey copilot, show me our top 10 products by revenue."`}
+          label={`Install & Update Plugins`}
+          description={`"Hey copilot, add the latest elementor plugin to my site."`}
           image="https://placehold.co/1920x1080.png"
           imageWidth={1920}
           imageHeight={1080}
@@ -90,7 +74,19 @@ export default function Home() {
         <Section
           color="#f7cd72"
           label={`Updates at the\nspeed of AI.`}
-          description="Write a new about page, add a tax-line to your checkout, and so much more."
+          description="Modifying and interacting with your Wordpress site has never been easier."
+          image="https://placehold.co/1920x1080.png"
+          imageWidth={1920}
+          imageHeight={1080}
+        />
+        <Section
+          color="#f8bdf4"
+          label={
+            <>
+              <span>Ask and receive informed answers</span>
+            </>
+          }
+          description="Modifying and interacting with your Wordpress site has never been easier."
           image="https://placehold.co/1920x1080.png"
           imageWidth={1920}
           imageHeight={1080}
@@ -105,7 +101,6 @@ export default function Home() {
             <WPMarquee />
           </div>
         </Section>
-        {/* Supported plugins */}
         <Section
           color="#F5F5F5"
           label={`What plugins\ndo we support?`}
