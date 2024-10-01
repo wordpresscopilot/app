@@ -9,7 +9,7 @@ export const useStreamableText = (
   )
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       if (typeof content === 'object') {
         let value = ''
         for await (const delta of readStreamableValue(content)) {

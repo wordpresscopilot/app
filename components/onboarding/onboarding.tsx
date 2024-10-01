@@ -132,7 +132,6 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
 
     try {
       const formData = new FormData();
-      formData.append("name", projectName);
       formData.append("baseUrl", baseWordpressSiteUrl);
       const result = await createSiteProject(formData);
 
@@ -202,7 +201,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-3xl font-bold">
             <Logo />
-            <span>Welcome to Wordpress Copilot</span>
+            <span>Welcome to WP Copilot</span>
           </CardTitle>
           <CardDescription className="text-base font-medium">
             {`Let's get your WordPress site connected in just a few steps.`}
@@ -238,7 +237,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
             </TabsList>
             <TabsContent value={Steps.ADD_SITE.toString()}>
               <form onSubmit={handleCreateProject} className="space-y-4 mt-4">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="project-name">Site Name</Label>
                   <Input
                     id="project-name"
@@ -246,7 +245,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                   />
-                </div>
+                </div> */}
                 <div className="space-y-2">
                   <Label htmlFor="base-url">WordPress Site Base URL</Label>
                   <Input
@@ -294,7 +293,7 @@ export default function Onboarding({ user_site }: { user_site?: WpSite }) {
                   <CardHeader>
                     <CardTitle>Your API Key</CardTitle>
                     <CardDescription>
-                      Your Wordpress Sage API key below
+                      Your WPCopilot API key below
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

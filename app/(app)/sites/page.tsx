@@ -4,6 +4,7 @@ import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Page() {
   const user = await currentUser();
+  console.log({ user });
   const user_sites = await retrieveSites({
     user_id: user?.id!,
   });

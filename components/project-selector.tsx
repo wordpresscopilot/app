@@ -57,8 +57,6 @@ export default function ProjectSelector({
   // }, [pathname, user_sites, setSelectedSite]);
 
   const site = user_sites.find((site: WpSite) => site.id === siteId);
-  console.log(site);
-
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -78,14 +76,12 @@ export default function ProjectSelector({
                   </AvatarFallback>
                 </Avatar>
               )}
-              {siteId
-                ? site?.name || site?.base_url
-                : "Select wordpress site..."}
+              {siteId ? site?.name || site?.base_url : "Select Site..."}
             </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-fit p-0">
+        <PopoverContent className="w-fit p-0 bg-white">
           <Command>
             <CommandInput placeholder="Search sites..." />
             <CommandEmpty>No site found.</CommandEmpty>

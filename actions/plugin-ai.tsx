@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import "server-only";
 
 import {
@@ -13,6 +15,7 @@ import { saveChat } from "@/actions";
 import { BotMessage } from "@/components/stocks";
 import { SpinnerMessage, UserMessage } from "@/components/stocks/message";
 import { CheckIcon, IconSpinner } from "@/components/ui/icons";
+import { rateLimit } from "@/lib/ratelimit";
 import { nanoid, sleep } from "@/lib/utils";
 import { openai } from "@ai-sdk/openai";
 import { currentUser } from "@clerk/nextjs/server";
@@ -116,7 +119,7 @@ async function submitUserMessage(content: string, plugin: Plugin) {
   "use server";
 
   console.log("submitUserMessage plugin", content, plugin);
-  // await rateLimit();
+  await rateLimit();
 
   const aiState = getMutableAIState();
 

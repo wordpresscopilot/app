@@ -7,22 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DownloadIcon, GithubIcon, ScaleIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "./logo";
 
 export default function PluginDownloadCard() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="flex flex-col items-center space-y-4">
-        <Image
-          src="/wp_colored.svg"
-          alt="WPSage Wordpress Plugin Logo"
-          width={100}
-          height={100}
-          className="rounded-full"
-        />
+        <Logo width={64} height={64} />
         <CardTitle className="text-2xl font-bold text-center">
-          WPSage Wordpress Plugin
+          WPCopilot Wordpress Plugin
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -34,7 +28,7 @@ export default function PluginDownloadCard() {
         </p>
         <div className="flex justify-center space-x-4">
           <a
-            href="https://github.com/w-p-ai/sage-plugin"
+            href="https://github.com/wordpresscopilot/plugin"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center text-sm text-muted-foreground hover:text-primary"
@@ -49,10 +43,10 @@ export default function PluginDownloadCard() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-4">
-        <Link href="https://github.com/w-p-ai/wpsage-plugin/raw/main/wpsage-plugin.zip">
+        <Link href="https://github.com/wordpresscopilot/plugin/releases/download/v8/wordpress-copilot.zip">
           <Button className="w-full sm:w-auto">
             <DownloadIcon className="mr-2 h-4 w-4" />
-            Download Plugin
+            Download V5 Plugin
           </Button>
         </Link>
         <p className="text-xs text-center text-muted-foreground">

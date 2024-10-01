@@ -4,7 +4,7 @@ import { ChatPanel } from "@/components/chat-panel";
 import { useSelectedSite } from "@/contexts/selected-site";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useScrollAnchor } from "@/hooks/use-scroll-anchor";
-import { Message } from "@/types";
+import { Message } from "@/types/export-pipeline";
 import { useAIState, useUIState } from "ai/rsc";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

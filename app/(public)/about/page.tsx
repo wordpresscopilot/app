@@ -122,9 +122,9 @@ export default function HomePage() {
                 <div className="flex flex-col items-center space-y-4 text-center">
                   {/* <div className="relative h-[500px] rounded-lg w-full bg-background overflow-hidden border"></div> */}
                   <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none bg-clip-text text-transparent text-white">
-                    WPCopilot AI Powered Wordpress Copilot
+                    AI Powered Wordpress Copilot
                   </h1>
-                  <p className="mx-auto max-w-[700px] text-white md:text-xl">
+                  <p className="mx-auto max-w-[700px] text-white text-xl">
                     Elevate your WordPress experience with an AI agent who can
                     manage and develop your site with prompts.
                   </p>
@@ -165,9 +165,9 @@ export default function HomePage() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-gray-100">
                   Supercharge Your WordPress Site
                 </h2>
-                <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-                  Harness the power of AI to streamline your WordPress
-                  development process. From content creation to performance
+                <p className="text-center text-white mb-12 max-w-2xl mx-auto text-xl">
+                  Harness the power of AI to understand and manage your site.
+                  From plugin development, data exports, to performance
                   optimization, our intelligent assistant is here to
                   revolutionize your workflow.
                 </p>

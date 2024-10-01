@@ -1,12 +1,13 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 import { Button } from "./ui/button";
 
 export const MarketingNavigation = ({
-  scrollToWaitlistForm,
+  scrollToWaitlistForm = () => {},
 }: {
-  scrollToWaitlistForm: () => void;
+  scrollToWaitlistForm?: () => void;
 }) => {
   const showAppEntryFlag = useFeatureFlagEnabled("show_app_entry");
   const links = [
@@ -15,7 +16,7 @@ export const MarketingNavigation = ({
       href: "/about",
     },
     {
-      label: "Plugins",
+      label: "Integrations",
       href: "/plugins",
     },
     ...(showAppEntryFlag
@@ -35,8 +36,8 @@ export const MarketingNavigation = ({
         ]
       : []),
     {
-      label: "Privacy Policy",
-      href: "/privacy-policy",
+      label: "WPCopilot Plugin Download",
+      href: "/plugin",
     },
     ...(showAppEntryFlag
       ? [

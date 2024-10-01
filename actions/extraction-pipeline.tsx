@@ -1,13 +1,16 @@
+// @ts-nocheck
+
 "use server";
 
+import { ExtractionPipelineFormSchema } from "@/actions/types/extraction-pipeline";
 import { executeWordPressSQL } from "@/actions/wp";
 import { runSiteHealthCheck } from "@/data/site";
 import { WP_PATH_RUN_SQL } from "@/lib/paths";
 import { WpSite } from "@/types";
+import { UserRequestCategoryType } from "@/types/export-pipeline";
 import { openai } from "@ai-sdk/openai";
-import { generateObject } from "ai";
+import { CoreMessage, generateObject } from "ai";
 import { z } from "zod";
-import { ExtractionPipelineFormSchema } from "@/actions/types/extraction-pipeline";
 
 export const runExtractionPipeline = async (
   formData: z.infer<typeof ExtractionPipelineFormSchema>
@@ -21,7 +24,7 @@ export const runExtractionPipeline = async (
     console.log("categories", categories);
 
     // Step 2: Verify permissions
-    const hasPermissions = await verifyHasPermissions(wpSite);
+    const hasPermissions = await verifyHasSitePermissions(wpSite);
     console.log("hasPermissions", hasPermissions);
     if (!hasPermissions) {
       throw new Error("Insufficient permissions to perform data extraction.");
@@ -81,32 +84,36 @@ export const runExtractionPipeline = async (
   }
 };
 
-export const categorizeRequest = async (user_request: string) => {
+export const categorizeRequest = async ({
+  messages,
+}: {
+  messages: CoreMessage[];
+}) => {
+  const system = `Categorize the following message, which action state does it belong to? Provide the category name.`;
   const result = await generateObject({
-    model: openai(process.env.DEFAULT_OPENAI_MODEL || "gpt-4-o", {
-      structuredOutputs: true,
-    }),
-    prompt: `
-    Categorize the following user request. Is it related to data extraction or something else?
-    Analyze the user's input: "${user_request}". Does it belong to the data extraction category or another category? Provide the category name.`,
-
+    model: openai(process.env.DEFAULT_OPENAI_MODEL || "gpt-4-turbo"),
+    output: "array",
+    system,
+    messages,
     schema: z.object({
       category: z.enum([
-        "data_extraction",
-        "content_creation",
-        "site_management",
-        "plugin_management",
-        "other",
+        UserRequestCategoryType.DATA_EXTRACTION_REQUEST,
+        UserRequestCategoryType.RUN_SQL_QUERY,
+        // UserRequestCategoryType.DATA_EXPLANATION,
+        // UserRequestCategoryType.CONTENT_CREATION,
+        // UserRequestCategoryType.SITE_MANAGEMENT,
+        // UserRequestCategoryType.PLUGIN_MANAGEMENT,
+        UserRequestCategoryType.OTHER,
       ]),
     }),
   });
 
-  if (result?.object?.category !== "data_extraction") {
-    throw new Error(
-      `Request is not related to data extraction. Category: ${result?.object?.category}`
-    );
-  }
-  return result;
+  // if (result?.object?.category !== "data_extraction") {
+  //   throw new Error(
+  //     `Request is not related to data extraction. Category: ${result?.object?.category}`
+  //   );
+  // }
+  return result?.object?.[0].category;
 };
 
 export const recognizeEntityIntent = async (user_request: string) => {
@@ -140,14 +147,13 @@ export const recognizeEntityIntent = async (user_request: string) => {
   return result;
 };
 
-export const verifyHasPermissions = async (
+export const verifyHasSitePermissions = async (
   wpSite: WpSite
 ): Promise<boolean> => {
   const healthCheckResult = await runSiteHealthCheck(
     wpSite.id,
     wpSite.base_url
   );
-  console.log("healthCheckResult", healthCheckResult);
   return healthCheckResult;
   // && healthCheckResult.api_key_valid === true;
 };
@@ -167,7 +173,7 @@ export const dataAvailabilityCheck = async (
   const queryResult = await executeWordPressSQL({
     query: sampleQuery,
     api_key: wpSite.api_key,
-    api_url: `${wpSite.base_url}/wp-json/wpsage/v1/execute-sql`,
+    api_url: `${wpSite.base_url}${WP_PATH_RUN_SQL}`,
   });
 
   if (!queryResult.ok || queryResult.error) {

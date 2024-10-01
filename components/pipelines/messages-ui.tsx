@@ -10,76 +10,92 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import {
-  Artifact,
-  Messages,
-  Role,
-  TextContentType,
-} from "@/types/export-pipeline";
+import { Artifact, Message, Role } from "@/types/export-pipeline";
 import { Loader2, User } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { toast } from "sonner";
 
 export function MessagesUI() {
-  const { isSubmitting, messages, error } = useExportContext();
+  const { isSubmitting, error, aiState, messages } = useExportContext();
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   return (
     <div className="flex flex-col gap-3 overflow-y-auto min-h-full grow p-4 pr-0 max-h-full pb-[112px]">
-      {messages.map((message, index) => (
-        <Message key={index} message={message} />
-      ))}
-      {isSubmitting && <LoadingMessage />}
-      {error && <ErrorMessage error={error} />}
+      {messages.map((message: any, index: number) => {
+        return <>{message?.display}</>;
+      })}
       <div ref={messagesEndRef} />
     </div>
   );
 }
 
-const Message = ({ message }: { message: Messages }) => {
+export const UserMessage = ({ content }: { content: string }) => {
+  return (
+    <div
+      className={cn(
+        "flex gap-2 border border-border rounded-lg py-4 px-3 backdrop-brightness-80"
+      )}
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-row items-center gap-2">
+          <UserAvatar />
+          {content}
+        </div>
+      </div>
+    </div>
+  );
+};
+export const AssistantMessage = ({
+  content,
+  artifacts,
+}: {
+  content: string;
+  artifacts?: Artifact[];
+}) => {
+  return (
+    <div
+      className={cn(
+        "flex gap-2 border border-border rounded-lg py-4 px-3 backdrop-brightness-90"
+      )}
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-row items-center gap-2">
+          <SystemAvatar />
+          {content}
+        </div>
+        {artifacts?.length ? (
+          <div className="flex flex-row gap-4">
+            {artifacts?.map((artifact, index) => (
+              <ArtifactCard key={index} artifact={artifact} />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+export const MessageUI = ({ message }: { message: any }) => {
   return (
     <div
       className={cn(
         "flex gap-2 border border-border rounded-lg py-4 px-3",
-        message.role === "system"
+        message.role === Role.SYSTEM || message.role === Role.ASSISTANT
           ? "backdrop-brightness-90"
           : "backdrop-brightness-50"
       )}
     >
-      {message.role === "system" ? <SystemAvatar /> : <UserAvatar />}
+      {message?.role === Role.USER ? <UserAvatar /> : null}
+      {message?.role === Role.SYSTEM ? <SystemAvatar /> : null}
+      {message?.role === Role.ASSISTANT ? <SystemAvatar /> : null}
+
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          {message.text.map((text, index) => (
-            <div
-              key={index}
-              className={cn(
-                "flex flex-col gap-2 text-sm",
-                index === 0 ? (text.title ? "pt-[3px]" : "pt-[6px]") : null
-              )}
-            >
-              {text.title && (
-                <div className="text-base font-semibold">{text.title}</div>
-              )}
-              {text.type === TextContentType.TEXT ? (
-                <div>{text.text}</div>
-              ) : (
-                <div>{text.text}</div>
-              )}
-            </div>
-          ))}
-        </div>
+        <div className="flex flex-col gap-2">{message?.text?.[0]?.text}</div>
         {message.artifacts && (
           <div className="flex flex-col gap-3">
-            {message.artifacts.map((artifact, index) => (
+            {message.artifacts.map((artifact: Artifact, index: number) => (
               <ArtifactCard key={index} artifact={artifact} />
             ))}
           </div>
@@ -89,7 +105,7 @@ const Message = ({ message }: { message: Messages }) => {
   );
 };
 
-const LoadingMessage = () => (
+export const LoadingMessage = () => (
   <div className="flex gap-2 border border-border rounded-lg py-4 px-3 backdrop-brightness-90">
     <SystemAvatar />
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -99,12 +115,12 @@ const LoadingMessage = () => (
   </div>
 );
 
-const ErrorMessage = ({ error }: { error: string }) => {
+export const ErrorMessage = ({ error }: { error: string }) => {
   const { messages, setMessages, onSubmit, isSubmitting } = useExportContext();
 
   const handleTryAgain = () => {
     const lastUserMessageIndex = messages.findLastIndex(
-      (message) => message.role === Role.USER
+      (message: Message) => message.role === Role.USER
     );
 
     if (lastUserMessageIndex === -1) {
@@ -115,7 +131,7 @@ const ErrorMessage = ({ error }: { error: string }) => {
     const lastUserMessageText = messages[lastUserMessageIndex].text[0].text;
 
     if (lastUserMessageText) {
-      setMessages((prev) => prev.slice(0, lastUserMessageIndex));
+      setMessages((prev: any) => prev.slice(0, lastUserMessageIndex));
       onSubmit({ userRequest: lastUserMessageText });
     }
   };
@@ -139,9 +155,8 @@ const ErrorMessage = ({ error }: { error: string }) => {
   );
 };
 
-const ArtifactCard = ({ artifact }: { artifact: Artifact }) => {
+export const ArtifactCard = ({ artifact }: { artifact: Artifact }) => {
   const { activeArtifact, setActiveArtifact } = useExportContext();
-
   return (
     <Card
       onClick={() => setActiveArtifact(artifact)}

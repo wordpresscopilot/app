@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSelectedSite } from "@/contexts/selected-site";
 import { runSiteHealthCheck } from "@/data/site";
 import { WP_PATH_HEALTH } from "@/lib/paths";
 import { SiteHealthStatus, WpSite } from "@/types";
@@ -19,11 +20,12 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
   const [siteName, setSiteName] = useState(site?.name);
   const [baseUrl, setBaseUrl] = useState(site?.base_url);
   const [isLoading, setIsLoading] = useState(false);
+  const { refreshSelectedSite } = useSelectedSite();
   const [status, setStatus] = useState<SiteHealthStatus>(
     site?.plugin_connected ? "connected" : "disconnected"
   );
   const [statusSSH, setStatusSSH] = useState<SiteHealthStatus>(
-    site?.ssh?.healthy ? "connected" : "disconnected"
+    site?.ssh_connected ? "connected" : "disconnected"
   );
 
   const getHealthCheckUrl = () => {
@@ -42,15 +44,13 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
   const checkSiteHealth = async () => {
     try {
       setStatus("checking");
-      const healthStatus = await runSiteHealthCheck(
-        site?.id,
-        getHealthCheckUrl()
-      );
+      const healthStatus = await runSiteHealthCheck(site?.id);
       if (healthStatus) {
         setStatus("connected");
       } else {
         setStatus("disconnected");
       }
+      refreshSelectedSite();
     } catch (error) {
       console.error("Error checking status:", error);
     }
@@ -111,7 +111,7 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
               Refresh Plugin Status
             </Button>
           </div>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div
                 className={`h-3 w-3 rounded-full ${
@@ -140,14 +140,12 @@ export default function WpSiteStatus({ site }: { site: WpSite }) {
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh SSH Status
             </Button>
-          </div>
+          </div> */}
         </div>
         <Accordion type="single" collapsible className="w-full mt-4">
           <AccordionItem value="connection-details">
-            <AccordionTrigger className="text-xs">
-              Connection Details
-            </AccordionTrigger>
-            <AccordionContent className="text-xs">
+            <AccordionTrigger>Connection Details</AccordionTrigger>
+            <AccordionContent>
               <ul className="space-y-2">
                 <li>
                   <strong>Site URL:</strong> {site.base_url}

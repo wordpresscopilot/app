@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,8 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { plugins } from "@/constants/plugins";
+import { searchWordPressPlugins } from "@/lib/wordpress";
+import { Plugin as WPPlugin } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 interface PluginProps {
   name: string;
@@ -52,17 +56,55 @@ const Plugin: React.FC<PluginProps> = ({ name, description, image_url }) => (
 );
 
 export default function PluginsPageGrid() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const results = await searchWordPressPlugins(searchQuery);
+    console.log("searchResults", results);
+    setSearchResults(results as any);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white py-12">
       <div className="container mx-auto px-4 ">
         <h1 className="text-3xl font-bold text-center mb-8">
           Supported WordPress Plugins & Modes
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plugins.map((plugin) => (
-            <Plugin key={plugin.name} {...plugin} />
-          ))}
-        </div>
+        <form onSubmit={handleSearch} className="mb-8">
+          <div className="flex justify-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search WordPress plugins..."
+              className="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <Button type="submit" className="rounded-l-none">
+              Search
+            </Button>
+          </div>
+        </form>
+        {searchResults.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {searchResults.map((plugin: WPPlugin, index) => (
+              <Plugin
+                image_url=""
+                key={index}
+                name={plugin.name}
+                description={`Version: ${plugin.version}, Author: ${plugin.author}`}
+                // image_url={`https://ps.w.org/${plugin.slug}/assets/icon-128x128.png`}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {plugins.map((plugin) => (
+              <Plugin key={plugin.name} {...plugin} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

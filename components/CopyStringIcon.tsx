@@ -6,7 +6,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function CopyStringIcon({
@@ -16,10 +17,22 @@ export function CopyStringIcon({
   stringToCopy: string;
   successText?: string;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
+
   const copyAddress = () => {
     try {
       navigator.clipboard.writeText(stringToCopy);
       toast.success(successText || "Copied to clipboard");
+      setCopied(true);
     } catch (err: any) {
       toast.error("Failed to copy", {
         description: err?.message || "Unknown error",
@@ -31,13 +44,17 @@ export function CopyStringIcon({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <CopyIcon
-            className="w-4 h-4 cursor-pointer transition-colors text-muted-foreground hover:text-primary-foreground"
-            onClick={copyAddress}
-          />
+          {copied ? (
+            <CheckIcon className="w-4 h-4 cursor-pointer transition-colors" />
+          ) : (
+            <CopyIcon
+              className="w-4 h-4 cursor-pointer transition-colors text-muted-foreground hover:text-primary-foreground"
+              onClick={copyAddress}
+            />
+          )}
         </TooltipTrigger>
         <TooltipContent>
-          <p>Click to copy</p>
+          <p>{copied ? "Copied!" : "Click to copy"}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

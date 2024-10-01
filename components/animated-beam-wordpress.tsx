@@ -4,6 +4,9 @@ import React, { forwardRef, useRef } from "react";
 
 import { AnimatedBeam } from "@/components/magicui/animated-beam";
 import { cn } from "@/lib/utils";
+import { DatabaseBackupIcon } from "lucide-react";
+import { Logo } from "./logo";
+import { IconOpenAI, PHPIcon, WordpressLogo } from "./ui/icons";
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -50,24 +53,21 @@ export function AnimatedBeamWordpress({ className }: { className?: string }) {
         </div>
         <div className="flex flex-col justify-center">
           <Circle ref={div6Ref} className="size-16">
-            <Icons.openai />
+            <Logo />
           </Circle>
         </div>
         <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref}>
-            <Icons.googleDrive />
+            <WordpressLogo />
           </Circle>
           <Circle ref={div2Ref}>
-            <Icons.googleDocs />
+            <DatabaseBackupIcon />
           </Circle>
           <Circle ref={div3Ref}>
-            <Icons.whatsapp />
+            <IconOpenAI />
           </Circle>
           <Circle ref={div4Ref}>
-            <Icons.messenger />
-          </Circle>
-          <Circle ref={div5Ref}>
-            <Icons.notion />
+            <PHPIcon />
           </Circle>
         </div>
       </div>

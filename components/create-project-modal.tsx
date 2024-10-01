@@ -43,6 +43,7 @@ export function CreateProjectModal({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("handleSubmit", handleSubmit);
     e.preventDefault();
     if (!validateUrl(url)) return;
 
@@ -69,7 +70,7 @@ export function CreateProjectModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Wordpress Site</DialogTitle>
+          <DialogTitle>Connect New Wordpress Site</DialogTitle>
           <DialogDescription>
             Enter the details of your Wordpress Site.
           </DialogDescription>
