@@ -67,17 +67,17 @@ export default function Home() {
           color="#7dc7ff"
           label={`Install & Update Plugins`}
           description={`"Hey copilot, add the latest elementor plugin to my site."`}
-          image="https://placehold.co/1920x1080.png"
-          imageWidth={1920}
-          imageHeight={1080}
+          // image="https://placehold.co/1920x1080.png"
+          // imageWidth={1920}
+          // imageHeight={1080}
         />
         <Section
           color="#f7cd72"
           label={`Updates at the\nspeed of AI.`}
           description="Modifying and interacting with your Wordpress site has never been easier."
-          image="https://placehold.co/1920x1080.png"
-          imageWidth={1920}
-          imageHeight={1080}
+          // image="https://placehold.co/1920x1080.png"
+          // imageWidth={1920}
+          // imageHeight={1080}
         />
         <Section
           color="#f8bdf4"
@@ -87,9 +87,9 @@ export default function Home() {
             </>
           }
           description="Modifying and interacting with your Wordpress site has never been easier."
-          image="https://placehold.co/1920x1080.png"
-          imageWidth={1920}
-          imageHeight={1080}
+          // image="https://placehold.co/1920x1080.png"
+          // imageWidth={1920}
+          // imageHeight={1080}
         />
         {/* Marquee */}
         <Section

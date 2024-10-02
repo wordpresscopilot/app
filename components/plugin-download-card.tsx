@@ -43,7 +43,7 @@ export default function PluginDownloadCard() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-4">
-        <Link href="https://github.com/wordpresscopilot/plugin/releases/download/v8/wordpress-copilot.zip">
+        <Link href="https://github.com/wordpresscopilot/plugin/releases/download/v14/wordpress-copilot.zip">
           <Button className="w-full sm:w-auto">
             <DownloadIcon className="mr-2 h-4 w-4" />
             Download V5 Plugin
