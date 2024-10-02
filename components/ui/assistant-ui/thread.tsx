@@ -19,7 +19,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useActiveArtifact } from "@/contexts/active-artifact";
 import { cn } from "@/lib/utils";
-import { Message, ToolType } from "@/types/export-pipeline";
+import {
+  Artifact,
+  ArtifactType,
+  getArtifactIcon,
+  Message,
+  ToolType,
+} from "@/types/export-pipeline";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import {
   ArrowDownIcon,
@@ -32,10 +38,12 @@ import {
   SendHorizontalIcon,
   StopCircleIcon,
 } from "lucide-react";
+import React from "react";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "../card";
@@ -202,6 +210,7 @@ const MyEditComposer: FC = () => {
 };
 
 const AskForPermissionArtifact: FC = () => {
+  const [buttonClicked, setButtonClicked] = useState(false);
   const message = useMessage((m) =>
     getExternalStoreMessage<Message>(m.message)
   );
@@ -217,12 +226,19 @@ const AskForPermissionArtifact: FC = () => {
       <p className="text-sm mb-4">{artifact.description}</p>
       <div className="flex gap-2">
         <ThreadPrimitive.Suggestion
-          prompt={"Confirm Permission" || ""}
+          prompt={"Permission Granted" || ""}
           method="replace"
           autoSend
           asChild
+          disabled={buttonClicked}
         >
-          <Button size="sm">Confirm Permission</Button>
+          <Button
+            size="sm"
+            disabled={buttonClicked}
+            onClick={() => setButtonClicked(true)}
+          >
+            Grant Permission
+          </Button>
         </ThreadPrimitive.Suggestion>
       </div>
     </div>
@@ -248,25 +264,51 @@ const ViewableArtifacts: FC = () => {
 
   return (
     <div className="mt-4 space-y-4">
-      {message.artifacts.map((artifact, index) => {
+      {message.artifacts.map((artifact: Artifact, index) => {
+        if (artifact?.content?.length === 0) return;
         return (
-          <Card
-            key={index}
-            className={`cursor-pointer bg-muted/50 hover:bg-muted transition-colors ${
-              artifact.isError ? "border-red-500 border-2" : ""
-            }`}
-            onClick={() => {
-              setActiveArtifact(artifact);
-              console.log("Artifact clicked:", artifact);
-            }}
-          >
-            <CardHeader>
-              <CardTitle className="text-sm">{artifact.title}</CardTitle>
-              <CardDescription className="text-xs">
-                {artifact.description}
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div key={index}>
+            <Card
+              className={`cursor-pointer bg-muted/50 hover:bg-muted transition-colors ${
+                artifact.isError ? "border-red-500 border-2" : ""
+              }`}
+              onClick={() => {
+                setActiveArtifact(artifact);
+                console.log("Artifact clicked:", artifact);
+              }}
+            >
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <div>
+                    {React.createElement(getArtifactIcon(artifact.type))}
+                  </div>
+                  <div>{artifact.title}</div>
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {artifact.description}
+                </CardDescription>
+              </CardHeader>
+              {/* <CardFooter></CardFooter> */}
+            </Card>
+            {artifact.toolName === ToolType.GENERATE_PAGE && (
+              <CardFooter className="flex justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const playgroundArtifact = {
+                      ...artifact,
+                      type: ArtifactType.PLAYGROUND,
+                    } as Artifact;
+                    setActiveArtifact(playgroundArtifact);
+                  }}
+                >
+                  View in Playground
+                </Button>
+              </CardFooter>
+            )}
+          </div>
         );
       })}
     </div>

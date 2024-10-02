@@ -20,12 +20,72 @@ export enum ArtifactType {
   XML = "xml",
   YAML = "yaml",
   SQL = "sql",
+  PHP = "php",
   MARKDOWN = "markdown",
   CODE = "code",
   JSON_TABLE = "json_table",
   BUTTONS = "buttons",
   SITE = "site",
+  PLAYGROUND = "playground",
 }
+
+import { IconType } from 'react-icons';
+import {
+  FaCode,
+  FaDatabase,
+  FaFile,
+  FaFileAlt,
+  FaFileCode,
+  FaFileExcel,
+  FaFilePdf,
+  FaFileWord, FaGlobe,
+  FaHtml5,
+  FaImage, FaLink,
+  FaMarkdown,
+  FaPhp,
+  FaTable,
+} from 'react-icons/fa';
+
+export function getArtifactIcon(type: ArtifactType): IconType {
+  switch (type) {
+    case ArtifactType.TEXT:
+      return FaFileAlt;
+    case ArtifactType.TABLE:
+      return FaTable;
+    case ArtifactType.JSON_TABLE:
+      return FaTable;
+    case ArtifactType.IMAGE:
+      return FaImage;
+    case ArtifactType.LINK:
+      return FaLink;
+    case ArtifactType.FILE:
+      return FaFile;
+    case ArtifactType.JSON:
+    case ArtifactType.CODE:
+      return FaCode;
+    case ArtifactType.CSV:
+      return FaFileExcel;
+    case ArtifactType.PDF:
+      return FaFilePdf;
+    case ArtifactType.HTML:
+      return FaHtml5;
+    case ArtifactType.XML:
+      return FaFileCode;
+    case ArtifactType.SQL:
+      return FaDatabase;
+    case ArtifactType.PHP:
+      return FaPhp;
+    case ArtifactType.MARKDOWN:
+      return FaMarkdown;
+    case ArtifactType.BUTTONS:
+      return FaFileWord;
+    case ArtifactType.SITE:
+      return FaGlobe;
+    default:
+      return FaFile;
+  }
+}
+
 
 export interface Artifact {
   id: string;
@@ -44,7 +104,10 @@ export enum ToolType {
   GET_CORE_SITE_DATA = "getCoreSiteData",
   SEARCH_PLUGINS = "searchPlugins",
   INSTALL_PLUGIN = "installPlugin",
+  INSTALL_PLUGIN_FILE = "installPluginFile",
+  REMOVE_PLUGIN = "removePlugin",
   ASK_FOR_PERMISSION = "askForPermission",
+  GENERATE_PAGE = "generatePage",
   ANSWER = "answer",
   SHOW_SITE = "showSite",
   ERROR = "error",

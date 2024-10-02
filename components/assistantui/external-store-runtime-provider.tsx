@@ -115,7 +115,7 @@ export function CustomExternalStoreRuntimeProvider({
               artifact.type = ArtifactType.TEXT;
               artifact.title = title;
               artifact.description = description;
-              artifact.content = [result];
+              artifact.content = [JSON.stringify(item.args.steps as any)];
               artifact.toolName = ToolType.ANSWER;
               break;
             case ToolType.ERROR:
@@ -131,10 +131,36 @@ export function CustomExternalStoreRuntimeProvider({
               artifact.description = description;
               artifact.toolName = ToolType.ASK_FOR_PERMISSION;
               break;
-
+            case ToolType.INSTALL_PLUGIN:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.INSTALL_PLUGIN;
+              break;
+            case ToolType.REMOVE_PLUGIN:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.REMOVE_PLUGIN;
+              break;
+            case ToolType.GENERATE_PAGE:
+              artifact.type = ArtifactType.CODE;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [
+                JSON.stringify({
+                  prompt: item.args.prompt,
+                  plugin_name: item.result.plugin_name,
+                  plugin_file_content: item.result.plugin_file_content,
+                  page_path: item.result.page_path,
+                }),
+              ];
+              artifact.toolName = ToolType.GENERATE_PAGE;
+              break;
             // Add more cases for other tool types as needed
           }
-          console.log("artifact", artifact);
           // if (m.toolName === ToolType.GET_CURRENT_SITE_PLUGINS) {
 
           // type: ArtifactType.JSON_TABLE,

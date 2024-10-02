@@ -21,7 +21,7 @@ if (typeof window !== "undefined") {
 export function Providers({ children, ...props }: ThemeProviderProps) {
   return (
     <PostHogProvider client={posthog}>
-      <NextThemesProvider {...props} defaultTheme="system">
+      <NextThemesProvider {...props}>
         <SidebarProvider>
           <TooltipProvider>
             <SelectedSiteProvider>{children}</SelectedSiteProvider>

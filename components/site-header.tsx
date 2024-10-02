@@ -11,7 +11,7 @@ import { getAdminAutoLoginLink } from "@/data/site";
 import { nanoid } from "@/lib/utils";
 import { WpSite } from "@/types";
 import { Artifact, ArtifactType, ToolType } from "@/types/export-pipeline";
-import { Globe2Icon, Pencil, RefreshCw } from "lucide-react";
+import { Computer, Globe2Icon, Pencil, RefreshCw } from "lucide-react";
 
 interface WpSiteHeaderProps {
   site: WpSite;
@@ -28,7 +28,18 @@ export default function SiteHeader({ site }: WpSiteHeaderProps) {
       description: site?.base_url,
       type: ArtifactType.SITE,
       toolName: ToolType.SHOW_SITE,
-      content: [adminAutoLoginLink],
+      content: [site?.base_url],
+    } as Artifact;
+    return artifact;
+  };
+  const createPlaygroundArtifact = async () => {
+    let artifact = {
+      id: nanoid(),
+      title: "Site Playground",
+      description: "",
+      type: ArtifactType.PLAYGROUND,
+      toolName: ToolType.SHOW_SITE,
+      content: [],
     } as Artifact;
     return artifact;
   };
@@ -62,6 +73,28 @@ export default function SiteHeader({ site }: WpSiteHeaderProps) {
           </TooltipProvider>
         </div>
         <div className="flex items-center gap-2">
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={async () => {
+                    if (activeArtifact?.type === ArtifactType.PLAYGROUND) {
+                      setActiveArtifact(null);
+                    } else {
+                      setActiveArtifact(await createPlaygroundArtifact());
+                    }
+                  }}
+                >
+                  <Computer className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Open Playground</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>

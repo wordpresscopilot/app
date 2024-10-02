@@ -13,12 +13,16 @@ import { useActiveArtifact } from "@/contexts/active-artifact";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { Artifact, ArtifactType } from "@/types/export-pipeline";
 import { XIcon } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { IframePanel } from "../iframe-panel";
+import { PlaygroundArtifact } from "../playground/playground-artifact";
 import JSONArrayTable from "../ui/json-table";
 
 const CODE_TYPES = [
   ArtifactType.CODE,
   ArtifactType.SQL,
+  ArtifactType.PHP,
   ArtifactType.JSON,
   ArtifactType.CSV,
   ArtifactType.YAML,
@@ -66,6 +70,8 @@ const ArtifactCard = ({
   console.log("artifact", artifact);
   if (artifact?.type === ArtifactType.SITE) {
     return <IframePanel src={artifact.content[0]} />;
+  } else if (artifact?.type === ArtifactType.PLAYGROUND) {
+    return <PlaygroundArtifact artifact={artifact} />;
   }
   return (
     <div
@@ -102,7 +108,7 @@ const ArtifactCard = ({
               // )
             }
           </CardHeader>
-          <CardContent>
+          <CardContent className="h-[calc(100vh-200px)] overflow-y-scroll">
             {artifact?.isError && (
               <div
                 className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -120,16 +126,16 @@ const ArtifactCard = ({
                 artifact?.type === ArtifactType.JSON_TABLE ? (
                   <JSONArrayTable key={index} data={JSON.parse(item)} />
                 ) : CODE_TYPES.includes(artifact?.type) ? (
-                  <pre key={index} className="p-4 rounded overflow-auto">
-                    <code>
-                      {JSON_TYPES.includes(artifact?.type)
-                        ? JSON.stringify(item, null, 2)
-                        : item}
-                    </code>
-                  </pre>
-                ) : (
-                  <div key={index}>{item}</div>
-                )
+                  JSON_TYPES.includes(artifact?.type) ? (
+                    <SyntaxHighlighter key={index} style={dark} language="json">
+                      {item}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <SyntaxHighlighter key={index} style={dark}>
+                      {item}
+                    </SyntaxHighlighter>
+                  )
+                ) : null
               )}
           </CardContent>
         </Card>

@@ -1,7 +1,7 @@
 "use server";
 
 import { executeWordPressSQL } from "@/actions/wp";
-import { WP_PATH_ADMIN_AUTO_LOGIN, WP_PATH_HEALTH, WP_PATH_INSTALL_PLUGIN, WP_PATH_SITE_INFO } from "@/lib/paths";
+import { WP_PATH_ADMIN_AUTO_LOGIN, WP_PATH_HEALTH, WP_PATH_INSTALL_PLUGIN, WP_PATH_INSTALL_PLUGIN_FILE, WP_PATH_REMOVE_PLUGIN, WP_PATH_SITE_INFO } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
@@ -178,6 +178,79 @@ export async function installPlugin(siteId: string, plugin_url: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ plugin_url }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    return {
+      error: errorData.message || 'Failed to install plugin',
+      ok: response.ok,
+      status: response.status,
+    }
+  }
+  const data = await response.json();
+  return data;
+}
+export async function installPluginFile(siteId: string, pluginCode: string, pluginName: string) {
+  const site = await currentSite(siteId);
+  if (!site) {
+    throw new Error('Site not found');
+  }
+  
+  const endpoint_url = new URL(WP_PATH_INSTALL_PLUGIN_FILE, site.base_url).toString();
+  
+  const formData = new FormData();
+  formData.append('plugin_code', pluginCode);
+  formData.append('plugin_name', pluginName);
+
+  try {
+    const response = await fetch(endpoint_url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${site.api_key}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: data.message || 'Failed to install plugin',
+        ok: false,
+        status: response.status,
+      };
+    }
+
+    return {
+      message: data.message,
+      ok: true,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      error: 'Network error or server is unreachable',
+      ok: false,
+      status: 0,
+    };
+  }
+}
+
+export async function removePlugin(siteId: string, plugin_slug: string) {
+  const site = await currentSite(siteId);
+  if (!site) {
+    throw new Error('Site not found');
+  }
+  
+  const endpoint_url = new URL(WP_PATH_REMOVE_PLUGIN, site.base_url).toString();
+  
+  const response = await fetch(endpoint_url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${site.api_key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ plugin_slug }),
   });
 
   if (!response.ok) {

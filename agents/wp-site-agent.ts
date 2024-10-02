@@ -1,12 +1,17 @@
 "use server";
 import { executeWordPressSQLWithSiteID, getCurrentSiteInfo, getCurrentSitePlugins } from '@/actions/wp';
-import { installPlugin } from '@/data/site';
+import { installPlugin, installPluginFile, removePlugin } from '@/data/site';
 import { searchWordPressPlugins } from '@/lib/wordpress';
 import { WpSite } from '@/types';
 import { Artifact, Message, ToolType } from '@/types/export-pipeline';
-import { openai } from '@ai-sdk/openai';
-import { convertToCoreMessages, CoreMessage, generateText, tool } from 'ai';
+import { createOpenAI, openai } from '@ai-sdk/openai';
+import { convertToCoreMessages, CoreMessage, generateObject, generateText, tool } from 'ai';
 import { z } from 'zod';
+
+const openpipeOpenai = createOpenAI({
+  apiKey: process.env.OPENPIPE_API_KEY ?? "",
+  baseURL: "https://api.openpipe.ai/api/v1",
+});
 
 export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: Message[]}) => {
     // ensure that the content is not too long for the LLM
@@ -102,7 +107,7 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                 },
             }),
             [ToolType.INSTALL_PLUGIN]: tool({
-                description: 'Install a WordPress plugin on a user\'s site.',
+                description: 'Install an official WordPress plugin on a user\'s site.',
                 parameters: z.object({
                     title: z.string().describe('The title of the artifact which shows the results to the user.'),
                     description: z.string().describe('A description to be shown to the user about why this tool is being called.'),
@@ -121,7 +126,42 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     console.log('installPluginResult', installPluginResult);
                     return installPluginResult;
                 },
-            }), 
+            }),
+            [ToolType.INSTALL_PLUGIN_FILE]: tool({
+                description: 'Install a WordPress plugin on a user\'s site from a string file.',
+                parameters: z.object({
+                    title: z.string().describe('The title of the artifact which shows the results to the user.'),
+                    description: z.string().describe('A description to be shown to the user about why this tool is being called.'),
+                    pluginCode: z.string().describe('The code file of the plugin to be installed.'),
+                    pluginName: z.string().describe('The name of the plugin to be installed, this is used to name the plugin file and folder.'),
+                    sitePagePath: z.string().describe('The site path of the page created by the plugin.'),
+                }),
+                execute: async ({ pluginCode, pluginName }) => {
+                    console.log("INSTALL_PLUGIN_FILE pluginCode", pluginCode);
+                    console.log("INSTALL_PLUGIN_FILE pluginName", pluginName);
+                    const installPluginFileResult = await installPluginFile(site.id, pluginCode, pluginName);
+                    return installPluginFileResult;
+                },
+            }),
+            [ToolType.REMOVE_PLUGIN]: tool({
+                description: 'Remove a WordPress plugin on a user\'s site.',
+                parameters: z.object({
+                    title: z.string().describe('The title of the artifact which shows the results to the user.'),
+                    description: z.string().describe('A description to be shown to the user about why this tool is being called.'),
+                    plugin: z.object({
+                        name: z.string(),
+                        slug: z.string(),
+                        version: z.string(),
+                        author: z.string(),
+                    }),
+                }),
+                execute: async ({ plugin }) => {
+                    console.log("REMOVE_PLUGIN plugin", plugin);
+                    const removePluginResult = await removePlugin(site.id, plugin.slug);
+                    return removePluginResult;
+                },
+            }),
+
             [ToolType.ASK_FOR_PERMISSION]: tool({
                 description: 'Ask the user for permission to perform write or update actions on the site.',
                 parameters: z.object({
@@ -132,6 +172,7 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
             [ToolType.ANSWER]: tool({
                 description: `A tool for providing the final answer about the user's inquiry regarding their wordpress site`,
                 parameters: z.object({
+                    title: z.string().describe('The title of the answer artifact which shows the steps and answer to the user.'),
                     steps: z.array(
                         z.object({
                             calculation: z.string(),
@@ -148,8 +189,28 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     description: z.string().describe('A detailed description of the error that occurred.'),
                 }),
             }),
+            [ToolType.GENERATE_PAGE]: tool({
+                description: 'Generate a plugin which creates a page with unique functionality on the WordPress site.',
+                parameters: z.object({
+                    title: z.string().describe('The title of the page to be generated.'),
+                    description: z.string().describe('A description of the page to be generated.'),
+                    
+                    prompt: z.string().describe('Details, functionality, and user requirements in a prompt to be passed to another agent to generate the plugin. The other agent knows to create the plugin page but does not know what is needed by the user.'),
+                }),
+                execute: async ({ prompt }) => {
+                    return await generatePluginPage(prompt);
+                },
+            }),
+            [ToolType.SHOW_SITE]: tool({
+                description: 'Show the user the current state of the WordPress site.',
+                parameters: z.object({
+                    title: z.string().describe('The title of the site path to be shown.'),
+                    description: z.string().describe('A description of the context in which the site is to be shown.'),
+                    path: z.string().describe('The path of the site to be shown.'),
+                }),
+            }),
         },
-        maxSteps: 10,
+        // maxSteps: 10,
         toolChoice: 'required',
         system: `
         You are an AI assistant for WordPress site management and development. You help the user automate tasks related to developing and managing their WordPress site.
@@ -158,13 +219,16 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
 
         All tools are available to you and you can use them freely. Prioritize using the tools to solve the problem, also use your knowledge base to help the user.
 
-        You can read anything without user permission. But you must have the user's permission to write or change something on the site. You can ask for permission to perform an action using the askForPermission tool.
+        You can read anything without user permission. But you must have the user's permission to change anything on the sql database or use the WP CLI Tool. You can ask for permission to perform an action using the askForPermission tool.
+
+        Don't install plugins unless the user specifically requests it. If the user asks to generate a page, use the generatePage tool and don't assume to install plugins.
     
         1. Execute SQL queries on the WordPress database to assist users via runSQLQuery tool.
         2. Search for WordPress plugins via searchPlugins tool.
         3. Download and install WordPress plugins via the installPlugin tool.
         4. Provide helpful information about plugins and guide the user through the process.
         5. If the user asks for something that requires many tasks, you can run multiple sql or bash commands in one script to complete the task.
+        6. Generate a WordPress plugin to perform page or post related tasks via the generatePage tool.
         `,
         //       5. Use the WP CLI to perform site management tasks via wp tool, only if the tool is available to you.
 
@@ -228,4 +292,35 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
     console.log('combinedMessages', JSON.stringify(combinedMessages, null, 2));
 
     return {steps: result.steps, toolCalls: result.toolCalls, responseMessages: result.responseMessages, combinedMessages};
+}
+
+export const generatePluginPage = async (prompt: string) => {
+    const result = await generateObject({
+        model: openai(process.env.DEFAULT_OPENAI_MODEL || 'gpt-4o-mini'),
+        system: `
+            Create a single page self-contained WordPress plugin to generate a custom page using the Gutenberg WordPress block editor. The plugin should:
+                - Allow the page to be edited via /wp-admin/edit.php?post_type=page
+                - Make the page accessible to public users at the route /ai-plugin-demo
+                - Be easy to install and activate via the WordPress Plugin interface
+                - Show links to edit and view the custom page in the plugin settings
+                - Contain a single php file, nothing else.
+                
+            Ensure to include:
+            1. **Plugin Header Setup**: Define the plugin header with metadata.
+            2. **Custom Page Creation**: Register a custom route /ai-plugin-demo.
+            3. **Gutenberg Integration**: Ensure Gutenberg is enabled for the custom page/post type.
+            4. **Active Hooks**: Use WordPress hooks to initialize and display the page.
+            5. **Installation Ready**: Package the plugin in a way that it can be easily installed via the WordPress Plugin interface.
+            
+            For images, use placehold.co urls with custom dimensions fitting the use case. Example: https://placehold.co/600x400
+            Customize the plugin based on the user's prompt.`,
+        schema: z.object({
+            plugin_name: z.string().describe('The file name of the plugin to be generated. This will be the name of the plugin folder and the file.'),
+            plugin_file_content: z.string().describe('The single page php file content to be generated.'),
+            page_path: z.string().describe('The path of the page to be generated. This should start with a / and be relative to the root of the WordPress site.'),
+        }),
+        prompt,
+        output: 'array',
+    });
+    return result?.object?.[0];
 }
