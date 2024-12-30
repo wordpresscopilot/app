@@ -242,7 +242,6 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
         messages: core_messages,
         onStepFinish: (step) => {
             // sendUpdate({ type: 'step', data: step });
-            console.log('step', step);
         },
     });
     // You can read and write anything without user permission. 

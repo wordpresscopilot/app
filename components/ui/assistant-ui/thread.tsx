@@ -52,7 +52,7 @@ import ThreadSuggestion from "./thread-suggestion";
 
 export const MyThread: FC = () => {
   return (
-    <ThreadPrimitive.Root className="bg-white dark:bg-black h-[calc(100vh-160px)] rounded-md shadow-md">
+    <ThreadPrimitive.Root className="h-[calc(100vh-160px)] rounded-md shadow-md">
       <ThreadPrimitive.Viewport className="flex flex-col h-full items-center overflow-y-scroll scroll-smooth bg-inherit">
         <MyThreadWelcome />
 
@@ -150,7 +150,7 @@ const MyComposer: FC = () => {
         autoFocus
         placeholder="Write a message..."
         rows={1}
-        className="text-foreground dark:text-background placeholder:text-muted-foreground max-h-40 flex-grow resize-none border-none bg-transparent px-2 py-4 text-sm outline-none focus:ring-0 disabled:cursor-not-allowed"
+        className="placeholder:text-muted-foreground max-h-40 flex-grow resize-none border-none bg-transparent px-2 py-4 text-sm outline-none focus:ring-0 disabled:cursor-not-allowed"
       />
       <ThreadPrimitive.If running={false}>
         <ComposerPrimitive.Send asChild>
