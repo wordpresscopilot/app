@@ -1,12 +1,14 @@
 "use client";
 
 import { Footer } from "@/components/footer";
-import { JoinWaitlistForm } from "@/components/JoinWaitlistForm";
 import { MarketingNavigation } from "@/components/marketing-navigation";
 import { PluginsMarquee } from "@/components/plugins-marquee";
+import { Button } from "@/components/ui/button";
+import { IconGitHub } from "@/components/ui/icons";
 import { WPMarquee } from "@/components/wp-marquee";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function Home() {
@@ -49,8 +51,8 @@ export default function Home() {
             }}
           />
           <div className="relative z-20 flex flex-col gap-4 md:gap-8 justify-between w-full h-full sm:w-[calc(100%-4rem)] mx-auto px-2.5 items-center py-[64px] md:py-[80px]">
-            <h1 className="z-10 text-[40px] md:text-8xl text-white font-semibold text-center w-full">
-              AI Powered
+            <h1 className="z-10 text-[32px] md:text-8xl text-white font-semibold text-center w-full">
+              Open Source AI Agent
               <br />
               Copilot for Wordpress
             </h1>
@@ -58,26 +60,35 @@ export default function Home() {
               className="leading-[140%] text-xl md:text-4xl text-center text-white font-base sm:max-w-[70%] mx-auto"
               style={{ textWrap: "balance" }}
             >
-              The fastest way to build and interact with your Wordpress site.
+              Open Source AI Agent + Plugin for Wordpress.
             </p>
-            <JoinWaitlistForm ref={waitlistFormRef} />
+            <div className="flex gap-4">
+              <Button size="lg" asChild>
+                <Link href="/demo">Try Demo</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild className="gap-2">
+                <Link
+                  href="https://github.com/wordpresscopilot/app"
+                  target="_blank"
+                >
+                  <IconGitHub />
+                  View on GitHub
+                </Link>
+              </Button>
+            </div>
+            {/* <JoinWaitlistForm ref={waitlistFormRef} /> */}
           </div>
         </section>
         <Section
           color="#7dc7ff"
           label={`Install & Update Plugins`}
           description={`"Hey copilot, add the latest elementor plugin to my site."`}
-          // image="https://placehold.co/1920x1080.png"
-          // imageWidth={1920}
-          // imageHeight={1080}
         />
         <Section
           color="#f7cd72"
           label={`Updates at the\nspeed of AI.`}
-          description="Modifying and interacting with your Wordpress site has never been easier."
-          // image="https://placehold.co/1920x1080.png"
-          // imageWidth={1920}
-          // imageHeight={1080}
+          description="Modifying and interacting with your Wordpr
+          ess site has never been easier."
         />
         <Section
           color="#f8bdf4"
@@ -87,9 +98,6 @@ export default function Home() {
             </>
           }
           description="Modifying and interacting with your Wordpress site has never been easier."
-          // image="https://placehold.co/1920x1080.png"
-          // imageWidth={1920}
-          // imageHeight={1080}
         />
         {/* Marquee */}
         <Section
@@ -123,10 +131,10 @@ export default function Home() {
               color: "transparent",
             }}
           />
-          <div className="z-100 flex flex-col items-center justify-center gap-8 text-white">
+          {/* <div className="z-100 flex flex-col items-center justify-center gap-8 text-white">
             <h1 className="text-5xl">Join the Waitlist Now</h1>
             <JoinWaitlistForm />
-          </div>
+          </div> */}
         </div>
       </main>
       <Footer />

@@ -11,12 +11,12 @@ export const MarketingNavigation = ({
 }) => {
   const showAppEntryFlag = useFeatureFlagEnabled("show_app_entry");
   const links = [
+    // {
+    //   label: "About",
+    //   href: "/about",
+    // },
     {
-      label: "About",
-      href: "/about",
-    },
-    {
-      label: "Integrations",
+      label: "Chat with Plugins",
       href: "/plugins",
     },
     ...(showAppEntryFlag
@@ -36,7 +36,7 @@ export const MarketingNavigation = ({
         ]
       : []),
     {
-      label: "WPCopilot Plugin Download",
+      label: "WP Copilot Plugin Download",
       href: "/plugin",
     },
     ...(showAppEntryFlag
@@ -99,7 +99,7 @@ export const MarketingNavigation = ({
             className="h-[50px] px-[18px] text-base gt-standard-mono cursor-pointer"
             onClick={scrollToWaitlistForm}
           >
-            Join the Waitlist
+            View on Github
           </Button>
         </div>
       </div>

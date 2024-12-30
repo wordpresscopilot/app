@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | WPCopilot",
+  title: "Privacy Policy | WP Copilot",
   description:
     "Privacy Policy for WPCopilot - AI-Powered WordPress Development",
 };

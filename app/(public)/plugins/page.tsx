@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { plugins } from "@/constants/plugins";
-import { searchWordPressPlugins } from "@/lib/wordpress";
 import { Plugin as WPPlugin } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,7 +46,7 @@ const Plugin: React.FC<PluginProps> = ({ name, description, image_url }) => (
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn more
+            Chat with Plugin
           </Link>
         </Button>
       </div>
@@ -59,20 +58,20 @@ export default function PluginsPageGrid() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const results = await searchWordPressPlugins(searchQuery);
-    console.log("searchResults", results);
-    setSearchResults(results as any);
-  };
+  // const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const results = await searchWordPressPlugins(searchQuery);
+  //   console.log("searchResults", results);
+  //   setSearchResults(results as any);
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white py-12">
       <div className="container mx-auto px-4 ">
         <h1 className="text-3xl font-bold text-center mb-8">
-          Supported WordPress Plugins & Modes
+          Interactive Chat for Wordpress Plugin Support
         </h1>
-        <form onSubmit={handleSearch} className="mb-8">
+        {/* <form onSubmit={handleSearch} className="mb-8">
           <div className="flex justify-center">
             <input
               type="text"
@@ -85,7 +84,7 @@ export default function PluginsPageGrid() {
               Search
             </Button>
           </div>
-        </form>
+        </form> */}
         {searchResults.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {searchResults.map((plugin: WPPlugin, index) => (

@@ -17,108 +17,13 @@ import { SpinnerMessage, UserMessage } from "@/components/stocks/message";
 import { CheckIcon, IconSpinner } from "@/components/ui/icons";
 import { rateLimit } from "@/lib/ratelimit";
 import { nanoid, sleep } from "@/lib/utils";
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { currentUser } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Chat, Message, Plugin } from "../types";
-
-const genAI = new GoogleGenerativeAI(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY || ""
-);
-
-// async function describeImage(imageBase64: string) {
-//   "use server";
-
-//   await rateLimit();
-
-//   const aiState = getMutableAIState();
-//   const spinnerStream = createStreamableUI(null);
-//   const messageStream = createStreamableUI(null);
-//   const uiStream = createStreamableUI();
-
-//   uiStream.update(
-//     <BotCard>
-//       <Video isLoading />
-//     </BotCard>
-//   );
-//   (async () => {
-//     try {
-//       let text = "";
-
-//       // attachment as video for demo purposes,
-//       // add your implementation here to support
-//       // video as input for prompts.
-//       if (imageBase64 === "") {
-//         await new Promise((resolve) => setTimeout(resolve, 5000));
-
-//         text = `
-//           You are an AI assistant for WordPress site management and development. You help users with tasks related to developing their WordPress site.
-
-//           You have the ability to:
-//           1. execute SQL queries on the WordPress database to assist users.
-//           2. execute bash scripts on the WordPress server from the public_html/ directory to retrieve output from the remote server for further processing. Bias to use the wp cli tool.
-
-//           If the user asks for something that requires many tasks, you can run multiple sql or bash commands in one script to complete the task.
-
-//           Use wp cli or sql commands to solve the problem.
-
-//           Always prioritize security and best practices. Never do anything or run any command which will harm the database, server, or the site.
-//       `;
-//       } else {
-//         const imageData = imageBase64.split(",")[1];
-
-//         const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-//         const prompt = "List the books in this image.";
-//         const image = {
-//           inlineData: {
-//             data: imageData,
-//             mimeType: "image/png",
-//           },
-//         };
-
-//         const result = await model.generateContent([prompt, image]);
-//         text = result.response.text();
-//         console.log(text);
-//       }
-
-//       spinnerStream.done(null);
-//       messageStream.done(null);
-
-//       uiStream.done(
-//         <BotCard>
-//           <Video isLoading={true} />
-//         </BotCard>
-//       );
-
-//       aiState.done({
-//         ...aiState.get(),
-//         interactions: [text],
-//       });
-//     } catch (e) {
-//       console.error(e);
-
-//       const error = new Error(
-//         "The AI got rate limited, please try again later."
-//       );
-//       uiStream.error(error);
-//       spinnerStream.error(error);
-//       messageStream.error(error);
-//       aiState.done();
-//     }
-//   })();
-
-//   return {
-//     id: nanoid(),
-//     attachments: uiStream.value,
-//     spinner: spinnerStream.value,
-//     display: messageStream.value,
-//   };
-// }
 
 async function submitUserMessage(content: string, plugin: Plugin) {
   "use server";
 
-  console.log("submitUserMessage plugin", content, plugin);
   await rateLimit();
 
   const aiState = getMutableAIState();
@@ -140,12 +45,11 @@ async function submitUserMessage(content: string, plugin: Plugin) {
     content: message.content,
   }));
 
-  // const textStream = createStreamableValue("");
   let textStream: undefined | ReturnType<typeof createStreamableValue<string>>;
   let textNode: undefined | React.ReactNode;
 
   const result = await streamUI({
-    model: openai(process.env.DEFAULT_OPENAI_MODEL || "gpt-3.5-turbo"),
+    model: anthropic("claude-3-5-sonnet-20240620"),
     initial: <SpinnerMessage />,
     system: `\
         You are a friendly assistant that helps the user with solving Wordpress related issues. The user is asking questions related to:

@@ -10,6 +10,7 @@ import {
 } from "../ui/card";
 
 export default function BrandCard({ plugin }: { plugin: Plugin }) {
+  console.log("plugin", plugin);
   return (
     <Card className="mb-6 max-w-2xl mx-auto">
       <CardHeader className="flex flex-col space-y-1.5 pb-2 pt-4 px-4">
@@ -21,20 +22,19 @@ export default function BrandCard({ plugin }: { plugin: Plugin }) {
             <CardTitle className="text-lg font-bold">{plugin?.name}</CardTitle>
           </div>
           <Link
-            href="https://wordpress.org/plugins/wp-super-cache/"
+            href={`https://wordpress.org/plugins/${plugin?.name.toLowerCase()}/`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-primary hover:text-primary-dark transition-colors duration-200"
           >
-            <Button size="sm" variant="link">
-              Learn more
-            </Button>
+            <Button variant="link">View Plugin on WordPress.org</Button>
           </Link>
         </div>
       </CardHeader>
       <CardContent className="pt-0 px-4 pb-4">
         <CardDescription className="text-sm">
           {plugin?.description}
+          {JSON.stringify(plugin)}
         </CardDescription>
       </CardContent>
     </Card>

@@ -43,7 +43,7 @@ export default function Layout({ children }: PluginLayoutProps) {
           </div>
         </div> */}
       </div>
-      <Footer />
+      {!window.location.pathname.includes("/plugins/") && <Footer />}
     </div>
   );
 }
