@@ -93,7 +93,7 @@ export default function Home() {
           label="Multi-Agent Wordpress Tools Supported"
           description="'Hey copilot, add the latest elementor plugin to my site.'"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6 mt-6">
             <Card>
               <CardHeader>
                 <CardTitle>Plugin Management</CardTitle>
