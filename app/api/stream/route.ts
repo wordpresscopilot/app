@@ -5,9 +5,9 @@ import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
   const {messages, site } = await req.json();
-  const filteredMessages = messages.map(message => {
+  const filteredMessages = messages.map((message: any) => {
     if (Array.isArray(message.content)) {
-      message.content = message.content.filter(content => {
+      message.content = message.content.filter((content: any) => {
         if (content.type === 'tool-call' || content.type === 'tool-result') {
           return !(content.args && Object.keys(content.args).length === 0);
         }
@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
 
   const uniqueToolCallIds = new Set();
 
-  const deduplicatedMessages = filteredMessages.map(message => {
+  const deduplicatedMessages = filteredMessages.map((message: any) => {
     if (Array.isArray(message.content)) {
-      message.content = message.content.filter(content => {
+      message.content = message.content.filter((content: any) => {
         if (content.type === 'tool-result') {
           if (uniqueToolCallIds.has(content.toolCallId)) {
             return false;
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
   
 
     const agentResult = await runWPSiteAgent({ site, messages: deduplicatedMessages });
+    // @ts-ignore
     controller.appendStep(fromAISDKStreamText(agentResult.fullStream));
 
     // const result2 = await streamObject({

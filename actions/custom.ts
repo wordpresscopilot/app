@@ -1,7 +1,5 @@
 "use server";
 
-import { runWPSiteAgent } from "@/agents/wp-site-agent";
-import { WpSite } from "@/types";
 import { Message, Role } from "@/types/export-pipeline";
 import { createOpenAI, openai } from "@ai-sdk/openai";
 import { CoreMessage, generateObject } from "ai";
@@ -40,9 +38,9 @@ export const convertMessagesToCore = async (messages: Message[]): Promise<CoreMe
 };
 
 // unused in latest assistant-nonrsc version
-export const runWPAIPipeline = async ({messages, site, core_site_data}: {messages: Message[], site: WpSite, core_site_data: any}) => {
-  const {steps, toolCalls } = await runWPSiteAgent({site, messages});
-  return {steps, toolCalls};
+// export const runWPAIPipeline = async ({messages, site, core_site_data}: {messages: Message[], site: WpSite, core_site_data: any}) => {
+//   const {steps, toolCalls } = await runWPSiteAgent({site, messages});
+//   return {steps, toolCalls};
   // const aiMessages = await convertMessagesToCore(messages);
   // const category = await categorizeRequest({
   //   messages: aiMessages,
@@ -122,7 +120,7 @@ export const runWPAIPipeline = async ({messages, site, core_site_data}: {message
   //       text: result.text,
   //     }
   //   }
-  }
+  // }
 
 
 export const callOpenai = async (messages: Message[]) => {

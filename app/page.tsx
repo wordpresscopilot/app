@@ -1,6 +1,7 @@
 "use client";
 
 import { Footer } from "@/components/footer";
+import Logos from "@/components/logos";
 import { MarketingNavigation } from "@/components/marketing-navigation";
 import { PluginsMarquee } from "@/components/plugins-marquee";
 import { Button } from "@/components/ui/button";
@@ -57,17 +58,17 @@ export default function Home() {
             }}
           />
           <div className="relative z-20 flex flex-col gap-4 md:gap-8 justify-between w-full h-full sm:w-[calc(100%-4rem)] mx-auto px-2.5 items-center py-[64px] md:py-[80px]">
-            <h1 className="z-10 text-[32px] md:text-8xl text-white font-semibold text-center w-full">
+            <h1 className="z-10 text-[28px] md:text-6xl text-white font-semibold text-center w-full">
               Open Source AI Agent
               <br />
               Copilot for Wordpress
             </h1>
-            <p
+            {/* <p
               className="leading-[140%] text-xl md:text-4xl text-center text-white font-base sm:max-w-[70%] mx-auto"
               style={{ textWrap: "balance" }}
             >
               Open Source AI Agent + Plugin for Wordpress.
-            </p>
+            </p> */}
             <div className="flex gap-4">
               <Button size="lg" asChild>
                 <Link href="/demo">Try Demo</Link>
@@ -85,6 +86,7 @@ export default function Home() {
             {/* <JoinWaitlistForm ref={waitlistFormRef} /> */}
           </div>
         </section>
+        <Logos />
 
         <Section
           color="#7dc7ff"
@@ -121,7 +123,7 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>Export Data</CardTitle>
                 <CardDescription>
-                  View and analyze your WordPress site's current state
+                  View and analyze your WordPress site&apos;s current state
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -149,13 +151,13 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>Site Monitoring</CardTitle>
                 <CardDescription>
-                  View and analyze your WordPress site's current state
+                  View and analyze your WordPress site&apos;s current state
                 </CardDescription>
               </CardHeader>
             </Card>
           </div>
         </Section>
-        <Section
+        {/* <Section
           color="#f7cd72"
           label={`Updates at the\nspeed of AI.`}
           description="Modifying and interacting with your Wordpr
@@ -169,7 +171,7 @@ export default function Home() {
             </>
           }
           description="Modifying and interacting with your Wordpress site has never been easier."
-        />
+        /> */}
         {/* <Section
           color="#F5F5F5"
           label="And so much more."
@@ -189,62 +191,6 @@ export default function Home() {
             <PluginsMarquee />
           </div>
         </Section>
-        {/* <Section
-          color="#ffffff"
-          label="Frequently Asked Questions"
-          className=""
-        >
-          <div className="max-w-[680px] w-full">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Who Should Use WPC.dev?</AccordionTrigger>
-                <AccordionContent>
-                  WPC.dev is perfect for any WordPress site owner who wants to
-                  simplify their site management and enhance functionality
-                  without the need for multiple plugins. It's especially useful
-                  for those who want to implement custom features or follow
-                  tutorials that require adding code to their site, as WPC.dev
-                  provides a safe and easy way to do so.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>
-                  What is required to use WPC.dev?
-                </AccordionTrigger>
-                <AccordionContent>
-                  To use WPC.dev, you only need a WordPress site. Our platform
-                  is designed to integrate seamlessly with WordPress, making it
-                  accessible to all WordPress site owners.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>
-                  Do I need Coding Skills to use WPC.dev?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Not at all! While WPC.dev can be used by those with coding
-                  skills to extend their sites, our user-friendly interface
-                  allows you to add and manage features without any coding
-                  knowledge. We even offer an AI-powered assistant that can help
-                  you implement custom functionalities by simply describing what
-                  you need.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4">
-                <AccordionTrigger>
-                  Will using WPC.dev slow down my website?
-                </AccordionTrigger>
-                <AccordionContent>
-                  Absolutely not. WPC.dev is built with performance in mind,
-                  ensuring that all features and functionalities are implemented
-                  efficiently. Our platform is designed to optimize the way
-                  custom code and features are loaded on your site, maintaining
-                  fast performance while extending your site's capabilities.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </Section> */}
         <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
           <Image
             alt="hero"

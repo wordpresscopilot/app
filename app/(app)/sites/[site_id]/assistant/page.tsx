@@ -1,8 +1,5 @@
 import { AssistantUI } from "@/components/assistantui";
-import {
-  LocalRuntimeProvider,
-  LocalRuntimeProvider,
-} from "@/components/assistantui/local-runtime";
+import { LocalRuntimeProvider } from "@/components/assistantui/local-runtime";
 import SiteHeader from "@/components/site-header";
 import prisma from "@/lib/prisma";
 import { WpSite } from "@/types";

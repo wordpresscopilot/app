@@ -48,7 +48,7 @@ const PluginCard = ({
 }) => {
   return (
     <Link
-      href={`/`}
+      href={`/plugins/${name.toLowerCase()}`}
       className={
         "flex flex-col gap-3 cursor-pointer overflow-hidden rounded-md border border-2 border-gray-300 bg-white p-4"
       }

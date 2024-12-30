@@ -43,23 +43,23 @@ export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
         step: "runPHP",
         code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
       },
-      ...(item?.plugin_name
-        ? [
-            {
-              step: "mkdir",
-              path: `/wordpress/wp-content/plugins/${item.plugin_name}`,
-            },
-            {
-              step: "writeFile",
-              path: `/wordpress/wp-content/plugins/${item.plugin_name}/${item.plugin_name}.php`,
-              data: `${item.plugin_file_content}`,
-            },
-            {
-              step: "activatePlugin",
-              pluginPath: `${item.plugin_name}/${item.plugin_name}.php`,
-            },
-          ]
-        : []),
+      // ...(item?.plugin_name
+      //   ? [
+      //       {
+      //         step: "mkdir",
+      //         path: `/wordpress/wp-content/plugins/${item.plugin_name}`,
+      //       },
+      //       {
+      //         step: "writeFile",
+      //         path: `/wordpress/wp-content/plugins/${item.plugin_name}/${item.plugin_name}.php`,
+      //         data: `${item.plugin_file_content}`,
+      //       },
+      //       {
+      //         step: "activatePlugin",
+      //         pluginPath: `${item.plugin_name}/${item.plugin_name}.php`,
+      //       },
+      //     ]
+      //   : []),
       // {
       //   step: "runPHP",
       //   code: `
