@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy | WP Copilot",
   description:
-    "Privacy Policy for WPCopilot - AI-Powered WordPress Development",
+    "Privacy Policy for WP Copilot - AI-Powered WordPress Development",
 };
 
 export default function PrivacyPolicy() {
@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
       <section className="mb-6">
         <h2 className="text-2xl font-semibold mb-3">1. Introduction</h2>
         <p>
-          Welcome to WPCopilot (&quot;we,&quot; &quot;our,&quot; or
+          Welcome to wpc.dev (&quot;we,&quot; &quot;our,&quot; or
           &quot;us&quot;). We are committed to protecting your personal
           information and your right to privacy. This Privacy Policy explains
           how we collect, use, disclose, and safeguard your information when you
@@ -108,9 +108,9 @@ export default function PrivacyPolicy() {
         <h2 className="text-2xl font-semibold mb-3">8. Contact Us</h2>
         <p>
           If you have any questions about this Privacy Policy or our data
-          practices, please contact us at privacy@WPCopilot.com. We are
-          committed to addressing your concerns and ensuring our privacy
-          practices meet the highest standards of transparency and protection.
+          practices, please contact us at privacy@wpc.dev. We are committed to
+          addressing your concerns and ensuring our privacy practices meet the
+          highest standards of transparency and protection.
         </p>
       </section>
     </div>

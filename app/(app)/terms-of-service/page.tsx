@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Wordpress Copilot",
+  title: "Terms of Service | wpc.dev",
   description:
-    "Terms of Service for Wordpress Copilot - AI-Powered WordPress Development",
+    "Terms of Service for wpc.dev - AI-Powered WordPress Development",
 };
 
 export default function TermsOfService() {
@@ -15,9 +15,9 @@ export default function TermsOfService() {
       <section className="mb-6">
         <h2 className="text-2xl font-semibold mb-3">1. Acceptance of Terms</h2>
         <p>
-          By accessing or using Wordpress Copilot (&quot;the Service&quot;), you
-          agree to be bound by these Terms of Service. If you disagree with any
-          part of the terms, you may not access the Service.
+          By accessing or using wpc.dev (&quot;the Service&quot;), you agree to
+          be bound by these Terms of Service. If you disagree with any part of
+          the terms, you may not access the Service.
         </p>
       </section>
 
@@ -26,9 +26,9 @@ export default function TermsOfService() {
           2. Description of Service
         </h2>
         <p>
-          Wordpress Copilot provides AI-powered WordPress development tools and
-          services. We reserve the right to modify or discontinue, temporarily
-          or permanently, the Service with or without notice.
+          wpc.dev provides AI-powered WordPress development tools and services.
+          We reserve the right to modify or discontinue, temporarily or
+          permanently, the Service with or without notice.
         </p>
       </section>
 
@@ -47,9 +47,9 @@ export default function TermsOfService() {
         </h2>
         <p>
           The Service and its original content, features, and functionality are
-          owned by Wordpress Copilot and are protected by international
-          copyright, trademark, patent, trade secret, and other intellectual
-          property or proprietary rights laws.
+          owned by wpc.dev and are protected by international copyright,
+          trademark, patent, trade secret, and other intellectual property or
+          proprietary rights laws.
         </p>
       </section>
 
@@ -67,12 +67,18 @@ export default function TermsOfService() {
           6. Limitation of Liability
         </h2>
         <p>
-          In no event shall Wordpress Copilot, nor its directors, employees,
-          partners, agents, suppliers, or affiliates, be liable for any
-          indirect, incidental, special, consequential or punitive damages,
-          including without limitation, loss of profits, data, use, goodwill, or
-          other intangible losses, resulting from your access to or use of or
+          In no event shall wpc.dev, nor its directors, employees, partners,
+          agents, suppliers, or affiliates, be liable for any indirect,
+          incidental, special, consequential or punitive damages, including
+          without limitation, loss of profits, data, use, goodwill, or other
+          intangible losses, resulting from your access to or use of or
           inability to access or use the Service.
+        </p>
+        <p>
+          To the fullest extent permitted by applicable law, wpc.dev&apos;s
+          total liability for any claims under these terms, including for any
+          implied warranties, is limited to the amount you paid us to use the
+          Service (or, if we choose, to supplying you the Service again).
         </p>
       </section>
 
@@ -99,7 +105,7 @@ export default function TermsOfService() {
         <h2 className="text-2xl font-semibold mb-3">9. Contact Us</h2>
         <p>
           If you have any questions about these Terms, please contact us at
-          support@Wordpress Copilot.
+          support@wpc.dev.
         </p>
       </section>
     </div>

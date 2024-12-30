@@ -3,7 +3,6 @@ import { Artifact } from "@/types/export-pipeline";
 import { PlaygroundComponent } from "./playground";
 
 export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
-  console.log("PlaygroundArtifact", artifact);
   let item = artifact.content?.[0];
   item = typeof item === "string" ? JSON.parse(item) : item;
   console.log("item", item);
@@ -11,6 +10,26 @@ export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
     steps: [
       {
         step: "login",
+      },
+      // {
+      //   step: "installPlugin",
+      //   pluginData: {
+      //     resource: "wordpress.org/plugins",
+      //     slug: "gutenberg",
+      //   },
+      //   options: {
+      //     activate: true,
+      //   },
+      // },
+      {
+        step: "installTheme",
+        themeZipFile: {
+          resource: "wordpress.org/themes",
+          slug: "astra",
+        },
+        options: {
+          activate: true,
+        },
       },
       {
         step: "defineWpConfigConsts",
@@ -20,28 +39,27 @@ export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
           WP_DEBUG_DISPLAY: true,
         },
       },
-
-      // {
-      //   step: "runPHP",
-      //   code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
-      // },
-      // ...(item?.plugin_name
-      //   ? [
-      //       {
-      //         step: "mkdir",
-      //         path: `/wordpress/wp-content/plugins/${item.plugin_name}`,
-      //       },
-      //       {
-      //         step: "writeFile",
-      //         path: `/wordpress/wp-content/plugins/${item.plugin_name}/${item.plugin_name}.php`,
-      //         data: `${item.plugin_file_content}`,
-      //       },
-      //       {
-      //         step: "activatePlugin",
-      //         pluginPath: `${item.plugin_name}/${item.plugin_name}.php`,
-      //       },
-      //     ]
-      //   : []),
+      {
+        step: "runPHP",
+        code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
+      },
+      ...(item?.plugin_name
+        ? [
+            {
+              step: "mkdir",
+              path: `/wordpress/wp-content/plugins/${item.plugin_name}`,
+            },
+            {
+              step: "writeFile",
+              path: `/wordpress/wp-content/plugins/${item.plugin_name}/${item.plugin_name}.php`,
+              data: `${item.plugin_file_content}`,
+            },
+            {
+              step: "activatePlugin",
+              pluginPath: `${item.plugin_name}/${item.plugin_name}.php`,
+            },
+          ]
+        : []),
       // {
       //   step: "runPHP",
       //   code: `
@@ -52,10 +70,6 @@ export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
       //     }
       //   `,
       // },
-      {
-        step: "runPHP",
-        code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
-      },
     ],
     // setup: async (wp) => {
     //   const createdPage = await wp.data
@@ -71,10 +85,6 @@ export const PlaygroundArtifact = ({ artifact }: { artifact: Artifact }) => {
     },
     siteOptions: {
       blogname: "wpc.dev Playground",
-    },
-    options: {
-      importStarterContent: false,
-      activate: true,
     },
     // landingPage: item?.page_path,
     // {

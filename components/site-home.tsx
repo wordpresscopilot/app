@@ -17,13 +17,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import WpSiteStatus from "@/components/wp-site-status";
 import { getSshCredentials } from "@/data/site";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { SSH, WpSite } from "@/types";
 import { Label } from "@radix-ui/react-label";
-import { CheckCircle2, Copy, Loader2, MessageSquare } from "lucide-react";
+import { CheckCircle2, Copy, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -127,7 +126,7 @@ export default function SiteHome({ site }: { site: WpSite }) {
   };
 
   return (
-    <div className="flex justify-center w-full overflow-y-scroll">
+    <div className="h-[calc(100vh-68px)] flex justify-center w-full overflow-y-scroll">
       <div className="container p-4 max-w-3xl">
         <Card className="mb-8">
           <CardHeader>
@@ -135,7 +134,7 @@ export default function SiteHome({ site }: { site: WpSite }) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col space-y-4">
-              <Link href={`/sites/${site.id}/assistant-nonrsc`}>
+              <Link href={`/sites/${site.id}/assistant`}>
                 <Button variant="default" size="lg" className="w-full">
                   <MessageSquare className="w-5 h-5 mr-2" />
                   Chat with Site
@@ -210,7 +209,7 @@ export default function SiteHome({ site }: { site: WpSite }) {
             </Accordion>
           </CardContent>
         </Card>
-        <Card className="mb-8">
+        {/* <Card className="mb-8">
           <CardHeader>
             <CardTitle>SSH / SFTP Credentials</CardTitle>
             <CardDescription>
@@ -315,8 +314,8 @@ export default function SiteHome({ site }: { site: WpSite }) {
               </AccordionItem>
             </Accordion>
           </CardContent>
-        </Card>
-        <Card>
+        </Card> */}
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle>Danger Zone</CardTitle>
             <CardDescription>

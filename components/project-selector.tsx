@@ -65,20 +65,22 @@ export default function ProjectSelector({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-fit justify-between"
+            className="min-w-[200px] justify-between"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 truncate">
               {siteId && (
-                <Avatar className="h-6 w-6">
+                <Avatar className="h-6 w-6 flex-shrink-0">
                   <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
                   <AvatarFallback>
                     <AvatarImage src="/logo/logo-color.svg" alt="Logo" />
                   </AvatarFallback>
                 </Avatar>
               )}
-              {siteId ? site?.name || site?.base_url : "Select Site..."}
+              <span className="truncate">
+                {siteId ? site?.name || site?.base_url : "Select Site..."}
+              </span>
             </div>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-4 w-4 flex-shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0 bg-white">
@@ -103,14 +105,16 @@ export default function ProjectSelector({
                           siteId === site.id ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {site.name || site.base_url}
+                      <span className="font-semibold text-md">
+                        {site.name || site.base_url}
+                      </span>
                       <Link
                         href={"/sites"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="ml-auto"
                       >
-                        <Globe className="h-4 w-4" />
+                        <Globe className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </Link>
                     </CommandItem>
                   ))

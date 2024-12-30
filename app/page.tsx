@@ -4,8 +4,13 @@ import { Footer } from "@/components/footer";
 import { MarketingNavigation } from "@/components/marketing-navigation";
 import { PluginsMarquee } from "@/components/plugins-marquee";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { IconGitHub } from "@/components/ui/icons";
-import { WPMarquee } from "@/components/wp-marquee";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,13 +21,13 @@ export default function Home() {
 
   const scrollToWaitlistForm = () => {
     if (waitlistFormRef.current) {
-      const yOffset = -100; // Adjust this value to increase or decrease the top padding
+      const yOffset = -100;
       const element = waitlistFormRef.current;
       const y =
         element.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
       window.scrollTo({ top: y, behavior: "smooth" });
-      setTimeout(() => element.querySelector("input")?.focus(), 500); // Focus on the input after scrolling
+      setTimeout(() => element.querySelector("input")?.focus(), 500);
     }
   };
 
@@ -30,6 +35,7 @@ export default function Home() {
     <div className="p-3 md:p-5 flex flex-col gap-2.5 max-w-[1440px] mx-auto min-h-[100vh]">
       <main className="flex flex-col gap-2.5">
         <MarketingNavigation scrollToWaitlistForm={scrollToWaitlistForm} />
+
         <section className="w-full relative overflow-hidden rounded-md bg-black">
           <Image
             src="/landing/hero.webp"
@@ -79,11 +85,76 @@ export default function Home() {
             {/* <JoinWaitlistForm ref={waitlistFormRef} /> */}
           </div>
         </section>
+
         <Section
           color="#7dc7ff"
-          label={`Install & Update Plugins`}
-          description={`"Hey copilot, add the latest elementor plugin to my site."`}
-        />
+          label="Multi-Agent Wordpress Tools Supported"
+          description="'Hey copilot, add the latest elementor plugin to my site.'"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Plugin Management</CardTitle>
+                <CardDescription>
+                  Search, install, and remove WordPress plugins.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Information</CardTitle>
+                <CardDescription>Get core site data</CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>SQL Operations</CardTitle>
+                <CardDescription>
+                  Execute SQL queries and manage your WordPress database safely
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Export Data</CardTitle>
+                <CardDescription>
+                  View and analyze your WordPress site's current state
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Page Generation</CardTitle>
+                <CardDescription>
+                  Create custom pages and functionality through natural
+                  conversation
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Cache Management</CardTitle>
+                <CardDescription>
+                  Flush cache and optimize site performance with simple commands
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Monitoring</CardTitle>
+                <CardDescription>
+                  View and analyze your WordPress site's current state
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </Section>
         <Section
           color="#f7cd72"
           label={`Updates at the\nspeed of AI.`}
@@ -99,8 +170,7 @@ export default function Home() {
           }
           description="Modifying and interacting with your Wordpress site has never been easier."
         />
-        {/* Marquee */}
-        <Section
+        {/* <Section
           color="#F5F5F5"
           label="And so much more."
           className="md:pb-0 pb-0"
@@ -108,7 +178,7 @@ export default function Home() {
           <div className="w-full max-w-[100%] relative">
             <WPMarquee />
           </div>
-        </Section>
+        </Section> */}
         <Section
           color="#F5F5F5"
           label={`What plugins\ndo we support?`}
@@ -119,6 +189,62 @@ export default function Home() {
             <PluginsMarquee />
           </div>
         </Section>
+        {/* <Section
+          color="#ffffff"
+          label="Frequently Asked Questions"
+          className=""
+        >
+          <div className="max-w-[680px] w-full">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Who Should Use WPC.dev?</AccordionTrigger>
+                <AccordionContent>
+                  WPC.dev is perfect for any WordPress site owner who wants to
+                  simplify their site management and enhance functionality
+                  without the need for multiple plugins. It's especially useful
+                  for those who want to implement custom features or follow
+                  tutorials that require adding code to their site, as WPC.dev
+                  provides a safe and easy way to do so.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger>
+                  What is required to use WPC.dev?
+                </AccordionTrigger>
+                <AccordionContent>
+                  To use WPC.dev, you only need a WordPress site. Our platform
+                  is designed to integrate seamlessly with WordPress, making it
+                  accessible to all WordPress site owners.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger>
+                  Do I need Coding Skills to use WPC.dev?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Not at all! While WPC.dev can be used by those with coding
+                  skills to extend their sites, our user-friendly interface
+                  allows you to add and manage features without any coding
+                  knowledge. We even offer an AI-powered assistant that can help
+                  you implement custom functionalities by simply describing what
+                  you need.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4">
+                <AccordionTrigger>
+                  Will using WPC.dev slow down my website?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Absolutely not. WPC.dev is built with performance in mind,
+                  ensuring that all features and functionalities are implemented
+                  efficiently. Our platform is designed to optimize the way
+                  custom code and features are loaded on your site, maintaining
+                  fast performance while extending your site's capabilities.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </Section> */}
         <div className="hidden xl:flex flex-col items-center justify-center w-full rounded-md py-10 px-5 gap-4 relative overflow-hidden">
           <Image
             alt="hero"
@@ -131,10 +257,6 @@ export default function Home() {
               color: "transparent",
             }}
           />
-          {/* <div className="z-100 flex flex-col items-center justify-center gap-8 text-white">
-            <h1 className="text-5xl">Join the Waitlist Now</h1>
-            <JoinWaitlistForm />
-          </div> */}
         </div>
       </main>
       <Footer />
@@ -168,9 +290,9 @@ const Section = ({
     )}
     style={{ backgroundColor: color }}
   >
-    <div className="flex flex-col gap-2 md:items-center md:text-center relative w-fit max-w-[85%] md:max-w-[100%] mx-auto text-black">
+    <div className="flex flex-col gap-2 md:items-center md:text-center relative w-fit md:max-w-[100%] mx-auto text-black">
       {label && (
-        <div className="max-w-[680px]">
+        <div className="">
           <h2 className="text-2xl md:text-6xl font-semibold text-text-primary flex items-center gap-2">
             {label}
           </h2>

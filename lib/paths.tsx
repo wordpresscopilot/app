@@ -8,3 +8,4 @@ export const WP_PATH_INSTALL_PLUGIN_FILE =
 export const WP_PATH_REMOVE_PLUGIN = "/wp-json/wpcopilot/v1/remove-plugin";
 export const WP_PATH_ADMIN_AUTO_LOGIN =
   "/wp-json/wpcopilot/v1/get-admin-login-link";
+export const WP_PATH_FLUSH_CACHE = "/wp-json/wpcopilot/v1/flush-cache";

@@ -110,6 +110,7 @@ export enum ToolType {
   GENERATE_PAGE = "generatePage",
   ANSWER = "answer",
   SHOW_SITE = "showSite",
+  FLUSH_CACHE = "flushCache",
   ERROR = "error",
 }
 export enum TextContentType {

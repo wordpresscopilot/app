@@ -61,6 +61,8 @@ export async function getCurrentSitePlugins({
   const site = await currentSite(site_id);
   if (!site) return;
   const url = `${site.base_url}${WP_PATH_GET_PLUGINS}`;
+  console.log("url getCurrentSitePlugins", url);
+  console.log("site?.api_key", site?.api_key);
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
@@ -69,6 +71,7 @@ export async function getCurrentSitePlugins({
   });
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
+    console.log("errorData getCurrentSitePlugins", errorData);
     return {
       status: response.status,
       ok: response.ok,
@@ -78,6 +81,7 @@ export async function getCurrentSitePlugins({
     };
   }
   const data = await response.json();
+  console.log("data getCurrentSitePlugins", data);
   return data;
 }
 

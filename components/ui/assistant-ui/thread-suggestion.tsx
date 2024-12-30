@@ -13,9 +13,7 @@ const ThreadSuggestion: FC<PropsWithChildren<{ prompt: string }>> = ({
       autoSend
       asChild
     >
-      <Button variant="outline" className="flex-1 h-12">
-        {children}
-      </Button>
+      <Button className="flex-1 h-12">{children}</Button>
     </ThreadPrimitive.Suggestion>
   );
 };

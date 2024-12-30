@@ -19,17 +19,17 @@ export default async function PlaygroundPage() {
           slug: "astra",
         },
       },
-      {
-        step: "installPlugin",
-        pluginZipFile: {
-          resource: "wordpress.org/plugins",
-          slug: "interactive-code-block",
-        },
-      },
-      {
-        step: "runPHP",
-        code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
-      },
+      // {
+      //   step: "installPlugin",
+      //   pluginZipFile: {
+      //     resource: "wordpress.org/plugins",
+      //     slug: "interactive-code-block",
+      //   },
+      // },
+      // {
+      //   step: "runPHP",
+      //   code: "<?php require '/wordpress/wp-load.php'; wp_insert_post(['post_title' => 'WordPress Playground block demo!','post_content' => '<!-- wp:wordpress-playground/playground /-->', 'post_status' => 'publish', 'post_type' => 'post',]);",
+      // },
     ],
   };
 

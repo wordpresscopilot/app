@@ -16,9 +16,9 @@ export default function BrandCard({ plugin }: { plugin: Plugin }) {
       <CardHeader className="flex flex-col space-y-1.5 pb-2 pt-4 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center">
               <img src={plugin?.image_url} alt={plugin?.name} height={40} />
-            </div>
+          </div>
             <CardTitle className="text-lg font-bold">{plugin?.name}</CardTitle>
           </div>
           <Link

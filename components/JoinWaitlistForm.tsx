@@ -65,7 +65,7 @@ export const JoinWaitlistForm = forwardRef<
         )}
       </div>
       <Button type="submit" className="w-fit text-lg font-semibold">
-        Join the Waitlist
+        Join the Mailing List
       </Button>
     </form>
   );

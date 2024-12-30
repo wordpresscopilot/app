@@ -27,29 +27,30 @@ const AI_ThreadSuggestion: FC<PropsWithChildren<{}>> = ({ children }) => {
         debounceRef.current = false;
       }, 0);
     }
+    const response1 = await generate();
+    // `Generate a very short task recommendation for what the user can do next based on this response: "${content}". Only return a direct question. It should be less than 10 words."`
 
-    const [response1, response2] = await Promise.all([
-      generate(
-        `Generate a very very short follow up useful wordpress task button text based on this response: "${content}"`
-      ),
-      generate(
-        `Generate a very very short question based on this response: "${content}"`
-      ),
-    ]);
+    // const [response1, response2] = await Promise.all([
+    //   generate(
+    //     `Generate a very short task recommendation button text based on this response: "${content}". Only return a direct question. It should be less than 10 words."`
+    //   ),
+    //   generate(
+    //     `Generate a very short task recommendation button text based on this response: "${content}". Only return a direct question. It should be less than 10 words."`
+    //   ),
+    // ]);
 
     let generatedOutput = "";
     for await (const delta of readStreamableValue(response1.output)) {
       generatedOutput += delta;
     }
-    console.log(generatedOutput);
     setOutput(generatedOutput);
 
-    let generatedOutput2 = "";
-    for await (const delta of readStreamableValue(response2.output)) {
-      generatedOutput2 += delta;
-    }
-    console.log(generatedOutput2);
-    setOutput2(generatedOutput2);
+    // let generatedOutput2 = "";
+    // for await (const delta of readStreamableValue(response2.output)) {
+    //   generatedOutput2 += delta;
+    // }
+    // console.log(generatedOutput2);
+    // setOutput2(generatedOutput2);
   }, []);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ const AI_ThreadSuggestion: FC<PropsWithChildren<{}>> = ({ children }) => {
           {output || children}
         </Button>
       </ThreadPrimitive.Suggestion>
-      <ThreadPrimitive.Suggestion
+      {/* <ThreadPrimitive.Suggestion
         prompt={output2 || ""}
         method="replace"
         autoSend
@@ -87,7 +88,7 @@ const AI_ThreadSuggestion: FC<PropsWithChildren<{}>> = ({ children }) => {
         >
           {output2 || children}
         </Button>
-      </ThreadPrimitive.Suggestion>
+      </ThreadPrimitive.Suggestion> */}
     </div>
   );
 };

@@ -28,7 +28,7 @@ export const ArtifactsView = () => {
   return (
     <div
       className={
-        "h-full flex p-3 justify-stretch transition-[width] flex-grow basis-full relative"
+        "h-full flex justify-stretch transition-[width] flex-grow basis-full relative"
       }
     >
       <div className="border rounded-lg w-full h-full overflow-hidden">

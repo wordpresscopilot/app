@@ -20,14 +20,47 @@ type JsonValue =
   | { [key: string]: JsonValue };
 
 interface JsonTableProps {
-  data: JsonValue[];
+  data: JsonValue[] | string;
 }
+
 const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
-  if (!Array.isArray(data) || data.length === 0) {
+  const [parsedData, setParsedData] = React.useState<JsonValue[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof data === "string") {
+      try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          setParsedData(parsed);
+        } else {
+          setParsedData([parsed]);
+          setError("Parsed data is not an array, but we'll display it anyway");
+        }
+      } catch (e) {
+        setParsedData([{ data }]);
+      }
+    } else if (Array.isArray(data)) {
+      setParsedData(data);
+    } else {
+      setParsedData([data]);
+      setError(
+        "Data is neither a string nor an array, but we'll display it anyway"
+      );
+    }
+    setIsLoading(false);
+  }, [data]);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (parsedData.length === 0) {
     return <p>No data to display</p>;
   }
 
-  const headers = Object.keys(data[0] as object);
+  const headers = Object.keys(parsedData[0] as object);
 
   const renderValue = (value: JsonValue): React.ReactNode => {
     if (typeof value === "object" && value !== null) {
@@ -39,7 +72,7 @@ const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
   const exportToCSV = () => {
     const csvContent = [
       headers.join(","),
-      ...data.map((item) =>
+      ...parsedData.map((item) =>
         headers
           .map((header) =>
             JSON.stringify((item as { [key: string]: JsonValue })[header])
@@ -63,6 +96,7 @@ const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
 
   return (
     <>
+      {error && <p className="text-yellow-500 mb-2">{error}</p>}
       <div className="mb-4 flex justify-start items-center gap-4">
         <Button
           size="icon"
@@ -72,8 +106,8 @@ const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
           <Download className="h-4 w-4" />
         </Button>
         <div className="text-sm text-muted-foreground">
-          {data.length} row{data.length !== 1 ? "s" : ""} | {headers.length}{" "}
-          column{headers.length !== 1 ? "s" : ""}
+          {parsedData.length} row{parsedData.length !== 1 ? "s" : ""} |{" "}
+          {headers.length} column{headers.length !== 1 ? "s" : ""}
         </div>
       </div>
       <div className="rounded-md border max-h-[600px] overflow-auto">
@@ -92,7 +126,7 @@ const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item, index) => (
+              {parsedData.map((item, index) => (
                 <TableRow key={index} className={index % 2 === 0 ? "" : ""}>
                   {headers.map((header) => (
                     <TableCell
@@ -114,6 +148,6 @@ const JsonTable: React.FC<JsonTableProps> = ({ data }) => {
   );
 };
 
-export default function JSONArrayTable({ data }: { data: any[] }) {
+export default function JSONArrayTable({ data }: { data: any }) {
   return <JsonTable data={data} />;
 }

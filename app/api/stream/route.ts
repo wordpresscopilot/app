@@ -1,46 +1,57 @@
 import { runWPSiteAgent } from '@/agents/wp-site-agent';
-import { WpSite } from '@/types';
-import { Message } from '@/types/export-pipeline';
-import { NextRequest, NextResponse } from 'next/server';
+import { createRun, DataStreamEncoder } from 'assistant-stream';
+import { fromAISDKStreamText } from 'assistant-stream/ai-sdk';
+import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  const encoder = new TextEncoder();
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-
-  const sendUpdate = (data: any) => {
-    writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
-  };
-
-  // Keep the connection open by sending a comment every 15 seconds
-  const keepAlive = setInterval(() => {
-    writer.write(encoder.encode(': keep-alive\n\n'));
-  }, 15000);
-
-  req.signal.addEventListener('abort', () => {
-    clearInterval(keepAlive);
-    writer.close();
+  const {messages, site } = await req.json();
+  const filteredMessages = messages.map(message => {
+    if (Array.isArray(message.content)) {
+      message.content = message.content.filter(content => {
+        if (content.type === 'tool-call' || content.type === 'tool-result') {
+          return !(content.args && Object.keys(content.args).length === 0);
+        }
+        return true;
+      });
+    }
+    return message;
   });
 
-  const { site, messages } = await req.json() as { site: WpSite, messages: Message[] };
+  const uniqueToolCallIds = new Set();
 
-  try {
-    runWPSiteAgent({ site, messages }).catch((error) => {
-      console.error('Error running WP Site Agent:', error);
-      writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'error', data: error.message })}\n\n`));
-      writer.close();
-    });
-  } catch (error) {
-    console.error('Error parsing request:', error);
-    writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'error', data: 'Invalid request data' })}\n\n`));
-    writer.close();
-  }
-
-  return new NextResponse(stream.readable, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    },
+  const deduplicatedMessages = filteredMessages.map(message => {
+    if (Array.isArray(message.content)) {
+      message.content = message.content.filter(content => {
+        if (content.type === 'tool-result') {
+          if (uniqueToolCallIds.has(content.toolCallId)) {
+            return false;
+          }
+          uniqueToolCallIds.add(content.toolCallId);
+        }
+        return true;
+      });
+    }
+    return message;
   });
+
+  
+  const stream = createRun(async (controller) => {
+  
+
+    const agentResult = await runWPSiteAgent({ site, messages: deduplicatedMessages });
+    controller.appendStep(fromAISDKStreamText(agentResult.fullStream));
+
+    // const result2 = await streamObject({
+    //   model: openai("gpt-4o"),
+    //   prompt: "Response with hello world",
+    //   schema: z.object({
+    //     text: z.string(),
+    //   }),
+    // });
+    // controller.addStep(
+    //   fromAISDKStreamObject(result2.fullStream, "hello_world")
+    // );
+  });
+
+  return stream.toResponse(new DataStreamEncoder());
 }

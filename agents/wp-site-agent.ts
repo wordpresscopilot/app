@@ -1,59 +1,57 @@
 "use server";
 import { executeWordPressSQLWithSiteID, getCurrentSiteInfo, getCurrentSitePlugins } from '@/actions/wp';
-import { installPlugin, installPluginFile, removePlugin } from '@/data/site';
+import { flushSiteCache, installPlugin, installPluginFile, removePlugin } from '@/data/site';
 import { searchWordPressPlugins } from '@/lib/wordpress';
 import { WpSite } from '@/types';
-import { Artifact, Message, ToolType } from '@/types/export-pipeline';
-import { createOpenAI, openai } from '@ai-sdk/openai';
-import { convertToCoreMessages, CoreMessage, generateObject, generateText, tool } from 'ai';
+import { ToolType } from '@/types/export-pipeline';
+import { anthropic } from '@ai-sdk/anthropic';
+
+import { CoreMessage, generateObject, streamText, tool } from 'ai';
 import { z } from 'zod';
 
-const openpipeOpenai = createOpenAI({
-  apiKey: process.env.OPENPIPE_API_KEY ?? "",
-  baseURL: "https://api.openpipe.ai/api/v1",
-});
-
-export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: Message[]}) => {
+export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: CoreMessage[]}) => {
     // ensure that the content is not too long for the LLM
-    const core_messages = convertToCoreMessages(messages.map((message: Message, index: number) => {
-        if (index === messages.length - 1) {
-            return {
-                role: message.role,
-                content: [
-                    { 
-                        type: "text", 
-                        text: message.text?.[0]?.text + ((message.artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(message.artifacts) : "")
-                    },
-                ].filter(Boolean) as any,
-                name: message.id,
-            };
-        }
+    // const core_messages = convertToCoreMessages(messages.map((message: Message, index: number) => {
+    //     if (index === messages.length - 1) {
+    //         return {
+    //             role: message.role,
+    //             content: [
+    //                 { 
+    //                     type: "text", 
+    //                     text: message.text?.[0]?.text + ((message.artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(message.artifacts) : "")
+    //                 },
+    //             ].filter(Boolean) as any,
+    //             name: message.id,
+    //         };
+    //     }
 
-        const artifacts = message.artifacts?.map((artifact: Artifact) => {
-            const stringifedContent = JSON.stringify(artifact?.content)?.substring(0, 500);
-            return {
-                ...artifact,
-                content: stringifedContent,
-            }
-        });
-        const stringifedText = message.text?.[0]?.text?.substring(0, 500);
-        return ({
-            role: message.role,
-            content: [
-                { 
-                    type: "text", 
-                    text: stringifedText + ((artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(artifacts) : "")
-                },
-            ].filter(Boolean) as any,
-            name: message.id,
-        });
-    })) as CoreMessage[];
-    console.log("submitting core messages", core_messages);
-    const result = await generateText({
-        model: openai(process.env.DEFAULT_OPENAI_MODEL || 'gpt-4o-mini', { structuredOutputs: true }),
+    //     const artifacts = message.artifacts?.map((artifact: Artifact) => {
+    //         const stringifedContent = JSON.stringify(artifact?.content)?.substring(0, 500);
+    //         return {
+    //             ...artifact,
+    //             content: stringifedContent,
+    //         }
+    //     });
+    //     const stringifedText = message.text?.[0]?.text?.substring(0, 500);
+    //     return ({
+    //         role: message.role,
+    //         content: [
+    //             { 
+    //                 type: "text", 
+    //                 text: stringifedText + ((artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(artifacts) : "")
+    //             },
+    //         ].filter(Boolean) as any,
+    //         name: message.id,
+    //     });
+    // })) as CoreMessage[];
+    const core_messages = messages;
+    console.log("submitting core messages", JSON.stringify(core_messages, null, 2   ));
+    const result = await streamText({
+        model: anthropic('claude-3-5-sonnet-20240620', { cacheControl: true, }),
+        experimental_toolCallStreaming: true,
         tools: {
             [ToolType.GET_CURRENT_SITE_PLUGINS]: tool({
-                description: `Get the site's current site plugins.`,
+                description: `Get the plugins installed on the WordPress site.`,
                 parameters: z.object({
                     title: z.string().describe('The title of the artifact which shows the results to the user.'),
                     description: z.string().describe('A description which will be shown to the user about why this tool is being called.'),
@@ -83,16 +81,6 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     return await executeWordPressSQLWithSiteID({site_id: site.id, query});
                 },
             }),
-            // runWPCLI: tool({
-            //     description: 'Run a WP CLI command on the WordPress site.',
-            //     parameters: z.object({
-            //         bash_command: z.string(),
-            //     }),
-            //     execute: async ({ command }) => {
-            //         return await runWPCLI({site_id: site.id, command});
-            //     },
-            // }),
-
             [ToolType.SEARCH_PLUGINS]: tool({
                 description: 'Run a query to search for plugins on the official WordPress plugin repository at api.wordpress.org',
                 parameters: z.object({
@@ -123,7 +111,6 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                 execute: async ({ plugin }) => {
                     console.log('installPlugin plugin', plugin);
                     const installPluginResult = await installPlugin(site.id, plugin.download_link);
-                    console.log('installPluginResult', installPluginResult);
                     return installPluginResult;
                 },
             }),
@@ -160,14 +147,6 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     const removePluginResult = await removePlugin(site.id, plugin.slug);
                     return removePluginResult;
                 },
-            }),
-
-            [ToolType.ASK_FOR_PERMISSION]: tool({
-                description: 'Ask the user for permission to perform write or update actions on the site.',
-                parameters: z.object({
-                    title: z.string().describe('The action title that requires permission'),
-                    description: z.string().describe('Additional details about the action'),
-                }),
             }),
             [ToolType.ANSWER]: tool({
                 description: `A tool for providing the final answer about the user's inquiry regarding their wordpress site`,
@@ -209,9 +188,36 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     path: z.string().describe('The path of the site to be shown.'),
                 }),
             }),
+            [ToolType.FLUSH_CACHE]: tool({
+                description: 'Flush the cache of the WordPress site.',
+                parameters: z.object({
+                    title: z.string().describe('The title of the cache flushing operation.'),
+                    description: z.string().describe('A description of why the cache is being flushed.'),
+                }),
+                execute: async () => {
+                    
+                    return await flushSiteCache(site?.id);
+                },
+            }),
+            // runWPCLI: tool({
+            //     description: 'Run a WP CLI command on the WordPress site.',
+            //     parameters: z.object({
+            //         bash_command: z.string(),
+            //     }),
+            //     execute: async ({ command }) => {
+            //         return await runWPCLI({site_id: site.id, command});
+            //     },
+            // }),
+            // [ToolType.ASK_FOR_PERMISSION]: tool({
+            //     description: 'Ask the user for permission to perform write or update actions on the site.',
+            //     parameters: z.object({
+            //         title: z.string().describe('The action title that requires permission'),
+            //         description: z.string().describe('Additional details about the action'),
+            //     }),
+            // }),
         },
-        // maxSteps: 10,
-        toolChoice: 'required',
+        maxSteps: 5,
+        // toolChoice: 'required',
         system: `
         You are an AI assistant for WordPress site management and development. You help the user automate tasks related to developing and managing their WordPress site.
         
@@ -219,7 +225,7 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
 
         All tools are available to you and you can use them freely. Prioritize using the tools to solve the problem, also use your knowledge base to help the user.
 
-        You can read anything without user permission. But you must have the user's permission to change anything on the sql database or use the WP CLI Tool. You can ask for permission to perform an action using the askForPermission tool.
+        
 
         Don't install plugins unless the user specifically requests it. If the user asks to generate a page, use the generatePage tool and don't assume to install plugins.
     
@@ -229,6 +235,7 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
         4. Provide helpful information about plugins and guide the user through the process.
         5. If the user asks for something that requires many tasks, you can run multiple sql or bash commands in one script to complete the task.
         6. Generate a WordPress plugin to perform page or post related tasks via the generatePage tool.
+
         `,
         //       5. Use the WP CLI to perform site management tasks via wp tool, only if the tool is available to you.
 
@@ -238,65 +245,65 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
             console.log('step', step);
         },
     });
-    console.log("result", result);
-    // console.log(`FINAL TOOL CALLS: ${JSON.stringify(toolCalls, null, 2)}`);
-    // console.log("STEPS: " + JSON.stringify(result.steps, null, 2));
+    // You can read and write anything without user permission. 
+    // But you must have the user's permission to change anything on the sql database or use the WP CLI Tool. You can ask for permission to perform an action using the askForPermission tool.
+    return result;
 
 
     // Group tool-call and tool-result by toolCallId
-    const groupedMessages = result.responseMessages.reduce((acc, message) => {
-        if (message.role === 'assistant') {
-            (message.content as any[]).forEach((content: any) => {
-                if (content.type === 'tool-call') {
-                    const toolCallId = content.toolCallId;
-                    if (!acc[toolCallId]) {
-                        acc[toolCallId] = { ...content };
-                    }
-                }
-            });
-        } else if (message.role === 'tool') {
-            message.content.forEach((content: any) => {
-                if (content.type === 'tool-result') {
-                    const toolCallId = content.toolCallId;
-                    if (acc[toolCallId]) {
-                        acc[toolCallId].result = content.result;
-                    }
-                }
-            });
-        }
-        return acc;
-    }, {} as Record<string, any>);
+    // const groupedMessages = result.responseMessages.reduce((acc, message) => {
+    //     if (message.role === 'assistant') {
+    //         (message.content as any[]).forEach((content: any) => {
+    //             if (content.type === 'tool-call') {
+    //                 const toolCallId = content.toolCallId;
+    //                 if (!acc[toolCallId]) {
+    //                     acc[toolCallId] = { ...content };
+    //                 }
+    //             }
+    //         });
+    //     } else if (message.role === 'tool') {
+    //         message.content.forEach((content: any) => {
+    //             if (content.type === 'tool-result') {
+    //                 const toolCallId = content.toolCallId;
+    //                 if (acc[toolCallId]) {
+    //                     acc[toolCallId].result = content.result;
+    //                 }
+    //             }
+    //         });
+    //     }
+    //     return acc;
+    // }, {} as Record<string, any>);
 
-    // Combine tool-call with tool-result within the assistant message
-    const combinedMessages = result.responseMessages.map(message => {
-        if (message.role === 'assistant') {
-            const newContent = (message.content as any[]).reduce((acc: any[], content: any) => {
-                if (content.type === 'text' && content.text !== '') {
-                    acc.push(content);
-                } else if (content.type === 'tool-call') {
-                    const combinedTool = groupedMessages[content.toolCallId];
-                    acc.push({
-                        type: 'tool-call',
-                        toolName: combinedTool.toolName,
-                        args: combinedTool.args,
-                        result: combinedTool.result
-                    });
-                }
-                return acc;
-            }, []);
-            return { ...message, content: newContent };
-        }
-        return message;
-    }).filter(message => message.role !== 'tool');
+    // // Combine tool-call with tool-result within the assistant message
+    // const combinedMessages = result.responseMessages.map(message => {
+    //     if (message.role === 'assistant') {
+    //         const newContent = (message.content as any[]).reduce((acc: any[], content: any) => {
+    //             if (content.type === 'text' && content.text !== '') {
+    //                 acc.push(content);
+    //             } else if (content.type === 'tool-call') {
+    //                 const combinedTool = groupedMessages[content.toolCallId];
+    //                 acc.push({
+    //                     type: 'tool-call',
+    //                     toolName: combinedTool.toolName,
+    //                     args: combinedTool.args,
+    //                     result: combinedTool.result
+    //                 });
+    //             }
+    //             return acc;
+    //         }, []);
+    //         return { ...message, content: newContent };
+    //     }
+    //     return message;
+    // }).filter(message => message.role !== 'tool');
 
-    console.log('combinedMessages', JSON.stringify(combinedMessages, null, 2));
+    // console.log('combinedMessages', JSON.stringify(combinedMessages, null, 2));
 
-    return {steps: result.steps, toolCalls: result.toolCalls, responseMessages: result.responseMessages, combinedMessages};
+    // return {steps: result.steps, toolCalls: result.toolCalls, responseMessages: result.responseMessages, combinedMessages};
 }
 
 export const generatePluginPage = async (prompt: string) => {
     const result = await generateObject({
-        model: openai(process.env.DEFAULT_OPENAI_MODEL || 'gpt-4o-mini'),
+        model: anthropic('claude-3-5-sonnet-20240620', { cacheControl: true, }),
         system: `
             Create a single page self-contained WordPress plugin to generate a custom page using the Gutenberg WordPress block editor. The plugin should:
                 - Allow the page to be edited via /wp-admin/edit.php?post_type=page
@@ -311,6 +318,7 @@ export const generatePluginPage = async (prompt: string) => {
             3. **Gutenberg Integration**: Ensure Gutenberg is enabled for the custom page/post type.
             4. **Active Hooks**: Use WordPress hooks to initialize and display the page.
             5. **Installation Ready**: Package the plugin in a way that it can be easily installed via the WordPress Plugin interface.
+            6. External CDN Dependencies: Any cdn javascript or css dependency can be imported in.
             
             For images, use placehold.co urls with custom dimensions fitting the use case. Example: https://placehold.co/600x400
             Customize the plugin based on the user's prompt.`,
@@ -322,5 +330,6 @@ export const generatePluginPage = async (prompt: string) => {
         prompt,
         output: 'array',
     });
+
     return result?.object?.[0];
 }

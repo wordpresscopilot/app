@@ -12,11 +12,11 @@ import { Logo } from "./logo";
 
 export default function PluginDownloadCard() {
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto hover:shadow-lg">
       <CardHeader className="flex flex-col items-center space-y-4">
         <Logo width={64} height={64} />
         <CardTitle className="text-2xl font-bold text-center">
-          WPCopilot Wordpress Plugin
+          WPC.dev Wordpress Plugin
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -46,7 +46,7 @@ export default function PluginDownloadCard() {
         <Link href="https://github.com/wordpresscopilot/plugin/releases/download/v14/wordpress-copilot.zip">
           <Button className="w-full sm:w-auto">
             <DownloadIcon className="mr-2 h-4 w-4" />
-            Download V5 Plugin
+            Download Plugin
           </Button>
         </Link>
         <p className="text-xs text-center text-muted-foreground">

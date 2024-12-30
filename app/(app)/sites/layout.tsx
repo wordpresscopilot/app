@@ -4,7 +4,6 @@ import { Header } from "@/components/header";
 import { ActiveArtifactProvider } from "@/contexts/active-artifact";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { cn } from "@/lib/utils";
-
 export default function ChatLayout({
   children,
 }: {

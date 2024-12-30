@@ -1,7 +1,7 @@
 "use server";
 
 import { executeWordPressSQL } from "@/actions/wp";
-import { WP_PATH_ADMIN_AUTO_LOGIN, WP_PATH_HEALTH, WP_PATH_INSTALL_PLUGIN, WP_PATH_INSTALL_PLUGIN_FILE, WP_PATH_REMOVE_PLUGIN, WP_PATH_SITE_INFO } from "@/lib/paths";
+import { WP_PATH_ADMIN_AUTO_LOGIN, WP_PATH_FLUSH_CACHE, WP_PATH_HEALTH, WP_PATH_INSTALL_PLUGIN, WP_PATH_INSTALL_PLUGIN_FILE, WP_PATH_REMOVE_PLUGIN, WP_PATH_SITE_INFO } from "@/lib/paths";
 import { prisma } from "@/lib/prisma";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
@@ -190,6 +190,24 @@ export async function installPlugin(siteId: string, plugin_url: string) {
   }
   const data = await response.json();
   return data;
+}
+export async function flushSiteCache(siteId: string) {
+  const site = await currentSite(siteId);
+  if (!site) {
+    throw new Error('Site not found');
+  }
+  const endpoint_url = new URL(WP_PATH_FLUSH_CACHE, site.base_url).toString();
+
+  const response = await fetch(endpoint_url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${site.api_key}`,
+    },
+  }); 
+  const data = await response.json();
+  console.log("flush cache", data);
+  return data;
+  
 }
 export async function installPluginFile(siteId: string, pluginCode: string, pluginName: string) {
   const site = await currentSite(siteId);

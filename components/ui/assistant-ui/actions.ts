@@ -1,6 +1,6 @@
 "use server";
 
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { createStreamableValue } from "ai/rsc";
 
@@ -9,7 +9,7 @@ export async function generate(input: string) {
 
   (async () => {
     const { textStream } = await streamText({
-      model: openai("gpt-3.5-turbo"),
+      model: anthropic("claude-3-5-sonnet-20240620"),
       prompt: input,
     });
 

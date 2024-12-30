@@ -8,6 +8,7 @@ import {
   getExternalStoreMessage,
   MessagePrimitive,
   ThreadPrimitive,
+  ToolCallContentPart,
   useMessage,
 } from "@assistant-ui/react";
 import { useState, type FC } from "react";
@@ -18,7 +19,7 @@ import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-but
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useActiveArtifact } from "@/contexts/active-artifact";
-import { cn } from "@/lib/utils";
+import { cn, nanoid } from "@/lib/utils";
 import {
   Artifact,
   ArtifactType,
@@ -47,12 +48,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../card";
+import AI_ThreadSuggestion from "./AI_ThreadSuggestion";
 import ThreadSuggestion from "./thread-suggestion";
 
 export const MyThread: FC = () => {
   return (
-    <ThreadPrimitive.Root className="bg-background h-[calc(100vh-160px)]">
-      <ThreadPrimitive.Viewport className="flex flex-col h-full items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-8">
+    <ThreadPrimitive.Root className="bg-white h-[calc(100vh-160px)] rounded-md shadow-md">
+      <ThreadPrimitive.Viewport className="flex flex-col h-full items-center overflow-y-scroll scroll-smooth bg-inherit">
         <MyThreadWelcome />
 
         <ThreadPrimitive.Messages
@@ -63,7 +65,7 @@ export const MyThread: FC = () => {
           }}
         />
         <div className="sticky bottom-0 mt-4 flex w-full max-w-2xl flex-grow flex-col items-center justify-end rounded-t-lg bg-inherit pb-4">
-          {/* <ThreadPrimitive.If empty={false}>
+          <ThreadPrimitive.If empty={false}>
             <div className="mb-4 w-full px-4">
               <div className="flex flex-wrap justify-center gap-4">
                 <ThreadPrimitive.If running={false}>
@@ -71,7 +73,7 @@ export const MyThread: FC = () => {
                 </ThreadPrimitive.If>
               </div>
             </div>
-          </ThreadPrimitive.If> */}
+          </ThreadPrimitive.If>
           <MyThreadScrollToBottom />
           <MyComposer />
         </div>
@@ -107,17 +109,35 @@ const MyThreadWelcome: FC = () => {
     <ThreadPrimitive.Empty>
       <div className="flex w-full max-w-2xl grow flex-col px-4 py-6">
         <div className="flex flex-grow basis-full flex-col items-center justify-center">
-          <h1 className="leading-tighter mb-4 text-center text-5xl font-extrabold tracking-tighter md:text-6xl">
+          <h1 className="leading-tighter mb-4 text-center text-3xl font-extrabold tracking-tighter md:text-4xl">
             <span className="bg-gradient-to-r from-green-500 to-teal-400 bg-clip-text text-transparent">
-              Try me.
+              Ask anything about your site.
             </span>
           </h1>
         </div>
         <div className="mb-4 w-full px-4">
+          <p className="text-md mb-4">
+            Examples:
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
             <ThreadSuggestion prompt="Show me all the plugins on my site.">
               <p className="font-semibold">
                 Show me all the plugins on my site.
+              </p>
+            </ThreadSuggestion>
+             <ThreadSuggestion prompt="Add the latest elementor plugin">
+              <p className="font-semibold">
+                Add the latest elementor plugin
+              </p>
+            </ThreadSuggestion>
+             <ThreadSuggestion prompt="Export all my posts with their author name and view count">
+              <p className="font-semibold">
+                Export all my posts with their author name and view count
+              </p>
+            </ThreadSuggestion>
+            <ThreadSuggestion prompt="Create a new post about the historical significance of today's date.">
+              <p className="font-semibold">
+                Create a new post about the historical significance of today's date
               </p>
             </ThreadSuggestion>
           </div>
@@ -247,9 +267,7 @@ const AskForPermissionArtifact: FC = () => {
 
 const ViewableArtifacts: FC = () => {
   const { setActiveArtifact } = useActiveArtifact();
-  const message = useMessage((m) =>
-    getExternalStoreMessage<Message>(m.message)
-  );
+  const message = useMessage((m) => getExternalStoreMessage<Message>(m));
   if (!message?.artifacts || message.artifacts.length === 0) {
     return null;
   }
@@ -363,7 +381,63 @@ const ErrorArtifact: FC = () => {
   );
 };
 
+const ViewableToolUIBlock: FC<{ tool_call: ToolCallContentPart }> = ({
+  tool_call,
+}) => {
+  const { setActiveArtifact } = useActiveArtifact();
+  return (
+    <div className="mt-4 space-y-4">
+        return (
+          <div key={index}>
+            <Card
+              className={`cursor-pointer bg-muted/50 hover:bg-muted transition-colors ${
+                artifact.isError ? "border-red-500 border-2" : ""
+              }`}
+              onClick={() => {
+                setActiveArtifact(artifact);
+                console.log("Artifact clicked:", artifact);
+              }}
+            >
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <div>
+                    {React.createElement(getArtifactIcon(artifact.type))}
+                  </div>
+                  <div>{artifact.title}</div>
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {artifact.description}
+                </CardDescription>
+              </CardHeader>
+              {/* <CardFooter></CardFooter> */}
+            </Card>
+            {artifact.toolName === ToolType.GENERATE_PAGE && (
+              <CardFooter className="flex justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const playgroundArtifact = {
+                      ...artifact,
+                      type: ArtifactType.PLAYGROUND,
+                    } as Artifact;
+                    setActiveArtifact(playgroundArtifact);
+                  }}
+                >
+                  View in Playground
+                </Button>
+              </CardFooter>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const MyAssistantMessage: FC = () => {
+  const { activeArtifact, setActiveArtifact } = useActiveArtifact();
   return (
     <>
       <MessagePrimitive.Root className="relative grid w-full max-w-2xl grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr_auto] py-4">
@@ -374,7 +448,195 @@ const MyAssistantMessage: FC = () => {
 
         <div className="text-foreground col-span-2 col-start-2 row-start-1 my-1.5 max-w-xl break-words leading-7">
           <MessagePrimitive.Content
-            components={{ Empty: MyEmpty, Text: MarkdownText }}
+            components={{
+              Empty: MyEmpty,
+              Text: MarkdownText,
+              tools: {
+                by_name: {
+                  // [ToolType.ANSWER]: ({ args }) => {
+                  //   // renderAnswerTool()
+                  //   return (
+                  //     <Card>
+                  //       {args.title} {args.description}
+                  //     </Card>
+                  //   );
+                  // },
+                  // [ToolType.GET_CURRENT_SITE_PLUGINS]: ({
+                  //   args,
+                  //   argsText,
+                  //   status,
+                  //   toolName,
+                  // }) => {
+                  //   if (!argsText?.length) return;
+                  //   return (<></>
+
+                  //     // <Card
+                  //     //   className={`cursor-pointer hover:bg-foreground transition-colors bg-foreground/90 text-background`}
+                  //     // >
+                  //     //   <CardHeader>
+                  //     //     <CardTitle> {args.title}</CardTitle>
+                  //     //   </CardHeader>
+                  //     //   <CardContent>{args.description}</CardContent>
+                  //     // </Card>
+                  //     // <ToolUIWrapper
+                  //     //   title="Get Current Site Plugins"
+                  //     //   status={status}
+                  //     // >
+                  //     //   <h1>Get Current Site Plugins</h1>
+                  //     // </ToolUIWrapper>
+                  //   );
+                  // },
+                },
+                Fallback: (tool_call) => {
+                  // return <ViewableToolUIBlock tool_call={tool_call} />;
+                  console.log("tool_call", tool_call)
+                  if(!tool_call?.args?.title) return;
+                  const toolName = tool_call?.toolName;
+                  const description = tool_call?.args?.description || tool_call?.args?.answer;
+                  const isError = Boolean(
+                    tool_call?.result?.error || toolName === ToolType.ERROR
+          );
+          const title = `${isError ? "Error: " : ""}${tool_call?.args?.title}`;
+
+          const result =
+            typeof tool_call?.result === "object"
+              ? JSON.stringify(tool_call?.result)
+              : tool_call?.result || "";
+                  const artifact = {
+                    id: nanoid(),
+                    title,
+                    isError,
+                  } as Artifact;
+
+          switch (toolName) {
+            case ToolType.GET_CURRENT_SITE_PLUGINS:
+              artifact.type = ArtifactType.JSON_TABLE;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.GET_CURRENT_SITE_PLUGINS;
+              break;
+            case ToolType.GET_CORE_SITE_DATA:
+              artifact.type = ArtifactType.JSON_TABLE;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.GET_CORE_SITE_DATA;
+              break;
+            case ToolType.SEARCH_PLUGINS:
+              artifact.type = ArtifactType.JSON_TABLE;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.SEARCH_PLUGINS;
+              break;
+            case ToolType.RUN_SQL_QUERY:
+              artifact.type = ArtifactType.JSON_TABLE;
+              artifact.title = description;
+              artifact.description = tool_call?.args?.query;
+              artifact.content = [result];
+              artifact.toolName = ToolType.RUN_SQL_QUERY;
+              break;
+            case ToolType.ANSWER:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [JSON.stringify(tool_call.args.steps as any)];
+              artifact.toolName = ToolType.ANSWER;
+              break;
+            case ToolType.ERROR:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [];
+              artifact.toolName = ToolType.ERROR;
+              break;
+            case ToolType.ASK_FOR_PERMISSION:
+              artifact.type = ArtifactType.BUTTONS;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.toolName = ToolType.ASK_FOR_PERMISSION;
+              break;
+            case ToolType.INSTALL_PLUGIN:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.INSTALL_PLUGIN;
+              break;
+            case ToolType.REMOVE_PLUGIN:
+              artifact.type = ArtifactType.TEXT;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [result];
+              artifact.toolName = ToolType.REMOVE_PLUGIN;
+              break;
+            case ToolType.GENERATE_PAGE:
+              artifact.type = ArtifactType.CODE;
+              artifact.title = title;
+              artifact.description = description;
+              artifact.content = [
+                JSON.stringify({
+                  prompt: tool_call.args.prompt,
+                  plugin_name: tool_call?.result?.plugin_name,
+                  plugin_file_content: tool_call?.result?.plugin_file_content,
+                  page_path: tool_call?.result?.page_path,
+                }),
+              ];
+              artifact.toolName = ToolType.GENERATE_PAGE;
+              break;
+            // Add more cases for other tool types as needed
+          }
+    //       // if (m.toolName === ToolType.GET_CURRENT_SITE_PLUGINS) {
+
+    //       // type: ArtifactType.JSON_TABLE,
+    //       // content: [JSON.stringify(curr.result)],
+    //       // toolName: ToolType.GET_CURRENT_SITE_PLUGINS,
+    //       const content = [
+    //         {
+    //           type: TextContentType.TEXT,
+    //           text: description,
+    //         },
+    //       ] as Content[];
+          // const artifacts =
+          //   artifact.toolName !== ToolType.ANSWER ? [artifact] : [];
+          
+                  return (
+                          <Card
+                          onClick={() => {
+                            if(artifact?.content) {
+                              setActiveArtifact(artifact);
+                            }
+                            
+                            console.log("Artifact clicked:", artifact);
+                          }}
+                        className={` my-4 cursor-pointer hover:bg-foreground transition-colors bg-foreground/90 text-background`}
+                      >
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <div>
+                              {React.createElement(getArtifactIcon(artifact.type))}
+                            </div>
+                            <div>{tool_call?.args?.title}</div>
+                          </CardTitle>
+
+                        </CardHeader>
+                        <CardContent>
+                          {tool_call?.args?.description}
+                          {tool_call?.status?.type !== "complete" && (
+                            <SpinnerMessage />
+                          )}
+                        </CardContent>
+                      </Card>
+                  //     // <ToolUIWrapper
+                  //     //   title="Get Current Site Plugins"
+                  //     //   status={status}
+                  //     // >
+                  //     //   <h1>Get Current Site Plugins</h1>
+                  )
+                },
+              },
+            }}
           />
         </div>
 

@@ -76,7 +76,7 @@ const ArtifactCard = ({
   return (
     <div
       className={
-        "flex p-3 justify-stretch transition-[width] flex-grow basis-full sm:h-[calc(100vh-90px)]"
+        "flex p-3 justify-stretch transition-[width] flex-grow basis-full sm:h-[calc(100vh-120px)]"
       }
     >
       <div className="border rounded-lg w-full h-full overflow-hidden">
@@ -124,7 +124,7 @@ const ArtifactCard = ({
             {!artifact?.isError &&
               artifact?.content.map((item, index) =>
                 artifact?.type === ArtifactType.JSON_TABLE ? (
-                  <JSONArrayTable key={index} data={JSON.parse(item)} />
+                  <JSONArrayTable key={index} data={item} />
                 ) : CODE_TYPES.includes(artifact?.type) ? (
                   JSON_TYPES.includes(artifact?.type) ? (
                     <SyntaxHighlighter key={index} style={dark} language="json">

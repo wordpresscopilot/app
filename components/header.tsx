@@ -2,13 +2,11 @@
 
 import ProjectSelector from "@/components/project-selector";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useSelectedSite } from "@/contexts/selected-site";
 import { retrieveSites, runSiteHealthCheck } from "@/data/site";
 import { WpSite } from "@/types";
 import { useAuth } from "@clerk/clerk-react";
 import { UserButton } from "@clerk/nextjs";
-import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -74,7 +72,7 @@ export function Header() {
         </React.Suspense>
       </div>
 
-      <div className="flex justify-center w-full">
+      {/* <div className="flex justify-center w-full">
         {selectedSite && (
           <>
             <Sheet>
@@ -159,7 +157,7 @@ export function Header() {
             </Sheet>
           </>
         )}
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-end space-x-2">
         <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>

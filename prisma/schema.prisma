@@ -10,8 +10,7 @@ generator client {
 
 datasource db {
   provider  = "mongodb"
-  url       = env("DATABASE_PROXY_URL")
-  directUrl = env("MONGODB_URL")
+  url = env("MONGODB_URL")
 }
 
 

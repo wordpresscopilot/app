@@ -54,12 +54,6 @@ async function submitUserMessage(content: string, pathname: string) {
   "use server";
   const siteId = pathname.split("/")[2]; // Extract site ID from pathname
   const site = (await currentSite(siteId)) as WpSite;
-  console.log({
-    siteId,
-    site,
-    content,
-    pathname,
-  });
 
   const aiState = getMutableAIState<typeof AI>();
 
