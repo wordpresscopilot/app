@@ -9,6 +9,11 @@
   <a href="https://github.com/wordpresscopilot/app/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
 </div>
 
+<div align="center">
+  <img width="400" alt="AI Agent Copilot Demo Screenshot 1" src="https://github.com/user-attachments/assets/94cbc430-4e52-4944-8aa2-b3c6bd303283" />
+  <img width="400" alt="AI Agent Copilot Demo Screenshot 2" src="https://github.com/user-attachments/assets/cbca5929-9413-46a8-9aa0-215e874d503e" />
+</div>
+
 <p align="center">
     <a href="#-introduction">Introduction</a> ·
     <a href="#-features">Features</a> ·
