@@ -107,8 +107,9 @@ export const MarketingNavigation = ({
             size="lg"
             className="h-[50px] px-[18px] text-base gt-standard-mono cursor-pointer"
             onClick={scrollToWaitlistForm}
+            asChild
           >
-            View on Github
+            <Link href="/sign-in">Login / Sign Up</Link>
           </Button>
         </div>
       </div>
@@ -171,11 +172,11 @@ export const MarketingNavigation = ({
                   size="lg"
                   className="m-4 text-base gt-standard-mono cursor-pointer"
                   onClick={() => {
-                    scrollToWaitlistForm();
                     setIsMenuOpen(false);
                   }}
+                  asChild
                 >
-                  Join the Mailing List
+                  <Link href="/sign-in">Login / Sign Up</Link>
                 </Button>
               </motion.div>
             )}

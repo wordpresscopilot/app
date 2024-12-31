@@ -4,9 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { nanoid } from "@/lib/utils";
 import { SSH, WpSite } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
-import { Unkey } from "@unkey/api";
+import { v4 } from "uuid";
 
-const unkey = new Unkey({ rootKey: process.env.UNKEY_ROOT_KEY! });
 
 export async function createSiteProject(formData: FormData): Promise<WpSite> {
   const user = await currentUser();
@@ -15,23 +14,13 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
   const name = formData.get("name") as string;
   const baseUrl = formData.get("baseUrl") as string;
   const new_site_id = nanoid();
-  // const created_key = await unkey.keys.create({
-  //   apiId: process.env.UNKEY_API_ID!,
-  //   prefix: "wpc",
-  //   byteLength: 16,
-  //   externalId: user.id,
-  //   meta: {
-  //     site_id: new_site_id,
-  //   },
-  //   enabled: true,
-  // });
   const newSite = (await prisma.wp_site.create({
     data: {
       id: new_site_id,
       user_id: user.id,
       name,
       base_url: baseUrl,
-      api_key: "09198a57-c010-4479-a890-4bbda5af2df0", // created_key?.result?.key!,
+      api_key: v4(),
       plugin_connected: false,
     },
   })) as WpSite;
