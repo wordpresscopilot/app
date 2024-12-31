@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-
 export default function Home() {
   const waitlistFormRef = React.useRef<HTMLFormElement>(null);
 
@@ -31,6 +30,40 @@ export default function Home() {
       setTimeout(() => element.querySelector("input")?.focus(), 500);
     }
   };
+
+  const cards = [
+    {
+      title: "Plugin Management",
+      description: "Search, install, and remove WordPress plugins.",
+    },
+    {
+      title: "Site Information",
+      description: "Get core site data",
+    },
+    {
+      title: "SQL Operations",
+      description:
+        "Execute SQL queries and manage your WordPress database safely",
+    },
+    {
+      title: "Export Data",
+      description: "View and analyze your WordPress site's current state",
+    },
+    {
+      title: "Page Generation",
+      description:
+        "Create custom pages and functionality through natural conversation",
+    },
+    {
+      title: "Cache Management",
+      description:
+        "Flush cache and optimize site performance with simple commands",
+    },
+    {
+      title: "Site Monitoring",
+      description: "View and analyze your WordPress site's current state",
+    },
+  ];
 
   return (
     <div className="p-3 md:p-5 flex flex-col gap-2.5 max-w-[1440px] mx-auto min-h-[100vh]">
@@ -63,12 +96,12 @@ export default function Home() {
               <br />
               Copilot for Wordpress
             </h1>
-            {/* <p
-              className="leading-[140%] text-xl md:text-4xl text-center text-white font-base sm:max-w-[70%] mx-auto"
+            <p
+              className="leading-[140%] text-xl md:text-3xl text-center text-gray-200 font-base sm:max-w-[70%] mx-auto"
               style={{ textWrap: "balance" }}
             >
-              Open Source AI Agent + Plugin for Wordpress.
-            </p> */}
+              Built with NextJS, Shadcn, Clerk, AssistantUI, and Anthropic.
+            </p>
             <div className="flex gap-4">
               <Button size="lg" asChild>
                 <Link href="/demo">Try Demo</Link>
@@ -83,7 +116,6 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
-            {/* <JoinWaitlistForm ref={waitlistFormRef} /> */}
           </div>
         </section>
         <Logos />
@@ -94,67 +126,16 @@ export default function Home() {
           description="'Hey copilot, add the latest elementor plugin to my site.'"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Plugin Management</CardTitle>
-                <CardDescription>
-                  Search, install, and remove WordPress plugins.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Site Information</CardTitle>
-                <CardDescription>Get core site data</CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>SQL Operations</CardTitle>
-                <CardDescription>
-                  Execute SQL queries and manage your WordPress database safely
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Export Data</CardTitle>
-                <CardDescription>
-                  View and analyze your WordPress site&apos;s current state
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Page Generation</CardTitle>
-                <CardDescription>
-                  Create custom pages and functionality through natural
-                  conversation
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Cache Management</CardTitle>
-                <CardDescription>
-                  Flush cache and optimize site performance with simple commands
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Site Monitoring</CardTitle>
-                <CardDescription>
-                  View and analyze your WordPress site&apos;s current state
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {cards.map((card, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle>{card.title}</CardTitle>
+                  <CardDescription className="text-lg">
+                    {card.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
         </Section>
         {/* <Section

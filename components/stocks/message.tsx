@@ -16,10 +16,10 @@ import { spinner } from "./spinner";
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
     <div className="group relative flex items-start md:-ml-12">
-      <div className="flex size-[25px] shrink-0 select-none items-center justify-center rounded-md border bg-background shadow-sm">
+      <div className="flex size-[25px] shrink-0 select-none items-center justify-center rounded-md border shadow-sm">
         <IconUser />
       </div>
-      <div className="font-semibold ml-4 flex-1 space-y-2 overflow-hidden pl-2">
+      <div className="font-semibold ml-4 flex-1 space-y-2 overflow-hidden pl-2 text-background">
         {children}
       </div>
     </div>
@@ -52,7 +52,7 @@ export function BotMessage({
     <div className={cn("group relative flex items-start md:-ml-12", className)}>
       <div
         className={cn(
-          "flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-primary text-primary-foreground shadow-sm",
+          "flex size-[24px] shrink-0 select-none items-center justify-center rounded-md border bg-background text-foreground shadow-sm",
           !showAvatar && "invisible"
         )}
       >
@@ -60,7 +60,7 @@ export function BotMessage({
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
         <MemoizedReactMarkdown
-          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 text-background"
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
             // p({ children }) {

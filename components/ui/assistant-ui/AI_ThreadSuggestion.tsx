@@ -28,7 +28,7 @@ const AI_ThreadSuggestion: FC<PropsWithChildren<{}>> = ({ children }) => {
       }, 0);
     }
     const response1 = await generate(
-      `Generate a very short task recommendation for what the user can do next based on this response: "${content}". Only return a direct question. It should be less than 10 words."`
+      `Generate a 10 words or less very short task action for what the user can do next based on this response: "${content}". It should be a suggestion for the user can command the assistant to do next."`
     );
 
     // const [response1, response2] = await Promise.all([
