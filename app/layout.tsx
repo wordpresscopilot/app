@@ -12,9 +12,11 @@ export const metadata = {
     ? new URL(`https://${process.env.VERCEL_URL}`)
     : undefined,
   title: {
-    default: "Open Source AI Agent Copilot for Wordpress",
+    default: "Open Source AI Agent Copilot",
   },
-  description: "Open Source AI Agent Copilot for Wordpress",
+  description:
+    "Connect to a wordpress site and use an LLM with tools to manage plugins, execute complex sql queries, run wp-cli commands, export data, and more. Built using NextJS, Shadcn, and AssistantUI.",
+  robots: "index, follow",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",

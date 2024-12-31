@@ -10,42 +10,7 @@ import { CoreMessage, generateObject, streamText, tool } from 'ai';
 import { z } from 'zod';
 
 export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: CoreMessage[]}) => {
-    // ensure that the content is not too long for the LLM
-    // const core_messages = convertToCoreMessages(messages.map((message: Message, index: number) => {
-    //     if (index === messages.length - 1) {
-    //         return {
-    //             role: message.role,
-    //             content: [
-    //                 { 
-    //                     type: "text", 
-    //                     text: message.text?.[0]?.text + ((message.artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(message.artifacts) : "")
-    //                 },
-    //             ].filter(Boolean) as any,
-    //             name: message.id,
-    //         };
-    //     }
-
-    //     const artifacts = message.artifacts?.map((artifact: Artifact) => {
-    //         const stringifedContent = JSON.stringify(artifact?.content)?.substring(0, 500);
-    //         return {
-    //             ...artifact,
-    //             content: stringifedContent,
-    //         }
-    //     });
-    //     const stringifedText = message.text?.[0]?.text?.substring(0, 500);
-    //     return ({
-    //         role: message.role,
-    //         content: [
-    //             { 
-    //                 type: "text", 
-    //                 text: stringifedText + ((artifacts?.length ?? 0) > 0 ? "\nArtifacts: " + JSON.stringify(artifacts) : "")
-    //             },
-    //         ].filter(Boolean) as any,
-    //         name: message.id,
-    //     });
-    // })) as CoreMessage[];
     const core_messages = messages;
-    console.log("submitting core messages", JSON.stringify(core_messages, null, 2   ));
     const result = await streamText({
         model: anthropic('claude-3-5-sonnet-20240620', { cacheControl: true, }),
         experimental_toolCallStreaming: true,
@@ -61,7 +26,7 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                 },
             }),
             [ToolType.GET_CORE_SITE_DATA]: tool({
-                description: 'Get core data from the WordPress site including site title, site tagline, theme, wordpress version, site url, language, timezone, dateformat',
+                description: 'Get core data from the WordPress site including site title, site tagline, theme, wordpress version, site url, language, timezone, dateformat.',
                 parameters: z.object({
                     title: z.string().describe('The title of the artifact which shows the results to the user.'),
                     description: z.string().describe('A description which will be shown to the user about why this tool is being called.'),
@@ -143,7 +108,6 @@ export const runWPSiteAgent = async ({site, messages}: {site: WpSite, messages: 
                     }),
                 }),
                 execute: async ({ plugin }) => {
-                    console.log("REMOVE_PLUGIN plugin", plugin);
                     const removePluginResult = await removePlugin(site.id, plugin.slug);
                     return removePluginResult;
                 },
