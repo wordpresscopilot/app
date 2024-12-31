@@ -1,10 +1,11 @@
 <div align="center">
+  <img width="1395" alt="Screenshot 2024-12-31 at 4 35 49 PM" src="https://github.com/user-attachments/assets/a9f611a3-15b3-4e88-a24d-8ac993b32ea9" />
+
   <h1 align="center">WordPress AI Copilot</h1>
-  <h3>AI-Powered WordPress Site Management and Integration Platform</h3>
+  <h3>Open Source AI Agent for Wordpress Site Management and Integrations</h3>
 </div>
 
 <div align="center">
-  <a href="https://github.com/wordpresscopilot/app/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/wordpresscopilot/app"></a>
   <a href="https://github.com/wordpresscopilot/app/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue"></a>
 </div>
 
@@ -25,19 +26,17 @@ WordPress AI Copilot is an open source project that brings the power of AI to Wo
 | Feature | Description |
 |---------|-------------|
 | 🤖 AI-Powered Site Management | Natural language interface for WordPress administration |
-| 🔄 Multi-Site Support | Manage multiple WordPress installations from one dashboard |
-| 📊 Site Health Monitoring | Real-time monitoring and health checks for your WordPress sites |
+| 🔄 Multi-Site Support | Manage multiple WordPress sites |
 | 🔍 Smart Content Analysis | AI-powered content suggestions and optimization |
-| 🛠 Automated Tasks | Streamline common WordPress management tasks |
+| 🛠 Automated Tasks | Streamline common WordPress management tasks using natural language |
 
 ## 🛠 Tech Stack
 
-- [Next.js](https://nextjs.org/) – Framework
-- [TypeScript](https://www.typescriptlang.org/) – Language
-- [AssistantUI](https://assistantui.com) - AI Interface
+- [Next.js](https://nextjs.org/) – Web Framework
+- [shadcn/ui](https://ui.shadcn.com) - React UI Components
+- [AssistantUI](https://assistantui.com) - React UI Components for AI Agent Chat
 - [Clerk](https://clerk.dev) - Authentication
-- [WordPress REST API](https://developer.wordpress.org/rest-api/) - WordPress Integration
-- [shadcn/ui](https://ui.shadcn.com) - UI Components
+- [Anthropic](https://anthropic.com) - AI LLM Provider
 - [Prisma](https://prisma.io) - ORM
 - [MongoDB](https://www.mongodb.com/) - Database
 - [Vercel](https://vercel.com/) - Deployment & Hosting
@@ -46,10 +45,8 @@ WordPress AI Copilot is an open source project that brings the power of AI to Wo
 
 The WordPress AI Copilot requires a companion plugin to be installed on your WordPress sites. The plugin enables:
 
-- Secure API communication
-- Site health monitoring
-- Custom endpoints for AI integration
-- Content management features
+- Custom endpoints for wordpress agent tools like run sql queries, exporting data, plugin management, etc
+- Secure API access to a wordpress site with api key authentication.
 
 You can find the companion plugin in our [GitHub repository](https://github.com/wordpresscopilot/plugin).
 
@@ -59,10 +56,43 @@ You can find the companion plugin in our [GitHub repository](https://github.com/
 
 - Node.js 16+
 - MongoDB Database
-- WordPress site with [WPC Plugin](https://github.com/wordpresscopilot/plugin) installed
+- WordPress site with [WPC Plugin](https://github.com/wordpresscopilot/plugin) installed and the /wp-json/ api route enabled
 - Clerk API keys
-- OpenAI API key
-
+- Anthropic API key
 
 ### 1. Clone the repository
+
+```shell
+git clone https://github.com/wordpresscopilot/app.git wpcopilot-app
+cd wpcopilot-app
+```
+
+
+### 2. Install npm dependencies
+
+```shell
+npm install
+```
+
+### 3. Copy the environment variables to `.env` and change the values
+
+```shell
+cp .env.example .env
+```
+
+### 4. Initialize the prisma database
+
+```shell
+npx prisma generate
+```
+
+### 5. Run the dev server
+
+```shell
+npm run dev
+```
+
+### 6. Open the app in your browser
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
