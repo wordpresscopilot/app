@@ -25,16 +25,16 @@ type SSH {
 
 model wp_site {
   id                    String   @id @map("_id")
-  user_id               String   @map("user_id")
+  user_id               String  
   name                  String
-  base_url              String   @map("base_url")
-  api_key               String   @map("api_key")
+  base_url              String   
+  api_key               String
   logo_url              String?
   plugin_connected      Boolean?
   last_connected_date   DateTime?
   ssh                   SSH?
-  created_at            DateTime @default(now()) @map("created_at")
-  updated_at            DateTime @updatedAt @map("updated_at")
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now())
 }
 
 model chat {
