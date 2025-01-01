@@ -12,7 +12,7 @@ export default function Page({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <SignIn forceRedirectUrl={redirect_url || undefined} />
+      <SignIn forceRedirectUrl={redirect_url || "/sites"} />
     </div>
   );
 }

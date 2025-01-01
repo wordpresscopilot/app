@@ -11,7 +11,7 @@ export async function createSiteProject(formData: FormData): Promise<WpSite> {
   const user = await currentUser();
   if (!user) throw new Error("User not found");
 
-  const name = formData.get("name") as string;
+  const name = formData.get("name") as string || "New Site";
   const baseUrl = formData.get("baseUrl") as string;
   const new_site_id = nanoid();
   const newSite = (await prisma.wp_site.create({

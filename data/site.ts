@@ -30,10 +30,9 @@ export async function retrieveSites({
   // if (cachedSites && cachedSites.sites) {
   //   return cachedSites.sites as WpSite[];
   // }
-
   const sites = (await prisma.wp_site.findMany({
     where: {
-      user_id,
+      user_id: user_id,
     },
   })) as WpSite[];
 
